@@ -1,0 +1,243 @@
+
+/* assume all screen media defaults as phone to small tablet upright single column */
+
+@media only screen {
+
+/********* base definitions **********/
+  body {
+    position:relative;
+    z-index:-101;
+    background-color:#FFFFFF;
+  }
+
+  button {
+    padding:1em;
+    border:1px solid #A39480;
+    border-radius: 1em;
+    color:#A39480;
+  }
+
+  h1, h2, h3{
+    padding:0 4vw;
+  }
+
+  p {
+    padding:0 4vw;
+  }
+/***********  helper classes **********/
+
+  .content-box {
+    box-sizing: content-box
+  }
+
+  .border-box {
+    box-sizing: border-box;
+  }
+
+  .hidden-all {
+    display: none;
+  }
+
+  .hidden-visual {
+     border: 0;
+     clip: rect(0 0 0 0);
+     height: 1px;
+     width: 1px;
+     margin: -1px;
+     padding: 0;
+     overflow: hidden;
+     position: absolute;
+  }
+
+  .centered {
+    width:100%;
+    margin:auto;
+  }
+
+  .text-centered {
+    text-align: center;
+  }
+
+  .some-padding {
+    padding: 1rem;
+  }
+/* used for selected tabs and buttons */
+  .selected {
+    border-right:.5vw solid #000000;
+  }
+
+/* used for hover state */
+  .active {
+  }
+
+/* used to float images or blocks of content */
+  .left{
+    float:none;
+  }
+
+  .right{
+    float:none;
+  }
+
+/********** header styles *********/
+
+header {
+  height:6rem;
+  position: fixed;
+  top:0;
+  display: inline-block;
+  width:100%;
+}
+
+ .logo {
+   display:flex;
+   margin-top:.05rem;
+   height:5.9rem;
+   margin-left:auto;
+   margin-right:auto;
+ }
+
+/********** navigation styles ********/
+
+  nav {
+    position:fixed;
+    width:100vw;
+    top:6rem;
+    left:0px;
+  }
+
+  nav ul {
+    list-style: none;
+    display: inline-block;
+    margin:0;
+  }
+
+  nav li {
+    width:50vw;
+    display: inline-block;
+    padding:.5rem;
+    text-align: center;
+  }
+
+  #product-navigation {
+    top:auto;
+    bottom:0;
+  }
+
+  /**********  main styles *********/
+  main {
+    position:relative;
+    z-index: -100;
+  }
+
+  main img {
+    width:100%;
+  }
+
+  article{
+    display:inline-block;
+  }
+
+  embed{
+    width:98vw;
+  }
+
+  /**********  footer styles ******/
+
+  footer{
+    z-index: 2500;
+    background-color: #FFFFFF;
+    display: inline-block;
+    border-top: #322e26 solid 2px;
+    width:100vw;
+    padding:.25rem;
+  }
+
+  footer ul {
+    display: block;
+    list-style: none;
+  }
+
+  footer li {
+    display: inline;
+    padding-right:5px;
+  }
+  footer p {
+    padding-right: 2vw;
+  }
+  /**********  styles related to specific articles or pages *********/
+
+  /* example image, section or article has attention drawn to it with border and padding */
+
+  .example {
+    margin: 4vw auto;
+    padding: 1vw;
+    border: #000000 solid 1px;
+  }
+}
+
+@media only screen and (min-width: 900px) {
+
+  /* used to float images or blocks of content */
+    .left{
+      float:left;
+    }
+
+    .right{
+      float:right;
+    }
+
+  p {
+    padding:0;
+  }
+
+  h1, h2, h3 {
+    padding:0;
+  }
+
+  main{
+    width:850px;
+  }
+
+  nav{
+    width:50vw;
+  }
+
+  nav li{
+    width:25vw;
+  }
+
+  embed{
+    width:850px;
+    height:90vh;
+  }
+
+  /* bottom navigation moves to the top */
+  #product-navigation {
+    bottom: auto;
+    top: 6rem;
+    right: auto;
+    left:50%;
+  }
+
+  .example {
+    padding: 2vw 5vw;
+    border: #000000 solid 3px;
+  }
+
+  footer{
+    position:fixed;
+    bottom:0;
+    left:0;
+  }
+  footer ul {
+    display: inline;
+  }
+  footer p {
+    display: inline;
+  }
+}
+
+/* bigger than 1500, display two column */
+@media only screen and (min-width: 1500px) {
+}

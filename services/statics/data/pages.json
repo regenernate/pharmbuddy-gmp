@@ -1,0 +1,11 @@
+
+{
+  "pages":{
+    "about":{
+      "template":"./services/statics/views/about.handlebars",
+      "title":"Springboard page for this subdomain.",
+      "desc":""
+    }
+  },
+  "default_page":"about"
+}

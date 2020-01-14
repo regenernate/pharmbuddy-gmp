@@ -1,0 +1,114 @@
+/** base "mobile" font sizes follow **/
+html {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+}
+
+div, p, span, body {
+  font-family: Helvetica, Arial, sans-serif;
+  line-height:1.75rem;
+}
+
+nav{
+  font-family: Georgia, serif;
+}
+
+footer{
+  font-family:Helvetica, Arial, sans-serif;
+  font-size:.8rem;
+  margin:auto;
+  padding-bottom:6rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Georgia, serif;
+  line-height:2.5rem;
+}
+
+/*** base ratios are for mobile devices, using major third ratio ( 4/5 or 1.25 ) ***/
+/** to bump up in size, the next values are 2.441, 3.052 **/
+/** to reduce size, the next values down are .8, .64 **/
+h1 {
+  font-size: 2.1em;
+}
+
+h2 {
+  font-size: 1.563em;
+}
+
+h3, h4 {
+  font-size: 1.25em;
+}
+
+h5, h6 {
+  font-size: 1em;
+}
+
+.action-box{
+  padding:3vh;
+  text-align:center;
+}
+
+.divider-box{
+  padding:2vh 0;
+  font-size:1.4rem;
+}
+.invitation{
+  width:100%;
+  font-size:1.9em;
+}
+
+.action{
+  width:100%;
+  font-size:1.9em;
+}
+
+main {
+  margin:10rem auto 1rem auto;
+}
+
+article {
+  margin:0 auto;
+}
+
+/*** change ratios to perfect fourth on anything small tablet size or above ***/
+/** to bump up in size, the next values are 3.157, 4.209 **/
+/** to reduce size, the next values down are .75, .563 **/
+@media only screen and (min-width: 900px){
+  html{
+    font-size:16px;
+  }
+
+  h1{
+    font-size: 2.369em;
+  }
+
+  h2{
+    font-size: 1.777em;
+  }
+
+  h3, h4{
+    font-size: 1.333em;
+  }
+
+  h5, h6{
+    font-size:1em;
+  }
+
+  footer{
+    padding-bottom:5px;
+  }
+
+  main{
+    margin-bottom:3rem;
+  }
+}
+
+/*** change ratios to perfect fifth on large screens ***/
+/** to bump up in size, the next values are 5.063, 7.594 **/
+/** to reduce size, the next values down are .667, .444 **/
+@media only screen and (min-width: 1200px){
+  html{
+    font-size:18px;
+  }
+}

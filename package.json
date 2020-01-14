@@ -1,0 +1,26 @@
+{
+  "name": "pharmbuddy-gmp",
+  "version": "1.0.0",
+  "description": "tracking manufacturing processes for ravenridge products",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nathangreenling/pharmbuddy-gmp.git"
+  },
+  "keywords": [],
+  "author": "Nathan Wheeler <nathan.greenling@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nathangreenling/pharmbuddy-gmp/issues"
+  },
+  "homepage": "https://github.com/nathangreenling/pharmbuddy-gmp#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "handlebars": "^4.7.2",
+    "moment": "^2.24.0",
+    "query-string": "^6.9.0"
+  }
+}

@@ -1,0 +1,39 @@
+/* assume all screen media defaults as phone to small tablet upright single column */
+
+@media only screen {
+
+  .panoramic {
+    width: 100vw;
+    max-width:100%;
+  }
+
+  .paired-equal{
+    width: 100%;
+  }
+
+  .paired-half{
+      width: 50%;
+      max-width:500px;
+  }
+
+  .tall {
+    width: 20vw;
+    float: right;
+  }
+
+  .half {
+    width: 50%;
+  }
+}
+
+
+@media only screen and ( min-width: 500px ){
+  .tall {
+    width: 100px;
+  }
+
+  .paired-equal{
+    width:50%;
+    max-width:500px;
+  }
+}
