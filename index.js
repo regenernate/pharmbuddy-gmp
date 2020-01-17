@@ -5,6 +5,12 @@ const http_server = require('./server/server_v2.js');
 //when no base path is sent, default_router will be used
 const default_router_path = "static";
 
+var port = process.env.PORT;
+var ip = process.env.BIND_IP;
+
+if( !port || !ip ){
+  console.log("Don't forget to set your .env file and define a port and ip.");
+}
 var routers_to_load = [ {name:"statics_router", path:"../services/statics/" } ];
 
 function loadRouters(){
@@ -17,7 +23,7 @@ function loadRouters(){
 
 try{
   loadRouters();
-  http_server.startServer();
+  http_server.startServer(port, ip);
 }catch(err){
   console.log( "there was an error loading a configured router", err.message );
 }

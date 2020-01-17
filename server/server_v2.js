@@ -40,8 +40,8 @@ db.connect(function(err) {
 
 var http_server;
 
-function initHttpServer(){
-  http_server = http.createServer( receiveHttpRequest ).listen(process.env.PORT, process.env.BIND_IP);
+function initHttpServer( port, ip ){
+  http_server = http.createServer( receiveHttpRequest ).listen(port, ip);
 }
 
 module.exports.startServer = initHttpServer;
@@ -273,6 +273,7 @@ async function collectRequestData(request, response, resume) {
         request.body[i] = formatDateForDB( request.body[i] );
       }
     }
+    console.log( request.body );
     //look for and reformat location objects - put this into the where service
     if( request.body.latitude && request.body.longitude ){
       request.geolocation = location(request.body.latitude, request.body.longitude, request.body.accuracy);
