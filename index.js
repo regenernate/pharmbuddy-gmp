@@ -11,7 +11,9 @@ var ip = process.env.BIND_IP;
 if( !port || !ip ){
   console.log("Don't forget to set your .env file and define a port and ip.");
 }
-var routers_to_load = [ {name:"statics_router", path:"../services/statics/" } ];
+
+//pull this out into /services/router_config.json
+var routers_to_load = [ {name:"statics_router", path:"../services/statics/" }, {name:"request_router", path:"../services/request/" } ];
 
 function loadRouters(){
   //loadConfiguredRoutes('./server/routers/', './routers/');

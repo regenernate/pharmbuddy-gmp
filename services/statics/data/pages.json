@@ -1,11 +1,12 @@
 
 {
   "pages":{
-    "about":{
-      "template":"./services/statics/views/about.handlebars",
-      "title":"Springboard page for this subdomain.",
-      "desc":""
+    "home":{
+      "template":"./services/statics/views/home.handlebars",
+      "title":"Let me guess ... you're lost?",
+      "desc":"You probably got here by mistake. If you were looking for our qulity CBD and hemp products, try www.ravenridgefamilyfarm.com."
     }
   },
-  "default_page":"about"
+  "default_page":"home",
+  "base_route":"request"
 }

@@ -1,0 +1,16 @@
+
+{
+  "pages":{
+    "login":{
+      "template":"./services/statics/views/login.handlebars",
+      "title":"Welcome to the RavenRidge cGMP portal",
+      "desc":"Login access page for RavenRidge Hemp and Herbals good manufacturing practices recordkeeping software."
+    },
+    "access":{
+      "template":"./services/request/views/confirm_device.handlebars",
+      "title":"One more step to Confirm this Device",
+      "desc":"If you work for RavenRidge Family Farm, you are working from a known computer. Use the device keygen to return an encrypted key."
+    }
+  },
+  "default_page":"login"
+}

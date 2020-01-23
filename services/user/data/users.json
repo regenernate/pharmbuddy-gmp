@@ -1,0 +1,28 @@
+{
+  "users":[
+    {
+      "name":"Nate",
+      "email":"nathan.greenling@gmail.com",
+      "phone":"3367053198",
+      "id":"1"
+    },
+    {
+      "name":"Richard",
+      "email":"rlwmd7@gmail.com",
+      "phone":"9196067839",
+      "id":"2"
+    },
+    {
+      "name":"Cynthia",
+      "email":"cabryant83@gmail.com",
+      "phone":"3369713323",
+      "id":"3"
+    },
+    {
+      "name":"Michele",
+      "email":"michelemarie52@gmail.com",
+      "phone":"9192803016",
+      "id":"4"
+    }
+  ]
+}

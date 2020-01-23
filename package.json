@@ -1,5 +1,5 @@
 {
-  "name": "pharmbuddy-gmp",
+  "name": "pharmbuddy",
   "version": "1.0.0",
   "description": "tracking manufacturing processes for ravenridge products",
   "main": "index.js",
@@ -21,6 +21,7 @@
     "dotenv": "^8.2.0",
     "handlebars": "^4.7.2",
     "moment": "^2.24.0",
-    "query-string": "^6.9.0"
+    "query-string": "^6.9.0",
+    "request": "^2.88.0"
   }
 }

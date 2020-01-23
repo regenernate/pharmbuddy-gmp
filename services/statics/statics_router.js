@@ -1,6 +1,6 @@
 /****
 
-The PURPOSE of this router is to handle requests for a set of mostly static content.
+The PURPOSE of this router is to handle request for a set of mostly static content.
 It defines a set of templates which correlate to specific urls.
 It is used here to load the general information pages for the RRHH website
 
@@ -18,7 +18,7 @@ module.exports.active = true;
 //The server expects a basic return object or an error to be thrown
 //load the basic return object prototype
 var bro = require("../../server/bro");
-//load any controllers needed to handle requests
+//load any controllers needed to handle request
 var template_manager = require('../../views/template_manager');
 
 var pages;
@@ -48,11 +48,15 @@ function compileTemplates(){
   template_manager.compileTemplates(templates, true);
 }
 
-//write a method to handle route requests and return a bro
+//write a method to handle route request and return a bro
 async function routeRequest( request, response, file_parts ){
   let rtn = null;
   //if no page name, use default template
-  if( !file_parts || file_parts.length == 0 ) file_parts = [ default_page ];
+  if( !file_parts ) file_parts = [ default_page ];
+  //if request url includes "statics" as first part, remove it
+  if( file_parts[0] == brp) file_parts.unshift();
+  //if no page now, use default_template
+  if( !file_parts.length ) file_parts.push( default_page );
   //get requested page name
   let template = file_parts[0].toLowerCase();
   //check for requested template in templates object

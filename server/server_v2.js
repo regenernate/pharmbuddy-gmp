@@ -72,7 +72,7 @@ module.exports.setDefaultRouter = setDefaultRouter;
 
 /*******  Assumptions ******
 
-All static resource requests will have a file extension
+All static resource request will have a file extension
 Multi-part form data and query data is parsed by the server and passed along with the request object
 
 Multi-part image streams are always routed to the image service to be uploaded and saved,
@@ -179,72 +179,73 @@ async function respondToRequest( request, response ){
       }
     }else{ */
       //bootstrap the main logged in page with logged_in layout
-      if( request_path == '/') {
-        request_path = default_router_path;
+    if( request_path == '/') {
+      request_path = default_router_path;
+    }
+
+    let extension = String(path.extname(request_path)).toLowerCase();
+    let has_extension = extension != "";
+
+    //if requested resource has a file extension, treat as static route
+    if( has_extension ){
+      content_type_out = mime_types[ extension ];
+      if( !content_type_out ) throw new Error('Unsupported extension requested :: ' + extension + ", " + request_path);
+      //check extension against content-type
+      //check extension against supported list
+      //check extension against accepts header
+      if( request_headers.hasOwnProperty( 'accepts' ) ){
+        if(String(request_headers.accepts).toLowerCase().indexOf(content_type_out) < 0){
+          throw new Error('Extension requested does not match accepts header, ' + extension);
+        }
       }
+      //serve static file
+      attemptToServeStaticFile( response, "." + request_path, content_type_out );
+    } else {
+      //no file extension so treat as dynamic route
+      //for now check only for html then json accepts
+      if( request_headers.hasOwnProperty( 'accept' ) ){
+        let accepts_header = String(request_headers.accept).toLowerCase();
+        if( accepts_header.indexOf( mime_types['.html'] ) >= 0 ) content_type_out = mime_types['.html'];
+        else if( accepts_header.indexOf( mime_types['.json'] ) >= 0 ) content_type_out = mime_types['.json'];
+        else throw new Error('Dynamic routes currently only serve content with accepts header html or json.');
+      }else{
+        content_type_out = mime_types['.html'];
+      }
+      //clean up requested url
+      let file_parts = request_path.split("/");
+      if( file_parts[0] == "" || file_parts[0] == "." ) file_parts.shift();
+      //if no matched router domain, insert default domain into url
+      if( !configured_routers.hasOwnProperty( file_parts[0] )){
+        file_parts.unshift(default_router_path);
+      }
+      //call matched router
+      console.log("routing to :: ", file_parts)
+      let routed_call = await configured_routers[ file_parts[0] ]( request, response, file_parts.slice(1) );
 
-      let extension = String(path.extname(request_path)).toLowerCase();
-      let has_extension = extension != "";
+      if(!routed_call.success){
+        if( routed_call.error ) console.log( "/***** ERROR CALLING ROUTE *****/ ( " + routed_call.error + " )" );
 
-      //if requested resource has a file extension, treat as static route
-      if( has_extension ){
-        content_type_out = mime_types[ extension ];
-        if( !content_type_out ) throw new Error('Unsupported extension requested :: ' + extension + ", " + request_path);
-        //check extension against content-type
-        //check extension against supported list
-        //check extension against accepts header
-        if( request_headers.hasOwnProperty( 'accepts' ) ){
-          if(String(request_headers.accepts).toLowerCase().indexOf(content_type_out) < 0){
-            throw new Error('Extension requested does not match accepts header, ' + extension);
-          }
-        }
-        //serve static file
-        attemptToServeStaticFile( response, "." + request_path, content_type_out );
-      } else {
-        //no file extension so treat as dynamic route
-        //for now check only for html then json accepts
-        if( request_headers.hasOwnProperty( 'accept' ) ){
-          let accepts_header = String(request_headers.accept).toLowerCase();
-          if( accepts_header.indexOf( mime_types['.html'] ) >= 0 ) content_type_out = mime_types['.html'];
-          else if( accepts_header.indexOf( mime_types['.json'] ) >= 0 ) content_type_out = mime_types['.json'];
-          else throw new Error('Dynamic routes currently only serve content with accepts header html or json.');
-        }else{
-          content_type_out = mime_types['.html'];
-        }
-        //clean up requested url
-        let file_parts = request_path.split("/");
-        if( file_parts[0] == "" || file_parts[0] == "." ) file_parts.shift();
-        //if no matched router domain, insert default domain into url
-        if( !configured_routers.hasOwnProperty( file_parts[0] )){
-          file_parts.unshift(default_router_path);
-        }
-        //call matched router
-        let routed_call = await configured_routers[ file_parts[0] ]( request, response, file_parts.slice(1) );
-        if( routed_call.success ){
-          if( routed_call.redirect ){
-            response.writeHead(302, { "Location": routed_call.redirect });
-            response.end();
-          }else if(content_type_out == mime_types['.html']){
-            endRequest( response, routed_call.content, content_type_out );
-          }else if(content_type_out == mime_types['.json']){
-            endRequest( response, JSON.stringify({success:true,content:routed_call.content}), content_type_out );
-        }else{
-
-          if( routed_call.error ) console.log( routed_call.error );
-
-          if( routed_call.redirect ){
-            response.writeHead(302, { "Location": routed_call.redirect });
-            response.end();
-          }else if(content_type_out == mime_types['.html']){
-            endRequest( response, routed_call.error, content_type_out );
-          }else if(content_type_out == mime_types['.json']){
+        if( routed_call.redirect ){
+          response.writeHead(302, { "Location": routed_call.redirect });
+          response.end();
+        }else if(content_type_out == mime_types['.html']){
+          endRequest( response, routed_call.error, content_type_out );
+        }else if(content_type_out == mime_types['.json']){
 //                if( typeof(routed_call.error) == "string" ) routed_call.error = {error:routed_call.error};
-            endRequest( response, JSON.stringify({success:false, error:routed_call.error}), content_type_out );
-          }
+          endRequest( response, JSON.stringify({success:false, error:routed_call.error}), content_type_out );
+        }
+      }else{
+        console.log("successful call");
+        if( routed_call.redirect ){
+          response.writeHead(302, { "Location": routed_call.redirect });
+          response.end();
+        }else if(content_type_out == mime_types['.html']){
+          endRequest( response, routed_call.content, content_type_out );
+        }else if(content_type_out == mime_types['.json']){
+          endRequest( response, JSON.stringify({success:true,content:routed_call.content}), content_type_out );
         }
       }
-//    }
-  }
+    }
   }catch(err){
     console.log("RESPOND TO REQUEST CATCH", err.stack);
     if(content_type_out == mime_types['.html']){

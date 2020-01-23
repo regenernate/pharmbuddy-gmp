@@ -71,7 +71,7 @@ handlebars.registerPartial('head', handlebars.compile( fs.readFileSync( "./views
 
 //load and compile layout templates
 var default_layout = "logged_out";
-const layouts = compileTemplates( {  "unsupported":"./views/layouts/unsupported.handlebars", "logged_out":"./views/layouts/logged_out.handlebars"} );
+const layouts = compileTemplates( {  "unsupported":"./views/layouts/unsupported.handlebars", "logged_out":"./views/layouts/logged_out.handlebars", "none":"./views/layouts/none.handlebars"} );
 
 module.exports.unsupported_route = layouts.unsupported;
 module.exports.compileTemplates = compileTemplates;
@@ -79,6 +79,7 @@ module.exports.compileTemplates = compileTemplates;
 /********
 
 data should be an object with specific variables to be sent to the source template ... the main of the page being rendered
+layout is the text key for a known layout
 
 *******/
 
