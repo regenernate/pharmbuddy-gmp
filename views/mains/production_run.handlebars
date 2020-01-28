@@ -1,0 +1,42 @@
+<h1>Create a production run</h1>
+<p>This is a two step process.
+  <ul>
+    <li>First select the number of units and the ingredients for this run from the options below.</li>
+    <li>Next, press <em>Calculate Ingredients</em>. You will have a chance to confirm the quantities before finalizing the run.</li>
+  </ul>
+
+<form action='/production/calculate_ingredients' method='post'>
+  <legend>Select your formulation and run size.</legend>
+  <fieldset>
+    Number of units:
+    <input type="text" name="quantity" size="10" value="1" />
+  </fieldset>
+  <fieldset>
+    <legend>Carrier Oil</legend>
+    <input type='radio' id="c2" name='carrier' value='olive' checked />
+    <label for="c2">olive</label>
+    <input type='radio' id="c1" name='carrier' value='hempseed' />
+    <label for="c1">hempseed</label>
+  </fieldset>
+    <fieldset>
+    <legend>Strength</legend>
+    <input type='radio' id="s1" name='strength' value='300' checked />
+    <label for="s1">300 mg</label>
+    <input type='radio' id="s2" name='strength' value='600' />
+    <label for="s2">600 mg</label>
+    <input type='radio' id="s3" name='strength' value='900' />
+    <label for="s3">900 mg</label>
+  </fieldset>
+    <fieldset>
+    <legend>Flavoring ( optional )</legend>
+    <input type='radio' id="f1" name='flavoring' value='natural' checked />
+    <label for="f1">Natural</label>
+    <input type='radio' id="f2" name='flavoring' value='peppermint' />
+    <label for="f2">Peppermint</label>
+    <input type='radio' id="f3" name='flavoring' value='licorice' />
+    <label for="f3">Licorice</label>
+    <input type='radio' id="f4" name='flavoring' value='orange_cream' />
+    <label for="f4">Orange Cream</label>
+  </fieldset>
+  <input type="submit" value="Calculate Ingredients"></input>
+</form>

@@ -1,0 +1,27 @@
+form{
+  margin-top:2em;
+  padding:1em;
+  border:1px solid #000000;
+}
+
+fieldset{
+  margin-bottom:1em;
+}
+
+legend {
+  font-size:1.15em;
+}
+
+input[type='radio']{
+  margin-left:2em;
+}
+
+input[type='submit']{
+  padding:.7em;
+  text-align:center;
+  font-size:1.25em;
+  border-radius:15px;
+  border: 1px soild #000000;
+  background-color: #0000AA;
+  color: #FFFFFF;
+}

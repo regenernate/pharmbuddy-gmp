@@ -1,0 +1,21 @@
+table {
+  box-sizing: content-box;
+  margin:2em auto;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  font-weight: bold;
+  font-size: 1.25em;
+  background-color: #6d9eeb;
+}
+
+th,td{
+  text-align: center;
+  padding:1em;
+}
+
+table, th, td {
+  border: 1px solid #000000;
+}

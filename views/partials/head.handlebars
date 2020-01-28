@@ -2,13 +2,16 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {{#if modules}}
+  {{#each module}}
+  <script type="module" src="{{path}}"></script>
+  {{/each}}
+  {{/if}}
+
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
 
   <link rel="stylesheet" type="text/css" href="/views/css/css_uglified.css" />
-
-  <!--[if (lt IE 9)&(!IEMobile 7)]>
-  <script src="respond.min.js"></script>
-  <![endif]-->
 
   <!-- SEO STUFF -->
   <title>{{title}}</title>

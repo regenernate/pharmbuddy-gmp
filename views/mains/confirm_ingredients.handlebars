@@ -1,0 +1,50 @@
+<h1>Confirm formulation</h1>
+
+<p>Confirm that the ingredients and amounts are correct below. If not, use the browser back button to make changes to the formulation request. Otherwise, pressing <em>Create run</em> will create the new run id.</p>
+
+<h2>This Formulation Request is for:</h2>
+<table>
+  <tr>
+    {{#each request}}
+    <th>
+      {{@key}}
+    </th>
+    {{/each}}
+  </tr>
+  <tr>
+    {{#each request}}
+    <td>
+      {{this}}
+    </td>
+    {{/each}}
+  </tr>
+</table>
+<h2>The ingredient amounts are ( in grams ):</h2>
+<table>
+  <tr>
+    {{#each formulation}}
+    <th>
+      {{@key}}
+    </th>
+    {{/each}}
+  </tr>
+  <tr>
+    {{#each formulation}}
+    <td>
+      {{this}}
+    </td>
+    {{/each}}
+  </tr>
+  <tr>
+    {{#each inventory}}
+    <td>{{#if this}}All Good{{else}}Short!{{/if}}</td>
+    {{/each}}
+  </tr>
+</table>
+
+<form action="/production/confirm_run" method="post">
+  {{#each request}}
+  <input type="hidden" name="{{@key}}" value="{{this}}" />
+  {{/each}}
+  <input type="submit" value="Create Run" />
+</form>

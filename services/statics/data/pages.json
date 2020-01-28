@@ -7,6 +7,5 @@
       "desc":"You probably got here by mistake. If you were looking for our qulity CBD and hemp products, try www.ravenridgefamilyfarm.com."
     }
   },
-  "default_page":"home",
-  "base_route":"request"
+  "default_page":"home"
 }
