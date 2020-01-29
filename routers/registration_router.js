@@ -10,10 +10,71 @@ The purpose of this router is to accept and manage requests to register user dev
 
 module.exports.base_route_path = "register";
 
+//externally available method to get the registered device from a request
+module.exports.getRegisteredDevice = function( req ){
+  let rc = getCookie( req, cookie_name );
+  if( rc ) return JSON.parse( rc ).device_name;
+  else return false;
+}
+
+//main request handler
+module.exports.router = async function( req, res, path ) {
+
+  if(!path) path = [''];
+  let rtn;
+
+  let reg_cookie = getCookie( req, cookie_name );
+
+  if( reg_cookie == false ){ //this device is not yet registered
+    if( path[0] !== "confirm" ){ //assume registration attempt
+      //step 1 :: ask for device name
+      let rc = path[0]; //registration code is the first segment of the path
+      console.log("/**********  REGISTRATION ATTEMPT FOR " + rc + " AT " + moment().format() + " ********/");
+      //cheat to see if this registration code is valid
+      let expected_name = getDeviceNameForCode( rc );
+      if( expected_name ){ //its a valid code
+        //serve up page with the device choices
+        rtn = executeTemplate( pages.confirm_device, {registration_code:rc, devices:valid_devices}, "logged_out" );
+      }else{
+        //this is an invalid code
+        rtn = executeTemplate( null, "You did not send a valid registration code ( " + rc + ")." );
+      }
+    }else{ //this is a registration confirmation attempt
+      //step 2 :: confirm device name matches registration code
+      if( req.body ){ //must have post data
+        let d = req.body.device_name;
+        let rc = req.body.registration_code;
+        //remove device code ( if it exists )
+        let ro = removeRegistrationCode( rc );
+        if( !ro ){ // this registration code didn't exist in the system
+          rtn = executeTemplate(null, "The registration code is not valid! ( " + rc + " ).", "logged_out");
+        }else if( ro.device_name == d ){ //this registration code exists and the device name matches
+          console.log("/**********  REGISTRATION SUCCESSFUL FOR " + d + " at " + moment().format() + " ********/");
+          //try to set cookie - if successful, redirect, else return error
+          let ccrv = setCookie( res, cookie_name, JSON.stringify(ro), true );
+          if( !ccrv  ) rtn = executeTemplate( null, "Cookie could not be set.", "logged_out" );
+          else return bro.get(true, null, null, redirect_path);
+        }else{ //the code existed but they device name doesn't match
+          rtn = executeTemplate(null, "The device you indicated ( " + d + " ) doesn't match the registration code used ( " + rc + " ). It should have been " + ro.device_name + ".", "logged_out");
+        }
+      }else{ //no posted data
+        //display public registration homepage ( this view will be indexed by search engines )
+        rtn = executeTemplate( null, "The necessary information was not sent with this request. Refer to your email!", "logged_out" );
+      }
+    }
+  }else{ //this device is alreay registered
+    let cc = JSON.parse( reg_cookie );
+    rtn = executeTemplate( null, 'This device was registered on ' + cc.code + ' as ' + cc.device_name + '.' );
+  }
+
+  return bro.get( true, rtn );
+}
+
 const fs = require('fs');
 const moment = require('moment');
 
 const cookie_name = "registration";
+
 const {setCookie, getCookie} = require('../tools/cookies/cookie_util');
 
 const redirect_path = "/login/";
@@ -58,67 +119,6 @@ function generateRegistrationCode( device_name ){
   return false;
 }
 
-/***** get and set registration cookies ***/
-function getRegistrationCookie( req ){
-  return getCookie( req, cookie_name );
-}
-
-function setRegistrationCookie( res, ro ){
-  return setCookie( res, cookie_name, JSON.stringify(ro), true );
-}
-
-//main request handler
-module.exports.router = async function( req, res, path ) {
-
-  if(!path) path = [''];
-  let rtn;
-
-  let reg_cookie = getRegistrationCookie( req );
-
-  if( reg_cookie == false ){ //this device is not yet registered
-    if( path[0] !== "confirm" ){ //assume registration attempt
-      //step 1 :: ask for device name
-      let rc = path[0]; //registration code is the first segment of the path
-      console.log("/**********  REGISTRATION ATTEMPT FOR " + rc + " AT " + moment().format() + " ********/");
-      //cheat to see if this registration code is valid
-      let expected_name = getDeviceNameForCode( rc );
-      if( expected_name ){ //its a valid code
-        //serve up page with the device choices
-        rtn = executeTemplate( pages.confirm_device, {registration_code:rc, devices:valid_devices}, "logged_out" );
-      }else{
-        //this is an invalid code
-        rtn = executeTemplate( null, "You did not send a valid registration code ( " + rc + ")." );
-      }
-    }else{ //this is a registration confirmation attempt
-      //step 2 :: confirm device name matches registration code
-      if( req.body ){ //must have post data
-        let d = req.body.device_name;
-        let rc = req.body.registration_code;
-        //remove device code ( if it exists )
-        let ro = removeRegistrationCode( rc );
-        if( !ro ){ // this registration code didn't exist in the system
-          rtn = executeTemplate(null, "The registration code is not valid! ( " + rc + " ).", "logged_out");
-        }else if( ro.device_name == d ){ //this registration code exists and the device name matches
-          console.log("/**********  REGISTRATION SUCCESSFUL FOR " + d + " at " + moment().format() + " ********/");
-          //try to set cookie - if successful, redirect, else return error
-          let ccrv = setRegistrationCookie( res, ro );
-          if( !ccrv  ) rtn = executeTemplate( null, "Cookie could not be set.", "logged_out" );
-          else return bro.get(true, null, null, redirect_path);
-        }else{ //the code existed but they device name doesn't match
-          rtn = executeTemplate(null, "The device you indicated ( " + d + " ) doesn't match the registration code used ( " + rc + " ). It should have been " + ro.device_name + ".", "logged_out");
-        }
-      }else{ //no posted data
-        //display public registration homepage ( this view will be indexed by search engines )
-        rtn = executeTemplate( null, "The necessary information was not sent with this request. Refer to your email!", "logged_out" );
-      }
-    }
-  }else{ //this device is alreay registered
-    let cc = JSON.parse( reg_cookie );
-    rtn = executeTemplate( null, 'This device was registered on ' + cc.code + ' as ' + cc.device_name + '.' );
-  }
-
-  return bro.get( true, rtn );
-}
 
 
 /****** helpers *******/

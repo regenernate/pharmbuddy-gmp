@@ -11,7 +11,6 @@ const default_max_age = 60*60*24*365*5; //expires in 5 years ... just for now
 const domain = process.env.COOKIE_DOMAIN;
 
 module.exports.setCookie = function( res, name, content, max_age ){
-  console.log(content);
   if( !name || !content ){ console.log("Cookie_util :: You didn't send name or content to setCookie."); return false; }
   if( max_age === true ) max_age = default_max_age; //default expires to true if nothing sent
   else if( isNaN( max_age ) ) max_age = false;
@@ -35,7 +34,7 @@ module.exports.getCookie = function( req, name ){
 
   let c = req.headers[ cookie_header_name ];
   if(c){
-    let cl = c.split(",");
+    let cl = c.split(";");
     let cc;
     for( let i in cl ){
       cc = cl[i].split( "=" );

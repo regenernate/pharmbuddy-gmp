@@ -1,7 +1,12 @@
 <footer>
-{{#if logged_in}}
-Loggers out now.
+{{#if registered_device}}
+You are on {{registered_device}}
+  {{#if responsible_party}}
+  as {{responsible_party}}. Click <a href='/logout/'>here to end your session</a>.
+  {{else}}
+   but who is taking responsibility now?
+  {{/if}}
 {{else}}
-Don't loggers out ... you ain't loggered in.
+This device isn't registered.
 {{/if}}
 </footer>

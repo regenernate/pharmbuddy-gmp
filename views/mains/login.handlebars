@@ -3,11 +3,15 @@
 
 <form method="post" action="/login/">
   <legend>So who wants to accept responsibility today?</legend>
-  <fieldset>
-    <input type="button" value="Richard"></input>
-    <input type="button" value="Michele"></input>
-    <input type="button" value="Cynthia"></input>
-    <input type="button" value="Nathan"></input>
-  </fieldset>
+
+  <input id="u1" type="radio" name="responsible_party" value="Richard" />
+  <label for="u1">Richard</label>
+  <input id="u2" type="radio" name="responsible_party" value="Michele" />
+  <label for="u2">Michele</label>
+  <input id="u3" type="radio" name="responsible_party" value="Cynthia" />
+  <label for="u3">Cynthia</label>
+  <input id="u4" type="radio" name="responsible_party" value="Nathan" />
+  <label for="u4">Nathan</label>
+
   <input type="submit" value="Get Started" />
 </form>
