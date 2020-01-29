@@ -11,7 +11,10 @@ if( !port || !ip ){
 }
 
 //pull this out into /services/router_config.json
-var routers_to_load = [ {name:"statics_router", path:"../routers/" }, {name:"formulating_router", path:"../routers/" } ];
+var routers_to_load = [ {name:"statics_router", path:"../routers/" },
+                        {name:"formulating_router", path:"../routers/" },
+                        {name:"registration_router", path:"../routers/" }
+                      ];
 
 function loadRouters(){
   //loadConfiguredRoutes('./server/routers/', './routers/');

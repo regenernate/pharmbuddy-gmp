@@ -235,7 +235,6 @@ async function respondToRequest( request, response ){
           endRequest( response, JSON.stringify({success:false, error:routed_call.error}), content_type_out );
         }
       }else{
-        console.log("successful call");
         if( routed_call.redirect ){
           response.writeHead(302, { "Location": routed_call.redirect });
           response.end();

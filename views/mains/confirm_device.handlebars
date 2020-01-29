@@ -1,0 +1,12 @@
+<h1>Looks like you have a registration code!</h1>
+
+<p>Please confirm which device you are currently on by selecting it from the list below and pressing <em>Confirm Device</em>.</p>
+
+<form method="post" action="/register/confirm/">
+  <input type="hidden" name="registration_code" value="{{registration_code}}" />
+{{#each devices}}
+  <input type="radio" id="d{{@index}}" name="device_name" value="{{this}}" />
+  <label for="d{{@index}}">{{this}}</label>
+{{/each}}
+  <input type="submit" value="Confirm Device" />
+</form>
