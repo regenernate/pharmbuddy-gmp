@@ -12,9 +12,12 @@ function genid(){
 }
 
 function get( success, content, error, redirect ){
-  let id = genid();
-//  console.log("new bro with id : " + id);
-  return { id:id , success:success, content:content, error:error, redirect:redirect };
+  return { id:genid() , success:success, content:content, error:error, redirect:redirect };
+}
+
+function redirect( path ){
+  return { id:genid(), success:true, redirect:path };
 }
 
 module.exports.get = get;
+module.exports.redirect = redirect;

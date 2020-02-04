@@ -1,0 +1,33 @@
+{
+  "batch_list":[
+    {
+      "id":2,
+      "production_date":"11/11/2019",
+      "mechanism":"rosin press",
+      "location":"on-site",
+      "percent_cbd":".619",
+      "initial_volume":120,
+      "current_volume":100,
+      "use_for":[ "topical" ]
+    },
+    {
+      "id":3,
+      "production_date":"11/28/2019",
+      "mechanism":"rosin press",
+      "location":"on-site",
+      "percent_cbd":".637",
+      "initial_volume":400,
+      "current_volume":400,
+      "use_for":[ "sublingual" ]
+    },
+    {
+      "id":4,
+      "mechanism":"subcritical",
+      "location":"Grower's Hemp",
+      "percent_cbd":".527",
+      "initial_volume":600,
+      "current_volume":600,
+      "use_for":[ "sublingual", "topical" ]
+    }
+  ]
+}

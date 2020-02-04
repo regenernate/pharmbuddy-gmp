@@ -13,13 +13,13 @@ if( !port || !ip ){
 //pull this out into /services/router_config.json
 var routers_to_load = [ {name:"registration_router", path:"../routers/" },
                         {name:"statics_router", path:"../routers/" },
-                        {name:"formulating_router", path:"../routers/" }                        
+                        {name:"production_router", path:"../routers/" },
+                        {name:"scrum_router", path:"../routers/"}
                       ];
 
 function loadRouters(){
   //loadConfiguredRoutes('./server/routers/', './routers/');
   for( let i in routers_to_load ){
-    console.log("loading first ... " + routers_to_load[i].name);
     http_server.addRouter( routers_to_load[i].name, routers_to_load[i].path );
   }
   http_server.setDefaultRouter( "static" );

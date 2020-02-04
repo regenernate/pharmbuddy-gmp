@@ -29,11 +29,9 @@ const carrier_error = "Carrier must be one of the following: olive, hempseed.";
 const strength_error = "Strength must be one of the following: 300, 600, 900.";
 const flavoring_error = "Flavoring must be one of the following: orange_cream, licorice, peppermint, natural.";
 
-const util = require('util');
-
 /*********    Calculating methods *********/
 
-module.exports.calculateIngredients = async function( quantity, carrier, strength, flavoring ){
+module.exports.calculateIngredients = async function( quantity, carrier, strength, flavoring, extract){
   let errors = [];
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
   quantity = validateQuantity( quantity, errors );
@@ -48,8 +46,8 @@ module.exports.calculateIngredients = async function( quantity, carrier, strengt
     throw new Error( errors.join("\n") );
   }
 
-  //have to look up current cbd_extract_percent, for now hard-code
-  let cbd_extract_percent = .637;
+  //have to look up current cbd_extract_percent from batches, for now hard-code sublingual product
+  let cbd_extract_percent = extract.percent_cbd;
 
   //calculate the ingredients required
   let cbd_per_unit = (strength/cbd_extract_percent)/1000 / extract_specific_gravity; // in ml
@@ -57,12 +55,11 @@ module.exports.calculateIngredients = async function( quantity, carrier, strengt
   let carr_per_unit = volume_per_item - flav_per_unit - cbd_per_unit;
 
   //convert everything to grams
-  let rtn = {
-    request: {quantity:quantity, carrier:carrier, strength:strength, flavoring:flavoring},
-    formulation: {quantity:quantity, carrier:(carr_per_unit * valid_carriers[ carrier ] * quantity), fshe:(cbd_per_unit * extract_specific_gravity * quantity ), flavoring:(flav_per_unit * valid_flavorings[ flavoring ] * quantity ) }
-  };
-
-  return rtn; //util.inspect(rtn, false, null);
+  let frm = {};
+  frm[ carrier.split(" ").join("_") ] = (carr_per_unit * valid_carriers[ carrier ]);
+  frm[ flavoring.split(" ").join("_") ] = (flav_per_unit * valid_flavorings[ flavoring ]);
+  frm[ "fshe_" + extract.id ] = (cbd_per_unit * extract_specific_gravity);
+  return { formula:frm, units:"g" };
 }
 
 

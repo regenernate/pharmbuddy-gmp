@@ -20,9 +20,10 @@ handlebars.registerPartial('header', handlebars.compile( fs.readFileSync( "./vie
 handlebars.registerPartial('footer', handlebars.compile( fs.readFileSync( "./views/partials/footer.handlebars", 'utf-8' )));
 
 //load and compile layout templates
-var default_layout = "logged_out";
+const default_layout = "logged_out";
+const empty_template = function(data){ return data; };
 
-const layouts = compileTemplates( {  "logged_in":"./views/layouts/logged_in.handlebars", "logged_out":"./views/layouts/logged_out.handlebars", "none":"./views/layouts/none.handlebars"} );
+const layouts = compileTemplates( {"logged_out":"./views/layouts/logged_out.handlebars", "none":"./views/layouts/none.handlebars"} );
 
 module.exports.compileTemplates = compileTemplates;
 
@@ -38,23 +39,19 @@ module.exports.executeTemplate = function( source, data, layout ){
     console.log("TemplateManager :: There is no layout ", layout);
     layout = "none";
   }
-  if( !data ) data = {};
 
-  //hackey default navigation - ideally navigation would be pulled out of template manager
+  if( !source ) source = empty_template;
 
-  if( !source ) source = function(data){ return data; }
-//  console.log("executeTemplate() : ", source, data, layout );
-//  console.log(data);
   var template_value;
   try{
     cleanDatesForDisplay(data);
-    template_value = layouts[ layout ]( { body:source(data), meta:{title:data.title, description:data.description }, footer:data });
+    console.log("executeTempate :: ", data.session );
+    template_value = layouts[ layout ]( { body:source(data.main), meta:{title:data.title, description:data.description }, footer:data.session });
   }catch(err){
     console.log("template_manager.executeTemplate :: ", err.message);
   }
   return template_value;
 }
-
 
 /***** Date formatters *****/
 function cleanDatesForDisplay( d ){
@@ -83,45 +80,3 @@ function formatDateForDisplay( date_name, ms ){
   //return r_date;
   return moment( ms, 'x' ).format('MM-DD-YYYY [at] HH:MM');
 }
-
-
-/*******  HELPERS *******/
-handlebars.registerHelper('compare', function (lvalue, operator, rvalue, options) {
-
-    var operators, result;
-
-    if (arguments.length < 3) {
-        throw new Error("Handlerbars Helper 'compare' needs 2 parameters");
-    }
-
-    if (options === undefined) {
-        options = rvalue;
-        rvalue = operator;
-        operator = "===";
-    }
-
-    operators = {
-        '==': function (l, r) { return l == r; },
-        '===': function (l, r) { return l === r; },
-        '!=': function (l, r) { return l != r; },
-        '!==': function (l, r) { return l !== r; },
-        '<': function (l, r) { return l < r; },
-        '>': function (l, r) { return l > r; },
-        '<=': function (l, r) { return l <= r; },
-        '>=': function (l, r) { return l >= r; },
-        'typeof': function (l, r) { return typeof l == r; }
-    };
-
-    if (!operators[operator]) {
-        throw new Error("Handlerbars Helper 'compare' doesn't know the operator " + operator);
-    }
-
-    result = operators[operator](lvalue, rvalue);
-
-    if (result) {
-        return options.fn(this);
-    } else {
-        return options.inverse(this);
-    }
-
-});

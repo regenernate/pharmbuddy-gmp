@@ -1,0 +1,14 @@
+<h1>Report an issue.</h1>
+
+<form method="post" action="/scrum/report_issue/">
+  <input type="hidden" name="reporter" value="{{responsible_party}}" />
+  <label for='s1'>Issue Category</label>
+  <select id='s1' name='category'>
+    {{#each categories}}
+    <option value='{{this}}'>{{this}}</option>
+    {{/each}}
+  </select>
+  <label for="d1">Issue Description</label>
+  <textarea id="d1" cols="50" name="description"></textarea>
+  <input type="submit" value="Report issue." />
+</form>

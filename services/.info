@@ -1,0 +1,6 @@
+
+
+Services are an abstraction of business logic out of the request/response flow
+
+A service should never need to know about a request or response object and should
+have a clearly defined purpose and points of user interaction.

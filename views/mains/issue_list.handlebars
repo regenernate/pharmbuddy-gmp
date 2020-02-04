@@ -1,0 +1,17 @@
+
+<h1>Heres the list of issues you requested.</h1>
+
+<table>
+  <tr>
+    {{#each issues.[0] }}
+    <th>{{@key}}</th>
+    {{/each}}
+  </tr>
+  {{#each issues}}
+  <tr>
+    {{#each this}}
+    <td>{{this}}</td>
+    {{/each}}
+  </tr>
+  {{/each}}
+</table>
