@@ -1,4 +1,10 @@
 
+/**** PURPOSE ****
+
+The purpose of this utility is to convert times between milliseconds and human readible time for develoment purposes.
+
+********/
+
 let moment = require('moment');
 
 let from = "YYYYMMDD";

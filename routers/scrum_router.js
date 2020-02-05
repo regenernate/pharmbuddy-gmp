@@ -15,9 +15,12 @@ module.exports.router = async function( req, res, path ) {
         let ci = createIssue( req.body.category, req.body.description, req.body.reporter );
         return bro.redirect( "/scrum/" );
       }
+    }else if( path.length && path[0] == "update_status" ){
+      let cu = updateIssueStatus( req.body.key, req.body.status, rp );
+      return bro.redirect("/scrum/");
     }else{
       let iss = getIssues();
-      rtn = renderTemplate( req, pages.issue_list, { issues:iss })
+      rtn = renderTemplate( req, pages.issue_list, { issues:iss, statuses:getStatusList() })
     }
     return bro.get( true, rtn );
   }else return bro.redirect("/login/"); //otherwise redirect to login
@@ -30,7 +33,7 @@ const bro = require('../server/bro');
 const {getResponsibleParty, getRegisteredDevice} = require('../tools/sessions/session_util');
 const { compileTemplates } = require('../views/template_manager');
 const {renderTemplate, renderError} = require('../tools/rendering/render_util');
-const {getIssues, getCategoryList, createIssue} = require( '../tools/bug_tracking/bug_tracker' );
+const {getStatusList, getIssues, getCategoryList, createIssue, updateIssueStatus} = require( '../tools/bug_tracking/bug_tracker' );
 
 function initialize(){
   //load view templates

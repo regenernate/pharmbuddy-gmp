@@ -1,17 +1,33 @@
+{{#if issues.[0]}}
+  <h1>Heres the list of issues you requested.</h1>
 
-<h1>Heres the list of issues you requested.</h1>
-
-<table>
-  <tr>
-    {{#each issues.[0] }}
-    <th>{{@key}}</th>
+  <table>
+    <tr>
+      {{#each issues.[0] }}
+      <th>{{@key}}</th>
+      {{/each}}
+      <th>Change Status</th>
+    </tr>
+    {{#each issues}}
+    <tr>
+      {{#each this}}
+      <td>{{this}}</td>
+      {{/each}}
+      <td>
+        <form action="/scrum/update_status/" method="post">
+          <input type="hidden" name="key" value="{{key}}" />
+          <select name="status">
+            {{#each ../statuses}}
+            <option value='{{this}}'>{{this}}</option>
+            {{/each}}
+          </select>
+          <input type="submit" value="Update Status" />
+        </form>
+      </td>
+    </tr>
     {{/each}}
-  </tr>
-  {{#each issues}}
-  <tr>
-    {{#each this}}
-    <td>{{this}}</td>
-    {{/each}}
-  </tr>
-  {{/each}}
-</table>
+  </table>
+{{else}}
+  <h1>There are no issues to track currently.</h1>
+{{/if}}
+  <p>To enter new issues, use the <a href='/scrum/report_issue/'>report_issue form</a>.</p>

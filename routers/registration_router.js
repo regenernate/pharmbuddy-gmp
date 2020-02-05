@@ -16,7 +16,16 @@ module.exports.router = async function( req, res, path ) {
   let is_registered = getRegisteredDevice( req );
 
   if( is_registered == false ){ //this device is not yet registered
-    if( path[0] !== "confirm" ){ //assume registration attempt
+    if( path[0] == "get_registration_code" ){
+      if( req.body ){ //must have post data
+        if( isValidDevice( req.body.device_name ) ){
+          let reg_code = generateRegistrationCode( req.body.device_name );
+          rtn = renderData( {registration_code:reg_code, device_name:req.body.device_name});
+        }else{
+          rtn = renderError( req, "Invalid device name sent.", "none" );
+        }
+      }else rtn = renderError( req, "<h1>I don't recognize this path.</h1>" );
+    }else if( path[0] !== "confirm" ){ //assume registration attempt
       let rc = path[0]; //registration code is the first segment of the path
       console.log("/**********  REGISTRATION ATTEMPT FOR " + rc + " AT " + moment().format() + " ********/");
       //cheat to see if this registration code is valid
@@ -62,7 +71,7 @@ const moment = require('moment');
 const crypto = require('crypto');
 const { getRegisteredDevice, setRegisteredDevice } = require('../tools/sessions/session_util');
 const { compileTemplates } = require('../views/template_manager');
-const { renderError, renderTemplate } = require('../tools/rendering/render_util');
+const { renderData, renderError, renderTemplate } = require('../tools/rendering/render_util');
 
 //misc constants
 const redirect_path = "/login/";
@@ -144,7 +153,7 @@ function initialize(){
 
   //for now create a registration code for each device
 //  for( let i in valid_devices ){
-    console.log( "REGISTRATION CODE FOR " + valid_devices[0] + " IS " + generateRegistrationCode( valid_devices[0] ) );
+//    console.log( "REGISTRATION CODE FOR " + valid_devices[2] + " IS " + generateRegistrationCode( valid_devices[2] ) );
 //  }
 }
 

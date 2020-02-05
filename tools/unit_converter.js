@@ -1,3 +1,8 @@
+/**** PURPOSE ****
+
+The purpose of this utility is to encapsulate the conversions between mils and grams using known specific specific_gravities
+
+******/
 
 module.exports.milsToGrams = function( mils, material ){
   material = material.toLowerCase();
