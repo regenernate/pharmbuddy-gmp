@@ -1,8 +1,8 @@
 
-//make remote call posting required data ( device name )
+//make remote call posting required data ( device name ) to get back a registration code
 
 const prod_url = "cgmp.ravenridgefamilyfarm.com";
-const prod_port = 80;
+const prod_port = 443;
 const dev_url = "localhost";
 const dev_port = 3000;
 
@@ -31,35 +31,40 @@ let base_url = ( prod ) ? prod_url : dev_url; //default to testing against dev, 
 let port = ( prod ) ? prod_port : dev_port;
 
 const FORM_URLENCODED = 'application/x-www-form-urlencoded';
-const https = require('http');
+
+const http = ( prod ) ? require('https') : require('http');
 
 const data = "device_name=" + encodeURIComponent(valid_devices[ device ]);
 
-const options = {
+var options = {
   hostname: base_url,
   port: port,
   path: '/register/get_registration_code',
   method: 'POST',
   headers: {
-    'Content-Type': FORM_URLENCODED,
-    'Content-Length':data.length
-  }
-}
+       'Content-Type': FORM_URLENCODED,
+       'Content-Length': data.length
+     }
+};
 
-const req = https.request(options, res => {
-  console.log(`statusCode: ${res.statusCode}`)
+var req = http.request(options, (res) => {
+  console.log('statusCode:', res.statusCode);
 
-  res.on('data', d => {
-    let jd = JSON.parse( d );
-    console.log( "Visit the following url to use this registration code:" );
-    console.log( base_url + ( ( prod ) ? "" : ":" + port ) + "/register/" + jd.registration_code );
-    console.log( "And be sure to select the proper device ( " + jd.device_name + " )!" );
-  })
-})
+  res.on('data', (d) => {
+    output(d);
+  });
+});
 
-req.on('error', error => {
-  console.error(error)
-})
+req.on('error', (e) => {
+  console.error(e);
+});
 
 req.write(data);
 req.end();
+
+function output(d){
+  let jd = JSON.parse( d );
+  console.log( "Visit the following url to use this registration code:" );
+  console.log( base_url + ( ( prod ) ? "" : ":" + port ) + "/register/" + jd.registration_code );
+  console.log( "And be sure to select the proper device ( " + jd.device_name + " )!" );
+}
