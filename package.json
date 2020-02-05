@@ -23,7 +23,6 @@
     "handlebars": "^4.7.3",
     "moment": "^2.24.0",
     "query-string": "^6.10.1",
-    "request": "^2.88.0",
     "uglifycss": "0.0.29"
   }
 }
