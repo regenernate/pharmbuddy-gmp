@@ -1,0 +1,46 @@
+
+body{
+  width:4in;
+  height:6in;
+  padding:.5in;
+  font-size:10px;
+}
+section {
+  width:100%;
+  height:100%;
+}
+
+table {
+  width:90%;
+  font-size:.8em;
+}
+
+p {
+ font-size:1.2em;
+}
+
+th {
+  border-bottom: 1px solid #000000;
+  font-weight: bold;
+}
+
+td, th{
+  text-align: center;
+}
+
+tr {
+  padding:.25em;
+  border: 1px solid #000000;
+}
+
+hr {
+  width:100%;
+}
+
+.important{
+  font-size:1.5em;
+  padding:.5em .5em;
+  color:#000000;
+  display:inline-block;
+  border:1px solid #000000;
+}

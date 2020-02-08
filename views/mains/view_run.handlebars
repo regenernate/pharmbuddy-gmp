@@ -1,0 +1,17 @@
+<h1>Here we get to view a run</h1>
+
+Run {{run_id}} made {{units_made}} on {{run_date}} at : {{strength}}
+<hr />
+<div class='important'>Lot <strong>{{lot_id}}</strong></div>
+<div class='important'>Run <strong>{{run_id}}</strong></div>
+<div class='important'>Batch <strong>{{batch_id}}</strong></div>
+<hr />
+
+<table>
+  <tr><th>item</th><th>lot #</th><th>amount</th></tr>
+  {{#each ingredients}}
+  <tr><td>{{ingredient}}</td><td>{{lot_number}}</td><td>{{amount}}</td></tr>
+  {{/each}}
+</table>
+
+<p>Here we need to manage workflow including add notes and mark as completed.</p>

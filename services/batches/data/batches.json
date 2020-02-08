@@ -6,8 +6,8 @@
       "mechanism":"rosin press",
       "location":"on-site",
       "percent_cbd":".619",
-      "initial_volume":120,
-      "current_volume":100,
+      "initial_mass":120,
+      "current_mass":100,
       "use_for":[ "topical" ]
     },
     {
@@ -16,8 +16,8 @@
       "mechanism":"rosin press",
       "location":"on-site",
       "percent_cbd":".637",
-      "initial_volume":400,
-      "current_volume":400,
+      "initial_mass":400,
+      "current_mass":5,
       "use_for":[ "sublingual" ]
     },
     {
@@ -25,9 +25,35 @@
       "mechanism":"subcritical",
       "location":"Grower's Hemp",
       "percent_cbd":".527",
-      "initial_volume":600,
-      "current_volume":600,
+      "initial_mass":600,
+      "current_mass":600,
       "use_for":[ "sublingual", "topical" ]
+    }
+  ],
+  "product_batches":[
+    {
+      "id":100,
+      "strength":300,
+      "product_type":"sublingual",
+      "batch_id":"3"
+    },
+    {
+      "id":102,
+      "strength":600,
+      "product_type":"sublingual",
+      "batch_id":"3"
+    },
+    {
+      "id":103,
+      "strength":900,
+      "product_type":"sublingual",
+      "batch_id":"3"
+    },
+    {
+      "id":104,
+      "strength":1,
+      "product_type":"salve",
+      "batch_id":"2"
     }
   ]
 }

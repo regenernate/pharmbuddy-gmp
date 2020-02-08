@@ -1,50 +1,51 @@
 <h1>Confirm formulation</h1>
-
 <p>Confirm that the ingredients and amounts are correct below. If not, use the browser back button to make changes to the formulation request. Otherwise, pressing <em>Create run</em> will create the new run id.</p>
-
-<h2>This Formulation Request is for:</h2>
-<table>
-  <tr>
-    {{#each request}}
-    <th>
-      {{@key}}
-    </th>
-    {{/each}}
-  </tr>
-  <tr>
-    {{#each request}}
-    <td>
-      {{this}}
-    </td>
-    {{/each}}
-  </tr>
-</table>
-<h2>The ingredient amounts are ( in grams ):</h2>
-<table>
-  <tr>
-    {{#each formulation}}
-    <th>
-      {{@key}}
-    </th>
-    {{/each}}
-  </tr>
-  <tr>
-    {{#each formulation}}
-    <td>
-      {{this}}
-    </td>
-    {{/each}}
-  </tr>
-  <tr>
-    {{#each inventory}}
-    <td>{{this}}</td>
-    {{/each}}
-  </tr>
-</table>
-
-<form action="/production/confirm_run" method="post">
-  {{#each request}}
-  <input type="hidden" name="{{@key}}" value="{{this}}" />
-  {{/each}}
-  <input type="submit" value="Create Run" />
-</form>
+<h2>This Formulation Request was for {{requested_units}} items.</h2>
+{{#if max_units}}
+  {{#if limiting_ingredient}}
+  <p>Unfortunately using the current lots, we only have enough <strong>{{limiting_ingredient}}</strong> to make <strong>{{max_units}}</strong> items using the <em>ingredient lot numbers</em> below.</p>
+  {{else}}
+  <p>It looks like we have the proper amounts of <em>all necessary ingredients</em> to make the full quantity requested using the <em>ingredient lot numbers</em> below.</p>
+  {{/if}}
+  <table>
+    <tr>
+      <th></th>
+      {{#each formulation}}
+      <th>
+        {{type}}
+      </th>
+      {{/each}}
+    </tr>
+    <tr>
+      <td class="firstcolumn">total amount in grams</td>
+      {{#each formulation}}
+      <td>{{total_amount}}</td>
+      {{/each}}
+    </tr>
+    <tr>
+      <td class="firstcolumn">lot #</td>
+      {{#each formulation}}
+      <td>{{lot_number}}</td>
+      {{/each}}
+    </tr>
+    {{#if limiting_ingredient}}
+    <tr>
+      <td class="firstcolumn">max units possible</td>
+      {{#each formulation}}
+      <td>{{max_units}}</td>
+      {{/each}}
+    </tr>
+    {{/if}}
+  </table>
+  <p>Click below to make {{max_units}} units of {{product_type}} using the above ingredient lots:</p>
+  <form action="/production/create_run" method="post">
+    <input type='hidden' name='formulation_cache_id' value='{{cache_id}}' />
+    <input type="submit" value="Make Run" />
+  </form>
+{{else}}
+  <p>There is not enough of the current lot of <strong>{{limiting_ingredient}}</strong> to make even one unit. Click below to <em>advance to the next lot of {{limiting_ingredient}}</em> and recalculate this run:</p>
+  <form action="/production/recalculate" method="post">
+    <input type='hidden' name='formulation_cache_id' value='{{cache_id}}' />
+    <input type='submit' value='Advance inventory and recalculate run.' />
+  </form>
+{{/if}}

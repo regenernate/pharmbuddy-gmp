@@ -7,16 +7,17 @@
 
 <form action='/production/calculate_ingredients' method='post'>
   <legend>Select your formulation and run size.</legend>
+  <input type='hidden' name='product_type' value='sublingual' />
   <fieldset>
     Number of units:
     <input type="text" name="quantity" size="10" value="1" />
   </fieldset>
   <fieldset>
     <legend>Carrier Oil</legend>
-    <input type='radio' id="c2" name='carrier' value='olive' checked />
-    <label for="c2">olive</label>
-    <input type='radio' id="c1" name='carrier' value='hempseed' />
-    <label for="c1">hempseed</label>
+    <input type='radio' id="c2" name='carrier' value='olive_oil' checked />
+    <label for="c2">olive oil</label>
+    <input type='radio' id="c1" name='carrier' value='hempseed_oil' />
+    <label for="c1">hempseed oil</label>
   </fieldset>
     <fieldset>
     <legend>Strength</legend>
@@ -31,11 +32,11 @@
     <legend>Flavoring ( optional )</legend>
     <input type='radio' id="f1" name='flavoring' value='natural' checked />
     <label for="f1">Natural</label>
-    <input type='radio' id="f2" name='flavoring' value='peppermint' />
+    <input type='radio' id="f2" name='flavoring' value='peppermint_flavoring' />
     <label for="f2">Peppermint</label>
-    <input type='radio' id="f3" name='flavoring' value='licorice' />
+    <input type='radio' id="f3" name='flavoring' value='licorice_flavoring' />
     <label for="f3">Licorice</label>
-    <input type='radio' id="f4" name='flavoring' value='orange_cream' />
+    <input type='radio' id="f4" name='flavoring' value='orange_cream_flavoring' />
     <label for="f4">Orange Cream</label>
   </fieldset>
   <input type="submit" value="Calculate Ingredients"></input>

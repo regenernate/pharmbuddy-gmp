@@ -16,4 +16,4 @@ module.exports.gramsToMils = function( grams, material ){
   return grams / specific_gravities[ material ];
 }
 
-const specific_gravities = { olive:.915, hempseed:.895, orange_cream:.89, licorice:.94, peppermint:.895, natural:0, fshe:.9 };
+const specific_gravities = { olive_oil:.915, hempseed_oil:.895, orange_cream_flavoring:.89, licorice_flavoring:.94, peppermint_flavoring:.895, natural:0, wpe:.9 };

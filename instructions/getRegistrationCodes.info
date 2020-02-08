@@ -5,8 +5,8 @@ thats a good sign that you should contact Nathan, or if Nathan is unavailable, t
 
 First, open a terminal window using spotlight, as shown below:
 
-1) press cmd + spacebar at the same time
-2) begin typing t e r m until "terminal" appears in the search results,
+1) press cmd and spacebar at the same time
+2) begin typing t e r m until "terminal" appears in the search results
 3) press enter
 
 * this should open a terminal window ( a somewhat amorphous looking black window )
@@ -19,7 +19,7 @@ cd ~/Desktop/ravenridge/dev/pharmbuddy-gmp/tools
 
 2) press enter
 
-Then, run the utility to get the device number you are trying to register:
+Now run the utility to get the device number you are trying to register:
 
 1) in the terminal window type or copy and paste:
 
@@ -59,5 +59,5 @@ Copy the url that resulted from the previous steps and paste it into your browse
 5) press cmd + p to paste the copied url into the location bar
 6) press enter
 
-If all went properly, you should see a screen where you can select 
+If all went properly, you should see a screen where you can select
 the device name that matches the registration code you are using.

@@ -1,22 +1,19 @@
 
 {
-  "units_volume":"ml",
   "inventory_list":{
-    "olive":{
-      "categories":["carrier", "base"],
+    "olive_oil":{
       "lots":[
         {
           "purchase_date":"1575176400000",
           "purchased_from":"Amazon Fresh",
-          "lot_number":"none",
+          "lot_number":"none-1575176400000",
           "expiration_date":"1592539200000",
           "initial_volume":"10647",
           "current_volume":"10647"
         }
       ]
     },
-    "hempseed":{
-      "categories":["carrier", "base"],
+    "hempseed_oil":{
       "lots":[
         {
           "purchase_date":"1575176400000",
@@ -28,8 +25,7 @@
         }
       ]
     },
-    "peppermint":{
-      "categories":["flavoring"],
+    "peppermint_flavoring":{
       "lots":[
         {
           "purchase_date":"157515640000",
@@ -41,8 +37,7 @@
         }
       ]
     },
-    "licorice":{
-      "categories":["flavoring"],
+    "licorice_flavoring":{
       "lots":[
         {
           "purchase_date":"157515640000",
@@ -54,8 +49,7 @@
         }
       ]
     },
-    "orange_cream":{
-      "categories":["flavoring"],
+    "orange_cream_flavoring":{
       "lots":[
         {
           "purchase_date":"157515640000",
@@ -64,34 +58,6 @@
           "expiration_date":"1658376000000",
           "initial_volume":"118",
           "current_volume":"118"
-        }
-      ]
-    },
-    "fshe":{
-      "lots":[
-        {
-          "production_date":"1605070800000",
-          "lot_number":"2",
-          "initial_mass":"300",
-          "current_mass":"300",
-          "percent_cbd":".619",
-          "use_for":["topical"]
-        },
-        {
-          "production_date":"1605070800000",
-          "lot_number":"3",
-          "initial_mass":"400",
-          "current_mass":"400",
-          "percent_cbd":".637",
-          "use_for":["sublingual"]
-        },
-        {
-          "production_date":"1605070800000",
-          "lot_number":"4",
-          "initial_mass":"600",
-          "current_mass":"600",
-          "percent_cbd":".527",
-          "use_for":["sublingual", "topical"]
         }
       ]
     }

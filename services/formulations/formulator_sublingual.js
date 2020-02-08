@@ -11,10 +11,10 @@ const max_quantity = 33;
 const volume_per_item = 30; //ml
 
 //this is an index of specific gravities for the carrier oils
-const valid_carriers = {"olive":.915, "hempseed":.895};
+const valid_carriers = {"olive_oil":.915, "hempseed_oil":.895};
 const valid_strengths = { 300:1, 600:1, 900:1 };
 //this is an index of the specific gravities of these flavorings
-const valid_flavorings = {"orange_cream":.89, "licorice":.94, "peppermint":.895, "natural":0 }
+const valid_flavorings = {"orange_cream_flavoring":.89, "licorice_flavoring":.94, "peppermint_flavoring":.895, "natural":0 }
 const flavoring_amount = 1; // in ml
 
 const extract_specific_gravity = .9;
@@ -31,22 +31,23 @@ const flavoring_error = "Flavoring must be one of the following: orange_cream, l
 
 /*********    Calculating methods *********/
 
-module.exports.calculateIngredients = async function( quantity, carrier, strength, flavoring, extract){
+module.exports.calculateIngredients = async function( ingredients, strength, extract){
   let errors = [];
+
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
-  quantity = validateQuantity( quantity, errors );
-  //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
-  carrier = validateCarrier( carrier, errors );
+  carrier = validateCarrier( ingredients.carrier, errors );
+  //validate flavoring
+  flavoring = validateFlavoring( ingredients.flavoring, errors );
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
   strength = validateStrength( strength, errors );
-  //validate flavoring
-  flavoring = validateFlavoring( flavoring, errors );
+
+  confirmExtract( extract, errors );
 
   if( errors.length ){
     throw new Error( errors.join("\n") );
   }
 
-  //have to look up current cbd_extract_percent from batches, for now hard-code sublingual product
+  //have to look up current cbd_extract_percent from batches
   let cbd_extract_percent = extract.percent_cbd;
 
   //calculate the ingredients required
@@ -56,25 +57,14 @@ module.exports.calculateIngredients = async function( quantity, carrier, strengt
 
   //convert everything to grams
   let frm = {};
-  frm[ carrier.split(" ").join("_") ] = (carr_per_unit * valid_carriers[ carrier ]);
-  frm[ flavoring.split(" ").join("_") ] = (flav_per_unit * valid_flavorings[ flavoring ]);
-  frm[ "fshe_" + extract.id ] = (cbd_per_unit * extract_specific_gravity);
-  return { formula:frm, units:"g" };
+  frm.carrier = { type:carrier, quantity:(carr_per_unit * valid_carriers[ carrier ]) };
+  if( flav_per_unit > 0 ) frm.flavoring = { type:flavoring, quantity:(flav_per_unit * valid_flavorings[ flavoring ]) };
+  frm.wpe = { id:extract.id, quantity:(cbd_per_unit * extract_specific_gravity) };
+  return frm;
 }
 
 
 /**********   VALIDATORS FOR INGREDIENTS   ************/
-
-//validation methods simply confirm value sent is ok and then either push errors onto error stack and return default value OR return valid value as sent
-function validateQuantity( qty, errors ){
-  if( !qty ) qty = default_quantity;
-  if( isNaN(qty) || qty < min_quantity || qty > max_quantity ){
-    errors.push( quantity_error + " // value sent was : " + qty );
-    return default_quantity;
-  }else {
-    return qty;
-  }
-}
 
 //validation methods simply confirm value sent is ok and then either push errors onto error stack and return default value OR return valid value as sent
 function validateCarrier( carr, errors ){
@@ -109,4 +99,11 @@ function validateFlavoring( flav, errors ){
   }else{
     return flav;
   }
+}
+
+function confirmExtract( extr, errors ){
+  if( !extr || !extr.hasOwnProperty( 'id' ) || !extr.hasOwnProperty( 'percent_cbd') ){
+    errors.push( extract_error + " // value sent was : ", extr );
+  }
+  return extr;
 }

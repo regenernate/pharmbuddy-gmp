@@ -1,0 +1,44 @@
+<h1>Create a production run</h1>
+<p>This is a two step process.
+  <ul>
+    <li>First select the number of units and the ingredients for this run from the options below.</li>
+    <li>Next, press <em>Calculate Ingredients</em>. You will have a chance to confirm the quantities before finalizing the run.</li>
+  </ul>
+
+<form action='/production/calculate_ingredients' method='post'>
+  <legend>Select your formulation and run size.</legend>
+  <input type='hidden' name='product_type' value='salve' />
+  <script language='javascript'>
+
+  function calculateSalveBatchSize( target ){
+    console.log(target);
+    let new_quantity = target.value;
+    if( new_quantity != last_quantity && new_quantity > 0 && new_quantity < 12 ){
+      let carrier_cups = new_quantity * 3;
+      let batch_size = carrier_cups + carrier_cups * 8;
+      $('#batch_size').innerHTML( "~" + batch_size + "oz ( " + batch_size/8 + " cups )" );
+    }
+  }
+
+  </script>
+  <fieldset>
+    A base unit of salve is three cups of carrier, 15oz beeswax and the appropriate e.o. and w.p.e..
+    Enter the multiple of base units desired. The total approximate batch size will show up to the right.
+    <input type="text" name="quantity" size="10" onchange="calculateSalveBatchSize(this);" value="5" /><span id='batch_size'></span>
+  </fieldset>
+  <fieldset>
+    <legend>Strength</legend>
+    <input type='radio' id="s1" name='strength' value='1' checked />
+    <label for="s1">1% CBD</label>
+    <input type='radio' id="s2" name='strength' value='.5' />
+    <label for="s2">0.5% CBD</label>
+  </fieldset>
+  <fieldset>
+    <legend>Essential Oils ( optional )</legend>
+    <input type='radio' id="f1" name='essential_oils' value='peppermint_lemon_eo' checked />
+    <label for="f1">Peppermint-Lemon</label>
+    <input type='radio' id="f2" name='essential_oils' value='orange_eo' />
+    <label for="f2">Orange</label>
+  </fieldset>
+  <input type="submit" value="Calculate Ingredients"></input>
+</form>

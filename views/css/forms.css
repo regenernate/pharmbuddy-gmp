@@ -25,3 +25,13 @@ input[type='submit']{
   background-color: #0000AA;
   color: #FFFFFF;
 }
+
+input[type='button']{
+  padding:.7em;
+  text-align:center;
+  font-size:1.25em;
+  border-radius:15px;
+  border: 1px soild #000000;
+  background-color: #000099;
+  color: #FFFFFF;
+}
