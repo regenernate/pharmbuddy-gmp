@@ -46,7 +46,7 @@ module.exports.executeTemplate = function( source, data, layout ){
   try{
     cleanDatesForDisplay(data);
 //    console.log("executeTempate :: ", data.session );
-    template_value = layouts[ layout ]( { body:source(data.main), meta:{title:data.title, description:data.description }, footer:data.session });
+    template_value = layouts[ layout ]( { body:source(data.main), meta:{title:data.title, description:data.description }, footer:data.session, header:data.session });
   }catch(err){
     console.log("template_manager.executeTemplate :: ", err.message);
   }

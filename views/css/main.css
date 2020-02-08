@@ -116,30 +116,30 @@ header {
 
 /********** navigation styles ********/
 
-  nav {
-    position:fixed;
-    width:100vw;
-    top:6rem;
-    left:0px;
-  }
+nav {
+  position:fixed;
+  width:100vw;
+  top:6rem;
+  left:0px;
+}
 
-  nav ul {
-    list-style: none;
-    display: inline-block;
-    margin:0;
-  }
+nav ul {
+  list-style: none;
+  display: inline-block;
+  margin:0;
+}
 
-  nav li {
-    width:50vw;
-    display: inline-block;
-    padding:.5rem;
-    text-align: center;
-  }
+nav li {
+  width:50vw;
+  display: inline-block;
+  padding:.5rem;
+  text-align: center;
+}
 
-  #product-navigation {
-    top:auto;
-    bottom:0;
-  }
+#secondary-navigation {
+  top:auto;
+  bottom:0;
+}
 
   /**********  main styles *********/
   main {
@@ -217,6 +217,11 @@ header {
     width:850px;
   }
 
+  embed{
+    width:850px;
+    height:90vh;
+  }
+
   nav{
     width:50vw;
   }
@@ -225,13 +230,8 @@ header {
     width:25vw;
   }
 
-  embed{
-    width:850px;
-    height:90vh;
-  }
-
-  /* bottom navigation moves to the top */
-  #product-navigation {
+/* bottom navigation moves to the top right */
+  #secondary-navigation {
     bottom: auto;
     top: 6rem;
     right: auto;
