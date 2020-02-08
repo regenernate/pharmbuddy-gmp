@@ -1,12 +1,14 @@
 <footer>
+<span class='pbbranded'><strong>Thanks for using PharmBuddy cGMP</strong></span><span class='sessioninfo'>
 {{#if device_name}}
-You are on {{device_name}}
+You are on <em>{{device_name}}</em>
   {{#if responsible_party}}
-  as {{responsible_party}}. Click <a href='/logout/'>here to end your session</a>.
+  as <em>{{responsible_party}}</em>. Click <a href='/logout/'>here to end your session</a>.
   {{else}}
-   , but who is taking responsibility now?
+   , but who is going to take responsibility for this work?
   {{/if}}
 {{else}}
 This device isn't registered.
 {{/if}}
+</span>
 </footer>

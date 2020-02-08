@@ -80,6 +80,22 @@
     display:inline-block;
     border:1px solid #000000;
   }
+
+  #run_label{
+    padding:0 .5em 12em .5em;
+    border: 1px solid #000000;
+  }
+
+  .sessioninfo{
+    padding-left: 2em;
+    border-left: 2px solid #000000;
+  }
+
+  .pbbranded{
+    padding-right:2em;
+  }
+
+
 /********** header styles *********/
 
 header {
@@ -152,6 +168,7 @@ header {
     border-top: #322e26 solid 2px;
     width:100vw;
     padding:.25rem;
+    text-align: center;
   }
 
   footer ul {
