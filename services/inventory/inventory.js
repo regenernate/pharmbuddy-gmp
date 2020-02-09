@@ -45,6 +45,10 @@ module.exports.retireInventory = function( item, lot_number ){
   return false;
 }
 
+module.exports.getInventoryList = function(){
+    return inventory_list;
+}
+
 const {milsToGrams} = require( "../../tools/unit_converter");
 let {loadData} = require( "../../tools/filesys/filesys_util");
 var inventory_list;
