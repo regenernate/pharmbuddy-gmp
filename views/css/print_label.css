@@ -1,9 +1,9 @@
 
 body{
-  width:4in;
-  height:6in;
-  padding:.5in;
-  font-size:10px;
+  width:6in;
+  height:4in;
+  padding:.1in;
+  font-size:14px;
 }
 section {
   width:100%;
@@ -11,16 +11,16 @@ section {
 }
 
 table {
-  width:90%;
-  font-size:.8em;
+  width:100%;
+  font-size:1em;
 }
 
 p {
- font-size:1.2em;
+ font-size:1em;
 }
 
 th {
-  border-bottom: 1px solid #000000;
+  border-bottom: 2px solid #000000;
   font-weight: bold;
 }
 
@@ -30,7 +30,7 @@ td, th{
 
 tr {
   padding:.25em;
-  border: 1px solid #000000;
+  border: 2px solid #000000;
 }
 
 hr {

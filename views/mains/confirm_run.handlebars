@@ -29,9 +29,9 @@ function printRunLabel() {
   <hr />
   <p>This run makes {{max_units}} {{request.strength}}mg strength {{product_type}}.</p>
   <table>
-    <tr><th>item</th><th>lot #</th><th>amount</th></tr>
+    <tr><th>ingredient</th><th>lot #</th><th>amount</th></tr>
     {{#each formulation}}
-    <tr><td>{{type}}</td><td>{{lot_number}}</td><td>{{total_amount}}</td></tr>
+    <tr><td>{{name}}</td><td>{{lot_number}}</td><td>{{total_amount}}</td></tr>
     {{/each}}
   </table>
   <hr />

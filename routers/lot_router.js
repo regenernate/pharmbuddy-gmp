@@ -31,7 +31,7 @@ const sessions = require("../tools/sessions/session_util");
 const { renderError, renderTemplate } = require("../tools/rendering/render_util");
 const { compileTemplates } = require('../views/template_manager');
 const { getRun } = require('../services/lots/lots');
-const wpe_batches = require('../services/batches/batches');
+const wpe_batches = require('../services/batches/wpe_batches');
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");

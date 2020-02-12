@@ -1,0 +1,10 @@
+{
+  "ingredients": [
+    { "key": "hempseed_oil", "amount": 8 },
+    { "key": "argan_oil", "amount": 8 },
+    { "key": "sunflower_seed_oil", "amount": 8 },
+    { "key": "beeswax", "amount": 3 },
+    { "key": "orange_eo", "amount": 0.84375 }
+  ],
+  "wpe": { "key": "11112019_rosin_press", "amount": 13.099 }
+}

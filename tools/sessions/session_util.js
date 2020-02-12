@@ -55,8 +55,10 @@ module.exports.isUserAuthorized = function( req ){
     return bro.redirect('/register/');
   }
   let rp = getResponsibleParty( req );
+
   if( !rp ){ //must have a responsible party logged in
-    return bro.redirect('/login/');
+      console.log("responsible party is :: ", rp);
+      return bro.redirect('/login/');
   }
   return true;
 }

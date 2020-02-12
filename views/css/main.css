@@ -81,6 +81,20 @@
     border:1px solid #000000;
   }
 
+  .extradatahead{
+    color: #333333;
+  }
+  .extradata{
+    color: #999999;
+  }
+
+  .lowinv {
+    color: #AD550F;
+  }
+
+  .outinv {
+    color: #AD250F;
+  }
   #run_label{
     padding:0 .5em 12em .5em;
     border: 1px solid #000000;

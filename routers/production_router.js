@@ -11,21 +11,72 @@ module.exports.base_route_path = "production";
 module.exports.router = async function( req, res, path ) {
   //handle authorization first
   let auth_check = sessions.isUserAuthorized( req );
-  if( !auth_check ) return auth_check;
+  if( auth_check !== true ) return auth_check;
 
   //this if/then situation may not last if this router requires more routes
   if( !path || !path.length || path[0] == "" || path[0] == "production_run" ){
-    return bro.get( true, renderTemplate( req, pages.make_production_run ) );
-  }else if( path[0] == "make_sublingual" ){
-    return bro.get( true, renderTemplate( req, pages.sublingual_run ) );
-  }else if( path[0] == "make_salve" ){
-    return bro.get( true, renderTemplate( req, pages.salve_run ) );
+    let pt = inventory.getProductTypes();
+    return bro.get( true, renderTemplate( req, pages.make_production_run, {product_types:pt} ) );
+  }else if( path[0].split("_")[0] == "make" ){
+    let product_type = path[0].split("_")[1];
+    let pt = inventory.getProduct( product_type ); //get the product object { key: , label: } for this product
+    let ing = inventory.getIngredientsFor( product_type );
+    return bro.get( true, renderTemplate( req, pages[product_type + "_run"], {product_type:pt, options:ing} ) );
   }else if( path[0] == "calculate_ingredients" || path[0] == "recalculate" ){
-    let f;
+
+    let formula;
     try{
       if( !req.body ) throw new Error("You must send appropriate data to the formulator! Post body was undefined.");
 
       if( path[0] == 'recalculate' ){
+        throw new Error("Recalculate doesn't work yet!");
+      }
+
+      let formulator = formulators[ req.body.product_type ];
+      if(!formulator) throw new Error( "No formulator exists for " + req.body.product_type );
+
+      let wpe_batch = inventory.getBatchForProduct( req.body.product_type ); //get correct wpe batch object { key: , label: , percent_cbd: }
+
+      formula = await formulator.createFormula( req.body, wpe_batch );
+//      console.log( "formula is :: ", formula );
+      let ingredient_lot, max_units, amount_needed;
+      max_units = inventory.calculateWPEMaxUnits( formula.wpe.key, formula.wpe.amount );
+      formula.wpe.lot_number = inventory.getWPELot( formula.wpe.key ).lot_number;
+      formula.wpe.max_units = max_units.max_units;
+      formula.wpe.warning_level = max_units.warning_level;
+      formula.wpe.label = inventory.getWPELabel( formula.wpe.key );
+      let limiting_ingredient = formula.wpe;
+      let limiting_type = "wpe";
+      let warning_level = formula.wpe.warning_level;
+      for( let i in formula.ingredients ){
+        formula.ingredients[i].lot_number = inventory.getIngredientLot( formula.ingredients[i].key ).lot_number;
+        if( formula.ingredients[i].units == 'g' ) max_units = inventory.calculateMaxUnitsByMass( formula.ingredients[i].key, formula.ingredients[i].lot_number, formula.ingredients[i].amount );
+        else{
+          amount_needed = formula.ingredients[i].amount;
+          if( formula.ingredients[i].units == 'oz' ) amount_needed *= MLS_PER_OZ;
+          max_units = inventory.calculateMaxUnitsByVolume( formula.ingredients[i].key, formula.ingredients[i].lot_number, amount_needed );
+        }
+        formula.ingredients[i].max_units = max_units.max_units;
+        formula.ingredients[i].warning_level = max_units.warning_level;
+        formula.ingredients[i].label = inventory.getIngredientLabel( formula.ingredients[i].key );
+        if( max_units.max_units < limiting_ingredient.max_units ){
+          limiting_ingredient = formula.ingredients[i];
+          limiting_type = "ingredient";
+        }
+        if( formula.ingredients[i].warning_level ) warning_level = true;
+      }
+      formula.limit = { warning_level:warning_level, type:limiting_type, item:limiting_ingredient };
+      /***
+      reformat calculate_ingredients view to allow
+      advancing inventory if any item has less than enough for one batch
+      making up to limiting ingredient's max_units
+      ***/
+
+//      console.log( formula );
+      //now add back in the labels for each ingredient
+
+//      throw new Error("Calculate Ingredients is a work in progress.");
+/*
         f = getCachedFormulation( req.body.formulation_cache_id );
         //advance limiting ingredient lot number
         advanceLimitingIngredients( f.formulation );
@@ -48,31 +99,29 @@ module.exports.router = async function( req, res, path ) {
 
       f.requested_units=quantity_requested;
       f.product_type = product_type; //pass product type through to next views
-      let mult;
       for( let i in f.formulation ){
-        if( i == WPE ) mult = 1000;
-        mult = 10;
-        f.formulation[i].total_amount = Math.ceil( f.formulation[i].quantity * f.max_units * 100 ) / 100;
-        f.formulation[i].type = f.formulation[i].type.split("_").join(" ");
+        f.formulation[i].total_amount = precisify( f.formulation[i].quantity * f.max_units );
       }
-      if( f.limiting_ingredient ) f.limiting_ingredient = f.limiting_ingredient.split("_").join(" ");
-      console.log(f);
+      console.log(f); */
+
     }catch(err){
       console.log("production_router error :: ", err.message);
       return bro.get( true, renderError( req, "production router :: " + err.message, 'logged_out' ) );
     }
     //cache formula instead of passing it back and forth in forms
-    f.request = req.body;
-    f.cache_id = cacheFormulation( f );
-    return bro.get( true, renderTemplate( req, pages.calculate_ingredients, f ) );
-  }else if( path[0] == "create_run" ){
+    formula.request = req.body;
+//    formula.cache_id = cacheFormulation( f );
+    console.log(formula);
+    return bro.get( true, renderTemplate( req, pages.calculate_ingredients, formula ) );
+  /*}else if( path[0] == "create_run" ){
     let f = getCachedFormulation( req.body.formulation_cache_id );
     if( !f ) return bro.get(true, renderError( req, "This run is no longer cached so you'll have to start over." ) );
     //make this run - get lot numbers for all ingrdients first
     let lot_numbers = [];
-    for( let i in f.formulation ){
-      lot_numbers.push( {ingredient:f.formulation[i].type, lot_number:f.formulation[i].lot_number, amount:f.formulation[i].total_amount} );
+    for( let i in f.formulation.base ){
+      lot_numbers.push( {ingredient:f.formulation.base[i].key, lot_number:f.formulation.base[i].lot_number, amount:f.formulation.base[i].total_amount} );
     }
+    lot_numbers.push({ingredient:f.formulation[WPE].key, lot_number:f.formulation[WPE].lot_number, amount:f.formulation[WPE].total_amount});
     //create the run -- this returns { run_id:{id}, lot_id:{id} }
     let run_id = lots.createRun( f.product_type, f.request.strength, lot_numbers, f.max_units );
 
@@ -92,12 +141,13 @@ module.exports.router = async function( req, res, path ) {
     f.run_id = run_id.run_id;
     console.log(f);
     return bro.get( true, renderTemplate( req, pages.confirm_run, f ) );
+  */
   }else{
     return bro.get( true, renderError( req, "This route doesn't exist.", 'logged_out' ) );
   }
 }
 
-async function getFormulation( product, ingredients, strength, wpe_batch, units_requested ){
+/*async function getFormulation( product, ingredients, strength, wpe_batch, units_requested ){
 
   let formulator = formulators[ product ];
   if(!formulator) throw new Error('production_router.error in getFormulation :: No match for product type :: ', product );
@@ -106,22 +156,26 @@ async function getFormulation( product, ingredients, strength, wpe_batch, units_
   let max_units = units_requested;
   let item_lot;
   let limiting_ingredient=null;
-  for( let i in formulation ){
-    //get max number of units we can make from current inventory lots
-    if( i == WPE ){
-      item_lot = await wpe_batches.getUnitsAvailable( formulation[i].id, formulation[i].quantity );
-      //adding type here because it is only for display purposes, not persisted to any data
-      formulation[i].type = WPE_TYPE;
-    }else{
-      item_lot = await inventory.getUnitsAvailable( formulation[i].type, formulation[i].quantity );
-    }
-    formulation[i].max_units = item_lot.max_units;
-    formulation[i].lot_number = item_lot.lot_number;
-    if( formulation[i].max_units < max_units ){
-      max_units = formulation[i].max_units;
-      limiting_ingredient = formulation[i].type;
+  for( let i in formulation.base ){
+    item_lot = await inventory.getUnitsAvailable( formulation.base[i].key, formulation.base[i].quantity );
+    formulation.base[i].name = inventory.getItemName( formulation.base[i].key );
+    formulation.base[i].inventory = item_lot;
+    if( item_lot.max_units < max_units ){
+      max_units = item_lot.max_units;
+      limiting_ingredient = formulation.base[i].key;
     }
   }
+  //get max number of units we can make from current inventory lots
+  formulation[WPE].name = "Whole Plant Extract";
+  formulation[WPE].inventory = wpe_batches.getUnitsAvailable( formulation[WPE].key, formulation[WPE].quantity );
+  if( formulation[WPE].inventory.max_units < max_units ){
+    max_units = formulation[WPE].inventory.max_units;
+    limiting_ingredient = formulation[WPE].key;
+  }
+
+    //adding type here because it is only for display purposes, not persisted to any data
+  console.log( "getFormulation *****" );
+  console.log(formulation);
   return {formulation:formulation, max_units:max_units, limiting_ingredient:limiting_ingredient };
 }
 
@@ -130,10 +184,11 @@ function getIngredientsFromRequest( product_type, req_body ){
   else if( product_type == SALVE ) return {essential_oils:req_body.essential_oils};
 }
 
+//this method doesn't handle errors pulling inventory which is going to be a problem eventually
 function pullInventory( ingredients ){
   for( let i in ingredients ){
-    if( i == WPE ) wpe_batches.pullBatch( ingredients[i].id, ingredients[i].total_amount );
-    else inventory.pullInventory( ingredients[i].type, ingredients[i].total_amount );
+    if( i == WPE ) wpe_batches.pullBatch( ingredients[i].key, ingredients[i].total_amount );
+    else inventory.pullInventory( ingredients[i].key, ingredients[i].lot_number, ingredients[i].total_amount );
   }
   return true;
 }
@@ -144,7 +199,7 @@ function advanceLimitingIngredients( ingredients, unit_count ){
   for( let i in ingredients ){
     if( ingredients[i].max_units <= unit_count ){
       if( i == WPE ) wpe_batches.retireBatch( ingredients[i].id );
-      else inventory.retireInventory( ingredients[i].type, ingredients[i].lot_number );
+      else inventory.retireInventory( ingredients[i].key, ingredients[i].lot_number );
     }
   }
   return true;
@@ -166,20 +221,23 @@ function getCachedFormulation( formulation_id ){
 function deleteCachedFormulation( formulation_id ){
   delete formulation_cache[ formulation_id ];
 }
+*/
 
 const WPE = "wpe";
 const WPE_TYPE = "whole plant extract";
 const SUBLINGUAL = "sublingual";
 const SALVE = "salve";
+const MLS_PER_OZ = 29.5635;
 
 const fs = require('fs');
 const bro = require('../server/bro');
 const sessions = require('../tools/sessions/session_util');
 const { compileTemplates } = require('../views/template_manager');
 const {renderError, renderTemplate} = require('../tools/rendering/render_util');
-const wpe_batches = require('../services/batches/batches');
-const inventory = require('../services/inventory/inventory');
+//const wpe_batches = require('../services/batches/batches');
+const inventory = require('../services/inventory_manager');
 const lots = require('../services/lots/lots');
+const {precisify} = require( '../tools/unit_converter');
 
 var formulators = {};
 formulators[SUBLINGUAL] = require('../services/formulations/formulator_sublingual');
@@ -193,14 +251,3 @@ function initialize(){
 
 var pages;
 initialize();
-
-//validation methods simply confirm value sent is ok and then either push errors onto error stack and return default value OR return valid value as sent
-function validateQuantity( qty, errors ){
-  if( !qty ) qty = default_quantity;
-  if( isNaN(qty) || qty < min_quantity || qty > max_quantity ){
-    errors.push( quantity_error + " // value sent was : " + qty );
-    return default_quantity;
-  }else {
-    return qty;
-  }
-}

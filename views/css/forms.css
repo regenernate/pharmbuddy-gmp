@@ -26,6 +26,10 @@ input[type='submit']{
   color: #FFFFFF;
 }
 
+input[type='submit']:disabled{
+  background-color: #999999;
+}
+
 input[type='button']{
   padding:.7em;
   text-align:center;
@@ -34,4 +38,8 @@ input[type='button']{
   border: 1px soild #000000;
   background-color: #000099;
   color: #FFFFFF;
+}
+
+input[type='button']:disabled{
+  background-color: #999999;
 }

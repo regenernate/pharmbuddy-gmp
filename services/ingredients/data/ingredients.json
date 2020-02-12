@@ -1,0 +1,169 @@
+
+{
+  "ingredient_list":[
+    { "item_id":"1",
+      "item_key":"olive_oil",
+      "item_name":"Olive Oil",
+      "lots":[
+        {
+          "purchase_date":"1575176400000",
+          "purchased_from":"Amazon Fresh",
+          "lot_number":"none-15751764",
+          "expiration_date":"1592539200000",
+          "initial_volume":"10647",
+          "current_volume":"10647"
+        }
+      ]
+    },
+    {
+      "item_id":"2",
+      "item_key":"hempseed_oil",
+      "item_name":"Hempseed Oil",
+            "lots":[
+        {
+          "purchase_date":"1575176400000",
+          "purchased_from":"Nutiva",
+          "lot_number":"140519012",
+          "expiration_date":"1581656400000",
+          "initial_volume":"3048",
+          "current_volume":"210"
+        }
+      ]
+    },
+    {
+      "item_id":"3",
+      "item_key":"peppermint_flavoring",
+      "item_name":"Peppermint Flavoring",
+            "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"Apex Flavorings",
+          "lot_number":"SC1572030419",
+          "expiration_date":"1646370000000",
+          "initial_volume":"236",
+          "current_volume":"236"
+        }
+      ]
+    },
+    {
+      "item_id":"4",
+      "item_key":"licorice_flavoring",
+      "item_name":"Licorice Flavoring",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"Apex Flavorings",
+          "lot_number":"A76498041819",
+          "expiration_date":"1650254400000",
+          "initial_volume":"118",
+          "current_volume":"118"
+        }
+      ]
+    },
+    {
+      "item_id":"5",
+      "item_key":"orange_cream_flavoring",
+      "item_name":"Orange Cream Flavoring",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"Apex Flavorings",
+          "lot_number":"A77829073119",
+          "expiration_date":"1658376000000",
+          "initial_volume":"118",
+          "current_volume":"118"
+        }
+      ]
+    },
+    {
+      "item_id":"6",
+      "item_key":"sunflower_seed_oil",
+      "item_name":"Sunflower Seed Oil",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"Reedy Fork",
+          "lot_number":"A77829073119",
+          "expiration_date":"1658376000000",
+          "initial_volume":"3784",
+          "current_volume":"3750"
+        }
+      ]
+    },
+    {
+      "item_id":"7",
+      "item_key":"lemon_eo",
+      "item_name":"Lemon Essential Oil",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"DoTerra",
+          "lot_number":"somelotnumberhere",
+          "expiration_date":"1658376000000",
+          "initial_volume":"30",
+          "current_volume":"30"
+        }
+      ]
+    },
+    {
+      "item_id":"8",
+      "item_key":"peppermint_eo",
+      "item_name":"Peppermint Essential Oil",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"DoTerra",
+          "lot_number":"anotherlotnumber",
+          "expiration_date":"1658376000000",
+          "initial_volume":"30",
+          "current_volume":"30"
+        }
+      ]
+    },
+    {
+      "item_id":"9",
+      "item_key":"orange_eo",
+      "item_name":"Orange Essential Oil",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"DoTerra",
+          "lot_number":"lastlylotnumber",
+          "expiration_date":"1658376000000",
+          "initial_volume":"30",
+          "current_volume":"30"
+        }
+      ]
+    },
+    {
+      "item_id":"10",
+      "item_key":"argan_oil",
+      "item_name":"Argan Oil",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"greensboro place",
+          "lot_number":"arganlotnum",
+          "expiration_date":"1658376000000",
+          "initial_volume":"946",
+          "current_volume":"946"
+        }
+      ]
+    },
+    {
+      "item_id":"11",
+      "item_key":"beeswax",
+      "item_name":"Beeswax",
+      "lots":[
+        {
+          "purchase_date":"157515640000",
+          "purchased_from":"Da Bees",
+          "lot_number":"beeswaxnumber",
+          "expiration_date":"1658376000000",
+          "initial_volume":"2500",
+          "current_volume":"2500"
+        }
+      ]
+    }
+  ]
+}
