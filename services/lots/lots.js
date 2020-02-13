@@ -15,6 +15,10 @@ module.exports.getRun = function( run_id ){
   if( run_index.hasOwnProperty( run_id ) ) return getPublicObject( run_index[run_id] );
 }
 
+module.exports.getLotsAndRuns = function(){
+  return lots_by_product_type;
+}
+
 //for now return full object without copying
 function getPublicObject( run ){
   return run;
