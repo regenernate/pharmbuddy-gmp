@@ -8,27 +8,31 @@ PURPOSE: The purpose of this service is to keep track of extraction batches and 
 module.exports.getBatchForProduct = function( use_type ){
   if( !use_type || typeof(use_type) !== "string" ) { console.log("batches.error in getBatchForUseType :: use_type was not a string"); return false; }
   for( let i=0; i<batch_list.length; i++ ){
-    if( batch_list[i].use_for.indexOf( use_type ) >= 0 && batch_list[i].current_mass > 0 ){
+    if( batch_list[i].use_for.indexOf( use_type ) >= 0 && !batch_list[i].retired_date ){
       return getBatch( batch_list[i].key );
     }
   }
   return false;
 }
 
-module.exports.pullBatch = function( batch_key, total_amount ){
-    let b = getBatch( batch_key );
-//    console.log( "batches.pullBatch :: " + batch_key + " : " + total_amount, b );
-    b.current_mass = precisify( b.current_mass - total_amount );
-    if( b.current_mass < 0 ) b.current_mass = 0;
-    return true;
+module.exports.pullFromBatch = function( batch_key, total_amount ){
+  for( let i=0; i<batch_list.length; i++ ){
+    if( batch_list[i].key == batch_key ){
+      let b = batch_list[i];
+      b.current_mass = b.current_mass - total_amount;
+      if( b.current_mass < 0 ) b.current_mass = 0;
+    }
+  }
+  return true;
 }
 
 module.exports.retireBatch = function( batch_key ){
-  let b = getBatch( batch_key );
-  if( b ){
-    b.current_mass = 0;
-    b.retired_date = moment().format('x');
-    return true;
+  for( let i=0; i<batch_list.length; i++ ){
+    if( batch_list[i].key == batch_key ){
+      let b = batch_list[i];
+      b.retired_date = moment().format('x');
+      return true;
+    }
   }
   return false;
 }
@@ -38,13 +42,7 @@ module.exports.getBatchList = function(){
 }
 
 module.exports.getBatchLot = function( batch_key ){
-  for( let i=0; i<batch_list.length; i++ ){
-    if( batch_list[i].key == batch_key ){
-      let b = batch_list[i];
-      return { key:batch_key, lot_number:b.lot_number };
-    }
-  }
-  return false;
+  return getBatch( batch_key );
 }
 
 module.exports.getBatchName = function( batch_key ){
@@ -64,7 +62,7 @@ module.exports.getAvailableMass = function( batch_key ){
 /***** base getters ********/
 function getBatch( batch_key ){
   if( batches_key.hasOwnProperty( batch_key ) ){
-    return { key:batch_key, label:batches_key[ batch_key ].label, percent_cbd:batches_key[ batch_key ].percent_cbd };
+    return { key:batch_key, label:batches_key[ batch_key ].label, lot_number:batches_key[ batch_key ].lot_number, percent_cbd:batches_key[ batch_key ].percent_cbd };
   }
   return false;
 }

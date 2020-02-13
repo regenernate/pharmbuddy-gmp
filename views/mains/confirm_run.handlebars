@@ -17,26 +17,27 @@ function printRunLabel() {
 
 <h1>This run has been created!</h1>
 
-<p>Run {{run_id}} of lot {{lot_id}} is ready to make.<br>The inventory lots and quantities to use are visible below.</p>
+<p>Run {{product.run_id}} of lot {{product.lot_id}} is ready to make.<br>The inventory lots and quantities to use are visible below.</p>
 
-<input type="button" onclick="printRunLabel();" value="Print a Label for this Run" />, then visit <a href="/lots/run/{{run_id}}">the run view</a> to add notes or mark it complete.
+<input type="button" onclick="printRunLabel();" value="Print a Label for this Run" />, then visit <a href="/lots/run/{{product.run_id}}">the run view</a> to add notes or mark it complete.
 
 
 <section id="run_label">
-  <div class='important'>Lot <strong>{{lot_id}}</strong></div>
-  <div class='important'>Run <strong>{{run_id}}</strong></div>
-  <div class='important'>Batch <strong>{{product_batch_id}}</strong></div>
+  <div class='important'>Lot <strong>{{product.lot_id}}</strong></div>
+  <div class='important'>Run <strong>{{product.run_id}}</strong></div>
+  <div class='important'>Batch <strong>{{product.batch_id}}</strong></div>
   <hr />
-  <p>This run makes {{max_units}} {{request.strength}}mg strength {{product_type}}.</p>
+  <p>This run makes {{units_made}} {{strength}}mg strength {{product_type}}.</p>
   <table>
     <tr><th>ingredient</th><th>lot #</th><th>amount</th></tr>
-    {{#each formulation}}
-    <tr><td>{{name}}</td><td>{{lot_number}}</td><td>{{total_amount}}</td></tr>
+    {{#each ingredients}}
+    <tr><td>{{label}}</td><td>{{lot_number}}</td><td>{{total_amount}} {{units}}</td></tr>
     {{/each}}
+    <tr><td>{{wpe.label}}</td><td>{{wpe.lot_number}}</td><td>{{wpe.total_amount}} {{wpe.units}}</td></tr>
   </table>
   <hr />
   Handwrite notes below and enter them online by visiting:
-  https://cgmp.ravenridgefamilyfarm.com/lots/run/{{run_id}}
+  https://cgmp.ravenridgefamilyfarm.com/lots/run/{{product.run_id}}
   <hr />
 </section>
 
@@ -44,6 +45,6 @@ function printRunLabel() {
 <ol>
   <li>Print the label for this run ( see obvious button above ).</li>
   <li>Make the run using the lot numbers provided and amounts as indicated.</li>
-  <li>Notes any deviations from the SOP on the label and online by visiting <a href="/lots/run/{{run_id}}">this runs view</a>.</li>
-  <li>The <a href="/lots/run/{{run_id}}">run's view page</a> is also where you mark the run as complete<br>which puts the products into inventory.</li>
+  <li>Notes any deviations from the SOP on the label and online by visiting <a href="/lots/run/{{product.run_id}}">this runs view</a>.</li>
+  <li>The <a href="/lots/run/{{product.run_id}}">run's view page</a> is also where you mark the run as complete<br>which puts the products into inventory.</li>
 </ol>

@@ -5,6 +5,7 @@ PURPOSE: The purpose of this service is to keep track of product batches
 *****/
 
 module.exports.getProductBatchId = function( product_type, batch_id, strength ){
+  console.log("product_batches.getProductBatchId", product_type, batch_id, strength );
   for( let i in product_batches ){
     let tpb = product_batches[i];
     if( tpb.batch_id == batch_id && tpb.product_type == product_type && tpb.strength == strength ) return tpb.id;

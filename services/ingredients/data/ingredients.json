@@ -27,6 +27,14 @@
           "expiration_date":"1581656400000",
           "initial_volume":"3048",
           "current_volume":"210"
+        },
+        {
+          "purchase_date":"1579176400000",
+          "purchased_from":"Nutiva",
+          "lot_number":"140519044",
+          "expiration_date":"1581956400000",
+          "initial_volume":"2500",
+          "current_volume":"2500"
         }
       ]
     },

@@ -1,18 +1,45 @@
 
 module.exports.getIngredientLot = function( item_key ){
-  let lot = getCurrentLot( getIngredient( item_key ) );
-  return { key:item_key, lot_number:lot.lot_number };
+  let ing = getIngredient( item_key );
+  let lot = getCurrentLot( ing );
+  if(!lot){
+    return { key:item_key, lot_number:false };
+  }
+  else {
+    return { key:item_key, lot_number:lot.lot_number };
+  }
 }
 
 //remove amount of ingredient from the item type and lot number sent
-module.exports.pullIngredient = function( item_key, lot_number, amount ){
+//expects grams
+module.exports.pullMassFromLot = function( item_key, lot_number, amount ){
 //  console.log("Ingredient.pullIngredient :: " + item_key + " : " + lot_number + " : " + amount );
-  let lot = getIngredientLot( getIngredient( item_key ), lot_number );
+  let lot = getItemLot( getIngredient( item_key ), lot_number );
 //  console.log("beginning mass :: " + lot);
   if( lot ){
-    lot.current_mass = precisify( lot.current_mass - amount, PRECISION );
-    if( lot.current_mass < 0 ) lot.current_mass = 0;
-    lot.current_volume = precisify( gramsToMils(lot.current_mass, item_key) );
+    lot.current_mass = lot.current_mass - amount;
+    if( lot.current_mass <= 0 ){
+      lot.current_mass = 0;
+      lot.retired_date = moment().format('x');
+    }
+    lot.current_volume = gramsToMils(lot.current_mass, item_key);
+//    console.log("ending mass :: " + lot.current_mass );
+    return true;
+  }
+  return false;
+}
+
+//expects mls
+module.exports.pullVolumeFromLot = function( item_key, lot_number, amount ){
+  let lot = getItemLot( getIngredient( item_key ), lot_number );
+//  console.log("beginning mass :: " + lot);
+  if( lot ){
+    lot.current_volume = lot.current_volume - amount;
+    if( lot.current_volume <= 0 ){
+      lot.current_volume = 0;
+      lot.retired_date = moment().format('x');
+    }
+    lot.current_mass = milsToGrams(lot.current_volume, item_key);
 //    console.log("ending mass :: " + lot.current_mass );
     return true;
   }
@@ -22,10 +49,8 @@ module.exports.pullIngredient = function( item_key, lot_number, amount ){
 /***** zero out ingredient for given itemkey and lot number  ******/
 module.exports.retireIngredient = function( item_key, lot_number ){
   //console.log("ingredient.retireIngredient :: " + item_key + " : " + lot_number );
-  let lot = getIngredientLot( getIngredient( item_key ), lot_number );
+  let lot = getItemLot( getIngredient( item_key ), lot_number );
   if( lot ){
-    lot.current_mass = 0;
-    lot.current_volume = 0;
     lot.retired_date = moment().format('x');
     return true;
   }
@@ -66,7 +91,7 @@ function getCurrentLot( item ){
   if( !item || !item.lots ) return false;
   let l = item.lots.length || 0;
   for( let i = 0; i<l; i++ ){
-    if( item.lots[i].current_mass > 0 ){
+    if( !item.lots[i].retired_date ){
       return item.lots[i];
     }
   }
@@ -117,6 +142,7 @@ function cleanQuantities( item ){
   precisify( item.current_volume, PRECISION );
 }
 
+const moment = require('moment');
 const WARNING_PERCENT = .1;
 const PRECISION = 1000;
 const {milsToGrams, gramsToMils, precisify } = require( "../../tools/unit_converter");

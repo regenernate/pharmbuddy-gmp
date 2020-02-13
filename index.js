@@ -15,9 +15,10 @@ var routers_to_load = [ {name:"registration_router", path:"../routers/" },
                         {name:"statics_router", path:"../routers/" },
                         {name:"production_router", path:"../routers/" },
                         {name:"scrum_router", path:"../routers/"},
-                        {name:"lot_router", path:"../routers/"}
+                        {name:"lot_router", path:"../routers/"},
+                        {name:"inventory_router", path:"../routers/"}
                       ];
-//                        {name:"inventory_router", path:"../routers/"}
+//
 
 function loadRouters(){
   //loadConfiguredRoutes('./server/routers/', './routers/');

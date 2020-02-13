@@ -9,6 +9,7 @@ module.exports.renderTemplate = function( req, template, data, layout ){
   if( !data ) d = { main:null };
   else d = { main:data };
   d.session = { device_name:getRegisteredDevice( req ), responsible_party:getResponsibleParty( req ) };
+  d.main.session = d.session;
   return executeTemplate( template, d, layout )
 }
 

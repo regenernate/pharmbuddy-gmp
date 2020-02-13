@@ -95,6 +95,16 @@
   .outinv {
     color: #AD250F;
   }
+
+  .msg {
+    background-color: #1c6a0a;
+    padding: .25em .5em;
+  }
+
+  .notify{
+    color: #FFFFFF;
+  }
+
   #run_label{
     padding:0 .5em 12em .5em;
     border: 1px solid #000000;

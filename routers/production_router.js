@@ -22,23 +22,32 @@ module.exports.router = async function( req, res, path ) {
     let pt = inventory.getProduct( product_type ); //get the product object { key: , label: } for this product
     let ing = inventory.getIngredientsFor( product_type );
     return bro.get( true, renderTemplate( req, pages[product_type + "_run"], {product_type:pt, options:ing} ) );
-  }else if( path[0] == "calculate_ingredients" || path[0] == "recalculate" ){
-
-    let formula;
+  }else if( path[0] == "calculate_ingredients" || path[0] == "advance_lot"){
+    let advanced_lot, formula;
     try{
       if( !req.body ) throw new Error("You must send appropriate data to the formulator! Post body was undefined.");
 
-      if( path[0] == 'recalculate' ){
-        throw new Error("Recalculate doesn't work yet!");
+      if( path[0] == 'advance_lot' ){
+        if( !req.body.limiting_type ) throw new Error( "You can't recalculate unless you advance")
+        let advanced_lot;
+        if( req.body.limiting_type == WPE ){
+          advanced_lot = inventory.advanceWPELot( {key:req.body.limiting_key, responsible_party:sessions.getResponsibleParty(req), registered_device:sessions.getRegisteredDevice(req) }, req.body.product_type );
+        }else{
+          advanced_lot = inventory.advanceIngredientLot( {key:req.body.limiting_key, lot_number:req.body.limiting_lot, responsible_party:sessions.getResponsibleParty(req), registered_device:sessions.getRegisteredDevice(req) } );
+        }
+        if( !advanced_lot ) throw new Error("Inventory could not be advanced, probably because I ain't got no " + req.body.limiting_key + ".");
+        if( !advanced_lot.lot_number ) throw new Error("Unfortunately there are no more lots of " + advanced_lot.label + "." );
       }
 
+      //get which whole plant extract batch to use
+      let wpe_batch;
+      if( req.body.wpe_key ) wpe_batch = inventory.getWPELot( req.body.wpe_key );
+      else wpe_batch = inventory.getBatchForProduct( req.body.product_type ); //get correct wpe batch object { key: , label: , percent_cbd: }
+      //get formulator to use based on product type being made
       let formulator = formulators[ req.body.product_type ];
       if(!formulator) throw new Error( "No formulator exists for " + req.body.product_type );
-
-      let wpe_batch = inventory.getBatchForProduct( req.body.product_type ); //get correct wpe batch object { key: , label: , percent_cbd: }
-
       formula = await formulator.createFormula( req.body, wpe_batch );
-//      console.log( "formula is :: ", formula );
+
       let ingredient_lot, max_units, amount_needed;
       max_units = inventory.calculateWPEMaxUnits( formula.wpe.key, formula.wpe.amount );
       formula.wpe.lot_number = inventory.getWPELot( formula.wpe.key ).lot_number;
@@ -53,7 +62,7 @@ module.exports.router = async function( req, res, path ) {
         if( formula.ingredients[i].units == 'g' ) max_units = inventory.calculateMaxUnitsByMass( formula.ingredients[i].key, formula.ingredients[i].lot_number, formula.ingredients[i].amount );
         else{
           amount_needed = formula.ingredients[i].amount;
-          if( formula.ingredients[i].units == 'oz' ) amount_needed *= MLS_PER_OZ;
+          if( formula.ingredients[i].units == 'oz' ) amount_needed *= MILS_PER_OZ;
           max_units = inventory.calculateMaxUnitsByVolume( formula.ingredients[i].key, formula.ingredients[i].lot_number, amount_needed );
         }
         formula.ingredients[i].max_units = max_units.max_units;
@@ -66,82 +75,63 @@ module.exports.router = async function( req, res, path ) {
         if( formula.ingredients[i].warning_level ) warning_level = true;
       }
       formula.limit = { warning_level:warning_level, type:limiting_type, item:limiting_ingredient };
-      /***
-      reformat calculate_ingredients view to allow
-      advancing inventory if any item has less than enough for one batch
-      making up to limiting ingredient's max_units
-      ***/
-
-//      console.log( formula );
-      //now add back in the labels for each ingredient
-
-//      throw new Error("Calculate Ingredients is a work in progress.");
-/*
-        f = getCachedFormulation( req.body.formulation_cache_id );
-        //advance limiting ingredient lot number
-        advanceLimitingIngredients( f.formulation );
-        deleteCachedFormulation( req.body.formulation_cache_id );
-        req.body = f.request;
+      if( advanced_lot ){
+        formula.message = "Success. This formulation is using the next lot of " + inventory.getIngredientLabel(advanced_lot.key) + ".";
       }
-
-      //get the per unit formula, assumes 1 oz currently
-      let product_type = req.body.product_type;
-      if( !product_type ) throw new Error("You must send a product type.");
-      ///get fshe batch public object from inventory to send to calculator
-      let wpe = wpe_batches.getBatchForProduct( product_type ); //return obj has id, percent_cbd, available_mass
-      let quantity_requested = req.body.quantity;
-      let product_ingredients = getIngredientsFromRequest( product_type, req.body );
-      f = await getFormulation( product_type, product_ingredients, req.body.strength, wpe, quantity_requested );
-
-      if( f.max_units < quantity_requested ){
-        console.log(" can only make " + f.max_units + " rather than " + quantity_requested + " limited by " + f.limiting_ingredient );
-      }
-
-      f.requested_units=quantity_requested;
-      f.product_type = product_type; //pass product type through to next views
-      for( let i in f.formulation ){
-        f.formulation[i].total_amount = precisify( f.formulation[i].quantity * f.max_units );
-      }
-      console.log(f); */
-
     }catch(err){
       console.log("production_router error :: ", err.message);
       return bro.get( true, renderError( req, "production router :: " + err.message, 'logged_out' ) );
     }
-    //cache formula instead of passing it back and forth in forms
-    formula.request = req.body;
+    let form_req = {};
+    for( let i in req.body ){
+      if( i.indexOf('limit') < 0) form_req[ i ] = req.body[i];
+    }
+    formula.request = form_req;
 //    formula.cache_id = cacheFormulation( f );
+    console.log("******* FORMULA REQUESTED ********")
     console.log(formula);
+    console.log("******* END FORMULA REQUESTED ********")
     return bro.get( true, renderTemplate( req, pages.calculate_ingredients, formula ) );
-  /*}else if( path[0] == "create_run" ){
-    let f = getCachedFormulation( req.body.formulation_cache_id );
-    if( !f ) return bro.get(true, renderError( req, "This run is no longer cached so you'll have to start over." ) );
-    //make this run - get lot numbers for all ingrdients first
-    let lot_numbers = [];
-    for( let i in f.formulation.base ){
-      lot_numbers.push( {ingredient:f.formulation.base[i].key, lot_number:f.formulation.base[i].lot_number, amount:f.formulation.base[i].total_amount} );
+  }else if( path[0] == "create_run" ){
+    let wpe_batch;
+    try{
+      if( req.body.wpe_key ) wpe_batch = inventory.getWPELot( req.body.wpe_key );
+      else wpe_batch = inventory.getBatchForProduct( req.body.product_type ); //get correct wpe batch object { key: , label: , percent_cbd: }
+      //get formulator to use based on product type being made
+      let formulator = formulators[ req.body.product_type ];
+      if(!formulator) throw new Error( "No formulator exists for " + req.body.product_type );
+      formula = await formulator.createFormula( req.body, wpe_batch );
+      let units_to_make = req.body.units_requested;
+      formula.wpe.total_amount = precisify(units_to_make * formula.wpe.amount);
+      formula.wpe.lot_number = inventory.getWPELot( formula.wpe.key ).lot_number;
+      formula.wpe.label = inventory.getWPELabel( formula.wpe.key );
+      for( let i in formula.ingredients ){
+        formula.ingredients[i].lot_number = inventory.getIngredientLot( formula.ingredients[i].key ).lot_number;
+        formula.ingredients[i].total_amount = precisify( units_to_make * formula.ingredients[i].amount );
+        formula.ingredients[i].label = inventory.getIngredientLabel( formula.ingredients[i].key );
+      }
+      //create the run -- this returns { run_id:{id}, lot_id:{id} }
+      let run_id = lots.createRun( req.body.product_type, req.body.strength, req.body.units_requested, formula.ingredients, formula.wpe );
+      if( !run_id ) return bro.get( true, renderError( req, "The run you requested could not be created." ) );
+
+      formula.product = run_id;
+      //get product batch id here ...
+      formula.product.batch_id = inventory.getProductBatchId( req.body.product_type, formula[ WPE ].lot_number, req.body.strength );
+
+      //pullInventory for this run
+      if( !inventory.pullIngredientsForRun( formula.ingredients, formula.wpe ) ){
+        //maybe delete run??
+        return bro.get( true, renderError( req, "The inventory could not be pulled based on the formulation requested.") );
+      }
+      //all was successful!
+      formula.units_made = units_to_make;
+      formula.strength = req.body.strength;
+      formula.product_type = req.body.product_type;
+      console.log("production_router :: ", formula);
+      return bro.get( true, renderTemplate( req, pages.confirm_run, formula ) );
+    }catch(e){
+      return bro.get( true, renderError( req, e.message ) );
     }
-    lot_numbers.push({ingredient:f.formulation[WPE].key, lot_number:f.formulation[WPE].lot_number, amount:f.formulation[WPE].total_amount});
-    //create the run -- this returns { run_id:{id}, lot_id:{id} }
-    let run_id = lots.createRun( f.product_type, f.request.strength, lot_numbers, f.max_units );
-
-    //get product batch id here ...
-    f.product_batch_id = wpe_batches.getProductBatchId( f.product_type, f.formulation[ WPE ].lot_number, f.request.strength );
-
-
-
-    if( !run_id ) return bro.get( true, renderError( req, "The run you requested could not be created." ) );
-    //pullInventory for this run
-    if( !pullInventory( f.formulation ) ){
-      //maybe delete run??
-      return bro.get( true, renderError( req, "The inventory could not be pulled based on the formulation requested.") );
-    }
-    deleteCachedFormulation( req.body.formulation_cache_id );
-    f.lot_id = run_id.lot_id;
-    f.run_id = run_id.run_id;
-    console.log(f);
-    return bro.get( true, renderTemplate( req, pages.confirm_run, f ) );
-  */
   }else{
     return bro.get( true, renderError( req, "This route doesn't exist.", 'logged_out' ) );
   }
@@ -227,7 +217,6 @@ const WPE = "wpe";
 const WPE_TYPE = "whole plant extract";
 const SUBLINGUAL = "sublingual";
 const SALVE = "salve";
-const MLS_PER_OZ = 29.5635;
 
 const fs = require('fs');
 const bro = require('../server/bro');
@@ -237,7 +226,7 @@ const {renderError, renderTemplate} = require('../tools/rendering/render_util');
 //const wpe_batches = require('../services/batches/batches');
 const inventory = require('../services/inventory_manager');
 const lots = require('../services/lots/lots');
-const {precisify} = require( '../tools/unit_converter');
+const {precisify, MILS_PER_OZ} = require( '../tools/unit_converter');
 
 var formulators = {};
 formulators[SUBLINGUAL] = require('../services/formulations/formulator_sublingual');

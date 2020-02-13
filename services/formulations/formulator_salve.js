@@ -19,12 +19,12 @@ module.exports.createFormula = async function( request, extract ){
   frm.ingredients.push( {key:BEESWAX, amount:3, units:'oz'}); //add beeswax 1oz per cup of base oil in oz
   let total_mls = 0;
   for( let i in frm.ingredients ){
-    total_mls += frm.ingredients[i].amount*MLS_PER_OZ;
+    total_mls += frm.ingredients[i].amount*MILS_PER_OZ;
   }
-  let mls_eo = EO_MLS_PER_OZ*(total_mls/MLS_PER_OZ);
+  let mls_eo = EO_MILS_TO_USE_PER_OZ*(total_mls/MILS_PER_OZ);
   frm.ingredients.push( {key:eos, amount:mls_eo, units:'ml'} ); //add e.o. in mls
   total_mls += mls_eo;
-  let cbd_per_unit = ( strength/cbd_extract_percent/MLS_PER_OZ );
+  let cbd_per_unit = ( strength/cbd_extract_percent/MILS_PER_OZ );
   frm.wpe = { key:extract.key, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add wpe in g
   return frm;
 }
@@ -41,12 +41,11 @@ const extract_specific_gravity = .9;
 const BASE_OILS = ["hempseed_oil","argan_oil","sunflower_seed_oil"];
 const BEESWAX = "beeswax";
 
-const EO_MLS_PER_OZ = .25/8;
-const MLS_PER_OZ = 29.5635;
+const EO_MILS_TO_USE_PER_OZ = .25/8;
 const ORANGE = "orange_eo";
 const PEPPERMINT = "peppermint_eo";
 
-const {precisify} = require('../../tools/unit_converter');
+const {precisify, MILS_PER_OZ} = require('../../tools/unit_converter');
 
 function validateEssentialOils( eos, errors ){
   if( eos == ORANGE || eos == PEPPERMINT ) return eos;

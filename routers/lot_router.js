@@ -15,12 +15,14 @@ module.exports.router = async function( req, res, path ) {
     if(!run_id || run_id.length <= 0) return bro.get( true, renderError( req, "You didn't include a run id in this request...what are you looking for?"));
     let run = getRun( run_id );
     //add the batch id and lot id
+    run.wpe.label = getWPELabel( run.wpe.key );
+    for( let i in run.ingredients ){
+      run.ingredients[i].label = getIngredientLabel( run.ingredients[i].key );
+    }
     console.log(run);
-
     //need to change how we store the wpe lot number so easier to look up the product batch id
     //run.ingredients.wpe.lot_number
-    run.batch_id = wpe_batches.getProductBatchId( run.product_type, 3, run.strength );
-
+    run.batch_id = getProductBatchId( run.product_type, run.wpe.lot_number, run.strength );
 
     return bro.get( true, renderTemplate( req, pages.view_run, run ) );
   }else return bro.get( true, renderError( req, "Unrecognized route."));
@@ -31,7 +33,7 @@ const sessions = require("../tools/sessions/session_util");
 const { renderError, renderTemplate } = require("../tools/rendering/render_util");
 const { compileTemplates } = require('../views/template_manager');
 const { getRun } = require('../services/lots/lots');
-const wpe_batches = require('../services/batches/wpe_batches');
+const { getWPELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");
