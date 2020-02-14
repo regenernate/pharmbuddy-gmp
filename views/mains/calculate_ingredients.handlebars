@@ -27,10 +27,14 @@
   }
 
   function confirmInventory(){
-    document.getElementById( 'confirm_inventory' ).setAttribute('disabled', "true");
-    document.getElementById( 'num_units' ).setAttribute( 'disabled', "true" );
-    document.getElementById( 'make_run' ).removeAttribute('disabled');
+    let r = window.confirm("I hope you really checked inventory!");
+    if( r == true ){
+      document.getElementById( 'confirm_inventory' ).setAttribute('disabled', "true");
+      document.getElementById( 'num_units' ).setAttribute( 'disabled', "true" );
+      document.getElementById( 'make_run' ).removeAttribute('disabled');
+    }
   }
+
 {{else}}
   function advanceInventory(){
     let r = window.confirm("Advancing inventory will change which {{limit.item.label}} is being used from inventory. Are you sure you want to proceed?");
@@ -69,7 +73,7 @@
   <input type='hidden' name='limiting_key' value='{{limit.item.key}}' />
   <input type='hidden' name='limiting_lot' value='{{limit.item.lot_number}}' />
   <input type='hidden' name='limiting_type' value='{{limit.type}}' />
-  <input type='button' value='Advance Inventory for {{limit.item.label}}' onclick='advanceInventory();'> or <input type='button' value='Make a Different Product' onclick='window.location="/production/make_{{request.product_type}}"' />
+  <input type='button' value='Advance Inventory for {{limit.item.label}}' onclick='advanceInventory();'> or <input type='button' value='Make a Different Product' onclick='window.location="/production/"' />
 </form>
 {{/if}}
 <table>
@@ -103,7 +107,7 @@
   <input type='hidden' name='wpe_key' value='{{wpe.key}}' />
   {{#if limit.item.max_units}}
     {{#if limit.warning_level}}
-      There are ingredients in this formulation that are below the warning stock level. Please confirm inventory on red quantities above then click <em>Inventory Confirmed</em>.
+      Please physically confirm inventory <span class='lowinv'>on red quantities above</span> then click <em>Inventory Confirmed</em>.
       <input id='confirm_inventory' type='button' value='Inventory Confirmed' onclick="confirmInventory();" />
     {{/if}}
     <input id='make_run' type='submit' value='Create this Run' {{#if limit.warning_level}}disabled{{/if}} />
