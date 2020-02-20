@@ -5,12 +5,12 @@ module.exports.base_route_path = "lots";
 module.exports.router = async function( req, res, path ) {
   //handle authorization first
   let auth_check = sessions.isUserAuthorized( req );
-  if( !auth_check ) return auth_check;
+  if( auth_check !== true ) return auth_check;
+
   try{
     //this if/then situation may not last if this router requires more routes
     if( !path || !path.length || path[0] == "" || path[0] == "list" ){
       let lots = getLotsAndRuns();
-      console.log(lots.sublingual[0].runs);
       return bro.get( true, renderTemplate( req, pages.lot_list, {lots:lots} ) );
     }else if( path[0] == "run"){
       let run_id = path[1];
@@ -25,7 +25,6 @@ module.exports.router = async function( req, res, path ) {
       for( let i in run.ingredients ){
         run.ingredients[i].label = getIngredientLabel( run.ingredients[i].key );
       }
-      console.log(run);
       //need to change how we store the wpe lot number so easier to look up the product batch id
       //run.ingredients.wpe.lot_number
       run.batch_id = getProductBatchId( run.product_type, run.wpe.lot_number, run.strength );

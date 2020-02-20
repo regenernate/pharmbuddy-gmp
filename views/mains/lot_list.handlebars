@@ -3,9 +3,11 @@
 {{#each lots}}
   <h2>{{@key}} product lots</h2>
   {{#each this}}
+  <table><tr><th>Run Id</th><th>Run Date</th><th>Units Made</th><th>strength</th><th>WPE Batch</th></tr>
   <p>Lot {{lot_id}}</p>
     {{#each runs}}
-    <div>{{run_id}}: on {{run_date_vf}} someone made {{units_made}} units of {{strength}}mg {{product_type}} using {{wpe.label}}</div>
+    <tr><td>{{run_id}}</td><td>{{run_date_vf}}</td><td>{{units_made}}</td><td>{{strength}}mg</td><td>{{wpe.label}}</td></tr>
     {{/each}}
+  </table>
   {{/each}}
 {{/each}}

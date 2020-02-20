@@ -61,6 +61,7 @@ function addRunToLot( lot_id, product_type, strength, units_made, ingredients, w
       let id = next_run_id++;
       run_index[ id ] = { run_id:id, lot_id:lot_id, product_type:product_type, run_date:moment().format('x'), strength:strength, units_made:units_made, ingredients:ingredients, wpe:wpe };
       lots[i].runs.push( run_index[id] );
+      console.log(run_index[id]);
       return id;
     }
   }
