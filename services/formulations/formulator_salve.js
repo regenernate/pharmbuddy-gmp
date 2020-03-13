@@ -1,12 +1,9 @@
 
-const default_oils = [ "hempseed", "sunflower", "argan" ];
-
-module.exports.calculateIngredients = async function( ingredients, strength, extract){
+module.exports.createFormula = async function( request, extract ){
   let errors = [];
-  console.log(ingredients);
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
-  let eos = validateEssentialOils( ingredients.essential_oils, errors );
-  strength = validateStrength( strength, errors );
+  let eos = validateEssentialOils( request.scent, errors );
+  let strength = validateStrength( request.strength, errors );
 
   confirmExtract( extract, errors );
 
@@ -15,46 +12,55 @@ module.exports.calculateIngredients = async function( ingredients, strength, ext
   }
 
   let cbd_extract_percent = extract.percent_cbd;
-
-
-  //salve calculations are based on number of cups of base oil desired
-  //for each qty requested, use 1/3 cup argan, 1/3 cup hempseed, 1/3 cup sunflower, 1 oz beeswax
-
-
-  //calculate the ingredients required, unit size = 8oz
-  let cbd_per_cup = (strength/cbd_extract_percent)/1000 / extract_specific_gravity;
-//  let eo_per_unit = flavoring_amount; // in ml
-
-
-
-
-  //convert everything to grams
-  let frm = {};
-/*  frm.base_1 = { type:"hempseed", quantity:2 * valid_carriers[ carrier ]) };
-  if( flav_per_unit > 0 ) frm.flavoring = { type:flavoring, quantity:(flav_per_unit * valid_flavorings[ flavoring ]) };
-  frm.wpe = { id:extract.id, quantity:(cbd_per_unit * extract_specific_gravity) };
-*/  return frm;
-
+  let frm = { ingredients:[] };
+  for( let i in BASE_OILS ){
+    frm.ingredients.push( {key:BASE_OILS[i], amount:8, units:'oz'} ); //add 1cup of each base oil in oz
+  }
+  frm.ingredients.push( {key:BEESWAX, amount:3, units:'oz'}); //add beeswax 1oz per cup of base oil in oz
+  let total_mls = 0;
+  for( let i in frm.ingredients ){
+    total_mls += frm.ingredients[i].amount*MILS_PER_OZ;
+  }
+  let mls_eo = EO_MILS_TO_USE_PER_OZ*(total_mls/MILS_PER_OZ);
+  frm.ingredients.push( {key:eos, amount:mls_eo, units:'ml'} ); //add e.o. in mls
+  total_mls += mls_eo;
+  let cbd_per_unit = ( strength/cbd_extract_percent/MILS_PER_OZ );
+  frm.wpe = { key:extract.key, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add wpe in g
+  return frm;
 }
 
+/********
+
+
+should be pulling valid essential oils from the inventory here , etc.
+
+
+******/
+
+const extract_specific_gravity = .9;
+const BASE_OILS = ["hempseed_oil","argan_oil","sunflower_seed_oil"];
+const BEESWAX = "beeswax";
+
+const EO_MILS_TO_USE_PER_OZ = .25/8;
+const ORANGE = "orange_eo";
+const PEPPERMINT = "peppermint_eo";
+
+const {precisify, MILS_PER_OZ} = require('../../tools/unit_converter');
+
 function validateEssentialOils( eos, errors ){
-  if( eos == ORANGE || eos == PEPPERMINT_LEMON ) return eos;
+  if( eos == ORANGE || eos == PEPPERMINT ) return eos;
   errors.push( "Essential Oil " + eos + " isn't valid." );
   return false;
 }
 
-const ORANGE = "orange";
-const PEPPERMINT_LEMON = "pepplem";
-
-function validateStrength( strength ){
-  if( strength == 1 ) return 300;
-  else if( strength == .5 ) return 150;
+function validateStrength( strength, errors ){
+  if( strength == 300 || strength == 150 ) return strength;
   errors.push( "Strength " + strength + " is not valid." );
   return false;
 }
 
 function confirmExtract( extr, errors ){
-  if( !extr || !extr.hasOwnProperty( 'id' ) || !extr.hasOwnProperty( 'percent_cbd') ){
+  if( !extr || !extr.hasOwnProperty( 'key' ) || !extr.hasOwnProperty( 'percent_cbd') ){
     errors.push( "The extraction sent was not valid // value sent was : ", extr );
   }
   return extr;

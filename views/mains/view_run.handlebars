@@ -1,6 +1,6 @@
 <h1>Here we get to view a run</h1>
 
-Run {{run_id}} made {{units_made}} on {{run_date}} at : {{strength}}
+Run {{run_id}} made {{units_made}} units of {{product_type}} at {{strength}}mg strength on {{run_date_vf}}.
 <hr />
 <div class='important'>Lot <strong>{{lot_id}}</strong></div>
 <div class='important'>Run <strong>{{run_id}}</strong></div>
@@ -10,8 +10,9 @@ Run {{run_id}} made {{units_made}} on {{run_date}} at : {{strength}}
 <table>
   <tr><th>item</th><th>lot #</th><th>amount</th></tr>
   {{#each ingredients}}
-  <tr><td>{{ingredient}}</td><td>{{lot_number}}</td><td>{{amount}}</td></tr>
+  <tr><td>{{label}}</td><td>{{lot_number}}</td><td>{{total_amount}} {{units}}</td></tr>
   {{/each}}
+  <tr><td>{{wpe.label}}</td><td>{{wpe.lot_number}}</td><td>{{wpe.total_amount}} {{wpe.units}}</td></tr>
 </table>
 
 <p>Here we need to manage workflow including add notes and mark as completed.</p>

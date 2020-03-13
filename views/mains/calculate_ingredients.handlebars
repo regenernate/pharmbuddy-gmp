@@ -1,51 +1,116 @@
-<h1>Confirm formulation</h1>
-<p>Confirm that the ingredients and amounts are correct below. If not, use the browser back button to make changes to the formulation request. Otherwise, pressing <em>Create run</em> will create the new run id.</p>
-<h2>This Formulation Request was for {{requested_units}} items.</h2>
-{{#if max_units}}
-  {{#if limiting_ingredient}}
-  <p>Unfortunately using the current lots, we only have enough <strong>{{limiting_ingredient}}</strong> to make <strong>{{max_units}}</strong> items using the <em>ingredient lot numbers</em> below.</p>
-  {{else}}
-  <p>It looks like we have the proper amounts of <em>all necessary ingredients</em> to make the full quantity requested using the <em>ingredient lot numbers</em> below.</p>
-  {{/if}}
-  <table>
-    <tr>
-      <th></th>
-      {{#each formulation}}
-      <th>
-        {{type}}
-      </th>
+<h1>Confirm formulation for {{request.product_type}}</h1>
+
+{{#if message }}<div class='msg notify'>{{message}}</div>{{/if}}
+<script language='javascript'>
+{{#if limit.item.max_units}}
+  function updateQuantities(event){
+    let num_units = document.getElementById('num_units').value;
+    let invalid = isNaN( num_units ) || num_units < 1 || num_units > {{limit.item.max_units}} || num_units.indexOf('.') >= 0;
+    if( invalid ){
+      {{#if limit.warning_level }}
+      document.getElementById( 'confirm_inventory' ).setAttribute("disabled", "true");
+      {{else}}
+      document.getElementById( 'make_run' ).setAttribute("disabled", "true");
+      {{/if}}
+    }else{
+      document.getElementById( 'qty_requested' ).value = num_units;
+      {{#if limit.warning_level }}
+      document.getElementById( 'confirm_inventory' ).removeAttribute("disabled");
+      {{else}}
+      document.getElementById( 'make_run' ).removeAttribute("disabled");
+      {{/if}}
+      {{#each ingredients}}
+      document.getElementById('{{key}}').innerHTML = Math.floor({{amount}}*num_units*1000)/1000 + " {{units}}";
       {{/each}}
-    </tr>
-    <tr>
-      <td class="firstcolumn">total amount in grams</td>
-      {{#each formulation}}
-      <td>{{total_amount}}</td>
-      {{/each}}
-    </tr>
-    <tr>
-      <td class="firstcolumn">lot #</td>
-      {{#each formulation}}
-      <td>{{lot_number}}</td>
-      {{/each}}
-    </tr>
-    {{#if limiting_ingredient}}
-    <tr>
-      <td class="firstcolumn">max units possible</td>
-      {{#each formulation}}
-      <td>{{max_units}}</td>
-      {{/each}}
-    </tr>
-    {{/if}}
-  </table>
-  <p>Click below to make {{max_units}} units of {{product_type}} using the above ingredient lots:</p>
-  <form action="/production/create_run" method="post">
-    <input type='hidden' name='formulation_cache_id' value='{{cache_id}}' />
-    <input type="submit" value="Make Run" />
-  </form>
+      document.getElementById('{{wpe.key}}').innerHTML = Math.floor({{wpe.amount}}*num_units*1000)/1000 + " {{wpe.units}}";
+    }
+  }
+
+  function confirmInventory(){
+    let r = window.confirm("I hope you really checked inventory!");
+    if( r == true ){
+      document.getElementById( 'confirm_inventory' ).setAttribute('disabled', "true");
+      document.getElementById( 'num_units' ).setAttribute( 'disabled', "true" );
+      document.getElementById( 'make_run' ).removeAttribute('disabled');
+    }
+  }
+
 {{else}}
-  <p>There is not enough of the current lot of <strong>{{limiting_ingredient}}</strong> to make even one unit. Click below to <em>advance to the next lot of {{limiting_ingredient}}</em> and recalculate this run:</p>
-  <form action="/production/recalculate" method="post">
-    <input type='hidden' name='formulation_cache_id' value='{{cache_id}}' />
-    <input type='submit' value='Advance inventory and recalculate run.' />
-  </form>
+  function advanceInventory(){
+    let r = window.confirm("Advancing inventory will change which {{limit.item.label}} is being used from inventory. Are you sure you want to proceed?");
+    if( r == true ){
+/*      let xhr = new XMLHttpRequest();
+      xhr.open('POST', '/inventory/advance/');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.onload = function() {
+        console.log(xhr.responseText);
+          if (xhr.status === 200) {
+              let result = JSON.parse( xhr.responseText );
+              alert('Result is : ' + result.lot_number);
+          }
+          else if (xhr.status !== 200) {
+              alert('Request failed.  Returned status of ' + xhr.status);
+          }
+      };
+      let str = "key=" + key + "&responsible_party={{session.responsible_party}}&registered_device=" + encodeURIComponent("{{session.device_name}}");
+      xhr.send(str); */
+  //    document.getElementById( 'confirm_run_form' ).action = "/production/advance_inventory";
+      document.getElementById( 'advance_inventory_form' ).submit();
+    }
+  }
+{{/if}}
+</script>
+
+{{#if limit.item.max_units}}
+<ol><li>Input the number of units to make in this run into the table header below,</li>
+  {{#if limit.warning_level }}<li>confirm low inventory quantities ( <span class='lowinv'>look for red amounts</span> in the table )</li>{{/if}}<li>Then <strong>create the run</strong> using the button at the bottom of the page.</li></ol>
+
+{{else}}
+<p>There is not enough {{limit.item.label}} to make any product matching this formulation. You can:</p>
+<form id='advance_inventory_form' action='/production/advance_lot' method='post'>
+  {{#each request}}<input type='hidden' name='{{@key}}' value='{{this}}' />{{/each}}
+  <input type='hidden' name='limiting_key' value='{{limit.item.key}}' />
+  <input type='hidden' name='limiting_lot' value='{{limit.item.lot_number}}' />
+  <input type='hidden' name='limiting_type' value='{{limit.type}}' />
+  <input type='button' value='Advance Inventory for {{limit.item.label}}' onclick='advanceInventory();'> or <input type='button' value='Make a Different Product' onclick='window.location="/production/"' />
+</form>
+{{/if}}
+<table>
+  <tr>
+    <th>ingredient</th>
+    <th>lot number</th>
+    <th>qty for {{#if limit.item.max_units}}<input type="text" id="num_units" name="num_units" size="5" value="1" oninput="updateQuantities();" />unit(s)<br><small>( max {{limit.item.max_units}} ){{else}}1 unit{{/if}}</small></th>
+    <th class='extradatahead'>max units possible</th>
+  </tr>
+  {{#each ingredients}}
+  <tr>
+    <td {{#unless max_units}}class='outinv'{{/unless}}>{{label}}</td>
+    <td {{#unless max_units}}class='outinv'{{/unless}}>{{lot_number}}</td>
+    <td {{#unless max_units}}class='outinv' {{/unless}}id='{{key}}'>{{amount}} {{units}}</td>
+    <td class='extradata {{#unless max_units}}outinv{{else}}{{#if warning_level}}lowinv{{/if}}{{/unless}}'>{{max_units}}</td>
+  </tr>
+  {{/each}}
+  <tr>
+    <td {{#unless wpe.max_units}}class='outinv'{{/unless}}>{{wpe.label}}</td>
+    <td {{#unless wpe.max_units}}class='outinv'{{/unless}}>{{wpe.lot_number}}</td>
+    <td {{#unless wpe.max_units}}class='outinv'{{/unless}} id='{{wpe.key}}'>{{wpe.amount}} {{wpe.units}}</td>
+    <td class='extradata {{#unless wpe.max_units}}outinv{{else}}{{#if wpe.warning_level}}lowinv{{/if}}{{/unless}}'>{{wpe.max_units}}</td>
+  </tr>
+</table>
+{{#if limit.item.max_units }}
+<form id='confirm_run_form' action='/production/create_run' method='post'>
+  {{#each request}}
+  <input type='hidden' name='{{@key}}' value='{{this}}' />
+  {{/each}}
+  <input type='hidden' id='qty_requested' name='units_requested' value='1' />
+  <input type='hidden' name='wpe_key' value='{{wpe.key}}' />
+  {{#if limit.item.max_units}}
+    {{#if limit.warning_level}}
+      Please physically confirm inventory <span class='lowinv'>on red quantities above</span> then click <em>Inventory Confirmed</em>.
+      <input id='confirm_inventory' type='button' value='Inventory Confirmed' onclick="confirmInventory();" />
+    {{/if}}
+    <input id='make_run' type='submit' value='Create this Run' {{#if limit.warning_level}}disabled{{/if}} />
+  {{/if}}
+</form>
 {{/if}}

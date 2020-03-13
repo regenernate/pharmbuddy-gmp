@@ -1,24 +1,45 @@
 
 <h1>Current Inventory is Below</h1>
 
+<h2>Extract Batches</h2>
+<table>
+  <th>Production Date</th>
+  <th>Mechanism</th>
+  <th>Lot #</th>
+  <th>Inventory (g)</th>
+  {{#each batches}}
+    {{#unless retired_date}}
+    <tr>
+      <td>{{production_date_vf}}</td>
+      <td>{{mechanism}}</td>
+      <td>{{lot_number}}</td>
+      <td>{{current_mass}}</td>
+    </tr>
+    {{/unless}}
+  {{/each}}
+</table>
+<h2>Ingredients</h2>
 <table>
   <tr>
+    <th>Item</th>
+    <th>Best By</th>
     <th>Purchased From</th>
     <th>Lot #</th>
     <th>Inventory (ml)</th>
     <th>Inventory (g)</th>
-    <th>Best By</th>
   </tr>
-{{#each inventory}}
-  <tr><td colspan='5'>{{@key}}</td></tr>
+{{#each ingredients}}
+{{#each lots }}
+  {{#unless retired_date}}
   <tr>
-    {{#each lots }}
+      <td>{{../name}}</td>
+      <td>{{expiration_date_vf}}</td>
       <td>{{purchased_from}}</td>
       <td>{{lot_number}}</td>
       <td>{{current_volume}}</td>
       <td>{{current_mass}}</td>
-      <td>{{expiration_date}}</td>
-    {{/each}}
   </tr>
+  {{/unless}}
+{{/each}}
 {{/each}}
 </table>

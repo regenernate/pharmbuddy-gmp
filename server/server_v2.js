@@ -187,8 +187,8 @@ async function respondToRequest( request, response ){
       }else if(content_type_out == mime_types['.html']){
         endRequest( response, routed_call.error, content_type_out );
       }else if(content_type_out == mime_types['.json']){
-//                if( typeof(routed_call.error) == "string" ) routed_call.error = {error:routed_call.error};
-        endRequest( response, JSON.stringify({success:false, error:routed_call.error}), content_type_out );
+        if( typeof(routed_call.error) == "string" ) routed_call.error = {error:routed_call.error};
+        endRequest( response, JSON.stringify(routed_call.error), content_type_out );
       }
     }else{
       if( routed_call.redirect ){
@@ -197,7 +197,8 @@ async function respondToRequest( request, response ){
       }else if(content_type_out == mime_types['.html']){
         endRequest( response, routed_call.content, content_type_out );
       }else if(content_type_out == mime_types['.json']){
-        endRequest( response, JSON.stringify({success:true,content:routed_call.content}), content_type_out );
+        if( typeof(routed_call.content) != "string" ) routed_call.content = JSON.stringify(routed_call.content);
+        endRequest( response, routed_call.content, content_type_out );
       }
     }
   }catch(err){

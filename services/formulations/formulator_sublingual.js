@@ -6,8 +6,6 @@ SCOPE : Sublingual product only
 
 ********/
 
-const min_quantity = 1;
-const max_quantity = 33;
 const volume_per_item = 30; //ml
 
 //this is an index of specific gravities for the carrier oils
@@ -19,27 +17,26 @@ const flavoring_amount = 1; // in ml
 
 const extract_specific_gravity = .9;
 
-const default_quantity = 1;
-const default_carrier = "olive";
+const default_carrier = "olive_oil";
 const default_strength = 600;
 const default_flavoring = "natural";
 
-const quantity_error = "Quantity must be a number between " + min_quantity + " and " + max_quantity + ". Used default quantity ( " + default_quantity + " ) instead.";
 const carrier_error = "Carrier must be one of the following: olive, hempseed.";
 const strength_error = "Strength must be one of the following: 300, 600, 900.";
 const flavoring_error = "Flavoring must be one of the following: orange_cream, licorice, peppermint, natural.";
+const extract_error = "Extract must have batch_id.";
 
 /*********    Calculating methods *********/
 
-module.exports.calculateIngredients = async function( ingredients, strength, extract){
+module.exports.createFormula = async function( request, extract ){
   let errors = [];
 
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
-  carrier = validateCarrier( ingredients.carrier, errors );
+  let carrier = validateCarrier( request.carrier, errors );
   //validate flavoring
-  flavoring = validateFlavoring( ingredients.flavoring, errors );
+  let flavoring = validateFlavoring( request.flavoring, errors );
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
-  strength = validateStrength( strength, errors );
+  let strength = validateStrength( request.strength, errors );
 
   confirmExtract( extract, errors );
 
@@ -57,11 +54,20 @@ module.exports.calculateIngredients = async function( ingredients, strength, ext
 
   //convert everything to grams
   let frm = {};
-  frm.carrier = { type:carrier, quantity:(carr_per_unit * valid_carriers[ carrier ]) };
-  if( flav_per_unit > 0 ) frm.flavoring = { type:flavoring, quantity:(flav_per_unit * valid_flavorings[ flavoring ]) };
-  frm.wpe = { id:extract.id, quantity:(cbd_per_unit * extract_specific_gravity) };
+  frm.ingredients = [{ key:carrier, amount:(carr_per_unit * valid_carriers[ carrier ]), units:'g' }];
+  if( flav_per_unit > 0 ) frm.ingredients.push({ key:flavoring, amount:(flav_per_unit * valid_flavorings[ flavoring ]), units:'g' });
+  frm.wpe = { key:extract.key, amount:(cbd_per_unit * extract_specific_gravity), units:'g'};
   return frm;
 }
+
+
+/********
+
+
+should be pulling valid essential oils from the inventory or checking against inventory here , etc.
+
+
+******/
 
 
 /**********   VALIDATORS FOR INGREDIENTS   ************/
@@ -102,7 +108,7 @@ function validateFlavoring( flav, errors ){
 }
 
 function confirmExtract( extr, errors ){
-  if( !extr || !extr.hasOwnProperty( 'id' ) || !extr.hasOwnProperty( 'percent_cbd') ){
+  if( !extr || !extr.hasOwnProperty( 'key' ) || !extr.hasOwnProperty( 'percent_cbd') ){
     errors.push( extract_error + " // value sent was : ", extr );
   }
   return extr;

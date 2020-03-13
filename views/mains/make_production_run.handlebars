@@ -1,8 +1,7 @@
 
 <h1>There are only two choices here ...</h1>
 
-<p>Eventually in_progress runs will show up here.</p>
-
-<p>For now, you can make a new salve or sublingual run by clicking the appropriate button below.</p>
-<input type='submit' onclick='javascript:window.location="/production/make_sublingual";' value="Make Sublingual" />
-<input type='submit' onclick='javascript:window.location="/production/make_salve";' value="Make Topical Salve" />
+<p>Select which type of product you want to make.</p>
+{{#each product_types}}
+<input type='submit' onclick='javascript:window.location="/production/make_{{key}}";' value="Make {{label}}" />
+{{/each}}

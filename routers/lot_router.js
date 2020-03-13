@@ -5,33 +5,44 @@ module.exports.base_route_path = "lots";
 module.exports.router = async function( req, res, path ) {
   //handle authorization first
   let auth_check = sessions.isUserAuthorized( req );
-  if( !auth_check ) return auth_check;
+  if( auth_check !== true ) return auth_check;
 
-  //this if/then situation may not last if this router requires more routes
-  if( !path || !path.length || path[0] == "" || path[0] == "list" ){
-    return bro.get( true, renderTemplate( req, pages.lot_list ) );
-  }else if( path[0] == "run"){
-    let run_id = path[1];
-    if(!run_id || run_id.length <= 0) return bro.get( true, renderError( req, "You didn't include a run id in this request...what are you looking for?"));
-    let run = getRun( run_id );
-    //add the batch id and lot id
-    console.log(run);
+  try{
+    //this if/then situation may not last if this router requires more routes
+    if( !path || !path.length || path[0] == "" || path[0] == "list" ){
+      let lots = getLotsAndRuns();
+      return bro.get( true, renderTemplate( req, pages.lot_list, {lots:lots} ) );
+    }else if( path[0] == "run"){
+      let run_id = path[1];
+      if(!run_id || run_id.length <= 0) return bro.get( true, renderError( req, "You didn't include a run id in this request...what are you looking for?"));
+      let run = getRun( run_id );
+      //add the batch id and lot id
 
-    //need to change how we store the wpe lot number so easier to look up the product batch id
-    //run.ingredients.wpe.lot_number
-    run.batch_id = wpe_batches.getProductBatchId( run.product_type, 3, run.strength );
+      //catch case of invalid run requested
+      if( !run ) throw new Error("There was no run matching the run_id sent ( it was " + run_id + ")" );
 
+      run.wpe.label = getWPELabel( run.wpe.key );
+      for( let i in run.ingredients ){
+        run.ingredients[i].label = getIngredientLabel( run.ingredients[i].key );
+      }
+      //need to change how we store the wpe lot number so easier to look up the product batch id
+      //run.ingredients.wpe.lot_number
+      run.batch_id = getProductBatchId( run.product_type, run.wpe.lot_number, run.strength );
 
-    return bro.get( true, renderTemplate( req, pages.view_run, run ) );
-  }else return bro.get( true, renderError( req, "Unrecognized route."));
+      return bro.get( true, renderTemplate( req, pages.view_run, run ) );
+    }else return bro.get( true, renderError( req, "Unrecognized route."));
+  }catch(error){
+    console.log(error.stack);
+    return bro.get( true, renderError( req, error.message ) );
+  }
 }
 
 const bro = require("../server/bro");
 const sessions = require("../tools/sessions/session_util");
 const { renderError, renderTemplate } = require("../tools/rendering/render_util");
 const { compileTemplates } = require('../views/template_manager');
-const { getRun } = require('../services/lots/lots');
-const wpe_batches = require('../services/batches/batches');
+const { getRun, getLotsAndRuns } = require('../services/lots/lots');
+const { getWPELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");

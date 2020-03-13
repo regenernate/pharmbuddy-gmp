@@ -1,0 +1,16 @@
+{
+  "product_key":[
+      {
+        "product_type":{ "key":"sublingual", "label":"Sublingual" },
+        "strength":[ {"key":300, "label":"300mg / oz"},{"key":600, "label":"600mg / oz"},{"key":900, "label":"900mg / oz"} ],
+        "carrier":[{"key":"olive_oil"}, {"key":"hempseed_oil"}],
+        "flavoring":[{"key":"peppermint_flavoring"}, {"key":"licorice_flavoring"},{"key":"orange_cream_flavoring"}]
+      },
+      {
+        "product_type":{ "key":"salve", "label":"Topical Salve"},
+        "strength":[ {"key":300, "label":"1% or 10mg / ml"}, {"key":150, "label":".5% or 5mg / ml"}],
+        "base":[{"key":"hempseed_oil"},{"key":"sunflower_seed_oil"},{"key":"argan_oil"}, {"key":"beeswax"}],
+        "scent":[{"key":"peppermint_eo"}, {"key":"orange_eo"}]
+      }
+    ]
+}

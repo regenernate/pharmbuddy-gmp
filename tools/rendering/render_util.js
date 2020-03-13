@@ -6,9 +6,10 @@ module.exports.renderError = function( req, error, layout ){
 
 module.exports.renderTemplate = function( req, template, data, layout ){
   let d;
-  if( !data ) d = { main:null };
+  if( !data ) d = { main:{} };
   else d = { main:data };
   d.session = { device_name:getRegisteredDevice( req ), responsible_party:getResponsibleParty( req ) };
+  d.main.session = d.session;
   return executeTemplate( template, d, layout )
 }
 
