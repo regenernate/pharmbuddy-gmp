@@ -67,14 +67,19 @@
   {{#if limit.warning_level }}<li>confirm low inventory quantities ( <span class='lowinv'>look for red amounts</span> in the table )</li>{{/if}}<li>Then <strong>create the run</strong> using the button at the bottom of the page.</li></ol>
 
 {{else}}
-<p>There is not enough {{limit.item.label}} to make any product matching this formulation. You can:</p>
-<form id='advance_inventory_form' action='/production/advance_lot' method='post'>
-  {{#each request}}<input type='hidden' name='{{@key}}' value='{{this}}' />{{/each}}
-  <input type='hidden' name='limiting_key' value='{{limit.item.key}}' />
-  <input type='hidden' name='limiting_lot' value='{{limit.item.lot_number}}' />
-  <input type='hidden' name='limiting_type' value='{{limit.type}}' />
-  <input type='button' value='Advance Inventory for {{limit.item.label}}' onclick='advanceInventory();'> or <input type='button' value='Make a Different Product' onclick='window.location="/production/"' />
-</form>
+  {{#if limit.item.lot_number}}
+  <p>There is not enough {{limit.item.label}} to make any product matching this formulation. You can:</p>
+  <form id='advance_inventory_form' action='/production/advance_lot' method='post'>
+    {{#each request}}<input type='hidden' name='{{@key}}' value='{{this}}' />{{/each}}
+    <input type='hidden' name='limiting_key' value='{{limit.item.key}}' />
+    <input type='hidden' name='limiting_lot' value='{{limit.item.lot_number}}' />
+    <input type='hidden' name='limiting_type' value='{{limit.type}}' />
+    <input type='button' value='Advance Inventory for {{limit.item.label}}' onclick='advanceInventory();'> or <input type='button' value='Make a Different Product' onclick='window.location="/production/"' />
+  </form>
+  {{else}}
+  <p>There isn't any {{limit.item.label}} in inventory.</p>
+  <p><a href='/inventory/{{limit.item.key}}'>Add {{limit.item.label}} here</a>.</p>
+  {{/if}}
 {{/if}}
 <table>
   <tr>
