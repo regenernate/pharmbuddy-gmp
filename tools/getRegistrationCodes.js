@@ -4,7 +4,7 @@
 const prod_url = "cgmp.ravenridgefamilyfarm.com";
 const prod_port = 443;
 const dev_url = "localhost";
-const dev_port = 3000;
+const dev_port = 3200;
 
 const valid_devices = [
   "the Basement 27\" iMac",
