@@ -35,6 +35,19 @@
     }
   }
 
+  function createRun(){
+    let num_units = document.getElementById('num_units').value;
+    //confirm values have been updated ...
+    let qty_req = document.getElementById({{ingredients[0].key}}).innerHTML;
+    updateQuantities();
+    let new_req = document.getElementById({{ingredients[0].key}}).innerHTML;
+    if( qty_req != new_req ){
+      window.alert( "Unfortunately you will have to resubmit this formulation request. Maybe my bad, but also, try not using the browser back button.");
+    }else{
+      document.getElementById("confirm_run_form").submit();
+    }
+  }
+
 {{else}}
   function advanceInventory(){
     let r = window.confirm("Advancing inventory will change which {{limit.item.label}} is being used from inventory. Are you sure you want to proceed?");
@@ -85,7 +98,7 @@
   <tr>
     <th>ingredient</th>
     <th>lot number</th>
-    <th>qty for {{#if limit.item.max_units}}<input type="text" id="num_units" name="num_units" size="5" value="1" oninput="updateQuantities();" />unit(s)<br><small>( max {{limit.item.max_units}} ){{else}}1 unit{{/if}}</small></th>
+    <th>qty for {{#if limit.item.max_units}}<input type="text" id="num_units" name="num_units" size="5" value="1" onload="updateQuantities();" oninput="updateQuantities();" />unit(s)<br><small>( max {{limit.item.max_units}} ){{else}}1 unit{{/if}}</small></th>
     <th class='extradatahead'>max units possible</th>
   </tr>
   {{#each ingredients}}
@@ -115,7 +128,7 @@
       Please physically confirm inventory <span class='lowinv'>on red quantities above</span> then click <em>Inventory Confirmed</em>.
       <input id='confirm_inventory' type='button' value='Inventory Confirmed' onclick="confirmInventory();" />
     {{/if}}
-    <input id='make_run' type='submit' value='Create this Run' {{#if limit.warning_level}}disabled{{/if}} />
+    <input id='make_run' type='button' value='Create this Run' onclick="createRun();" {{#if limit.warning_level}}disabled{{/if}} />
   {{/if}}
 </form>
 {{/if}}
