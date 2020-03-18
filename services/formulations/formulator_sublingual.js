@@ -56,7 +56,7 @@ module.exports.createFormula = async function( request, extract ){
   let frm = {};
   frm.ingredients = [{ key:carrier, amount:(carr_per_unit * valid_carriers[ carrier ]), units:'g' }];
   if( flav_per_unit > 0 ) frm.ingredients.push({ key:flavoring, amount:(flav_per_unit * valid_flavorings[ flavoring ]), units:'g' });
-  frm.wpe = { key:extract.key, amount:(cbd_per_unit * extract_specific_gravity), units:'g'};
+  frm.wpe = { batch_id:extract.batch_id, amount:(cbd_per_unit * extract_specific_gravity), units:'g'};
   return frm;
 }
 
@@ -108,7 +108,7 @@ function validateFlavoring( flav, errors ){
 }
 
 function confirmExtract( extr, errors ){
-  if( !extr || !extr.hasOwnProperty( 'key' ) || !extr.hasOwnProperty( 'percent_cbd') ){
+  if( !extr || !extr.hasOwnProperty( 'batch_id' ) || !extr.hasOwnProperty( 'percent_cbd') ){
     errors.push( extract_error + " // value sent was : ", extr );
   }
   return extr;

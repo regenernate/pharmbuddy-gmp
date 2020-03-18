@@ -1,0 +1,73 @@
+
+<script language='javascript'>
+
+function updateQuantity(){
+  let new_qty = document.getElementById( 'wpe_mass' ).value;
+  let xhr = getXHRRequest( '/inventory/update' );
+  xhr.onload = function() {
+    console.log(xhr.responseText);
+      if (xhr.status === 200) {
+          let result = JSON.parse( xhr.responseText );
+          alert('Update ' + (( result.success ) ? 'succeeded' : 'failed') + '.');
+      }
+      else{
+          alert('Request failed.  Returned status of ' + xhr.status);
+      }
+  };
+  let str = "batch_id={{item.batch_id}}&new_mass=" + new_qty + "&type=wpe";
+  xhr.send(str);
+}
+
+{{#if item.retired_date}}
+function unretireBatch(){
+
+  let xhr = getXHRRequest( '/inventory/unretire' );
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+        let result = JSON.parse( xhr.responseText );
+        if( result.success ){
+          location.reload();
+        }
+    }
+    else if (xhr.status !== 200) {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+  };
+  let str = "batch_id={{item.batch_id}}&type=wpe";
+  xhr.send(str);
+}
+{{else}}
+function retireBatch(){
+
+  let xhr = getXHRRequest( '/inventory/retire' );
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+        let result = JSON.parse( xhr.responseText );
+        if( result.success ){
+          location.reload();
+        }
+    }
+    else if (xhr.status !== 200) {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+  };
+  let str = "batch_id={{item.batch_id}}&type=wpe";
+  xhr.send(str);
+}
+{{/if}}
+
+function getXHRRequest( url ){
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', url);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.setRequestHeader('Accept', 'application/json');
+  return xhr;
+}
+</script>
+
+<h1>Details for {{item.label}}</h1>
+<p>Batch {{item.batch_id}} was produced using {{item.mechanism}} at {{item.location}}.</p>
+<p>It was made on {{item.production_date_vf}} and is {{asPercent item.percent_cbd}}% CBD.</p>
+<p>It can be used for {{#each item.use_for}}{{#if @index}}, and {{/if}}{{this}}{{/each}}.</p>
+<p>This item shows <input type='text' value='{{item.current_mass}}' id='wpe_mass' />g <input type='button' value='Update Mass' onClick='updateQuantity();' /> remaining from {{item.initial_mass}}g.</p>
+{{#if item.retired_date}}<input type='button' value='Unretire this Batch' onClick='unretireBatch();' />{{else}}<input type='button' value='Retire this Batch' onClick='retireBatch();'/>{{/if}}

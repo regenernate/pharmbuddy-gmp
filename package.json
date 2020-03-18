@@ -4,7 +4,8 @@
   "description": "tracking manufacturing processes for ravenridge products",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node injector.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "dotenv": "^8.2.0",
     "handlebars": "^4.7.3",
     "moment": "^2.24.0",
+    "mongodb": "^3.5.4",
     "query-string": "^6.10.1",
     "uglifycss": "0.0.29"
   }

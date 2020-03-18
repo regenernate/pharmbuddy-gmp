@@ -1,8 +1,8 @@
-
 <h1>Current Inventory is Below</h1>
 
 <h2>Extract Batches</h2>
 <table>
+  <th>Name</th>
   <th>Production Date</th>
   <th>Mechanism</th>
   <th>Lot #</th>
@@ -10,6 +10,7 @@
   {{#each batches}}
     {{#unless retired_date}}
     <tr>
+      <td><a href='/inventory/wpe/{{batch_id}}'>{{label}}</a></td>
       <td>{{production_date_vf}}</td>
       <td>{{mechanism}}</td>
       <td>{{lot_number}}</td>
@@ -29,17 +30,13 @@
     <th>Inventory (g)</th>
   </tr>
 {{#each ingredients}}
-{{#each lots }}
-  {{#unless retired_date}}
   <tr>
-      <td>{{../name}}</td>
+      <td><a href='/inventory/{{key}}'>{{label}}</a></td>
       <td>{{expiration_date_vf}}</td>
       <td>{{purchased_from}}</td>
       <td>{{lot_number}}</td>
       <td>{{current_volume}}</td>
       <td>{{current_mass}}</td>
   </tr>
-  {{/unless}}
-{{/each}}
 {{/each}}
 </table>

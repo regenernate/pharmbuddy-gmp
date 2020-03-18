@@ -3,6 +3,11 @@
 {{#if message }}<div class='msg notify'>{{message}}</div>{{/if}}
 <script language='javascript'>
 {{#if limit.item.max_units}}
+
+  var first_item = "{{ingredients.[0].key}}";
+
+  window.addEventListener('load', updateQuantities);
+
   function updateQuantities(event){
     let num_units = document.getElementById('num_units').value;
     let invalid = isNaN( num_units ) || num_units < 1 || num_units > {{limit.item.max_units}} || num_units.indexOf('.') >= 0;
@@ -22,25 +27,34 @@
       {{#each ingredients}}
       document.getElementById('{{key}}').innerHTML = Math.floor({{amount}}*num_units*1000)/1000 + " {{units}}";
       {{/each}}
-      document.getElementById('{{wpe.key}}').innerHTML = Math.floor({{wpe.amount}}*num_units*1000)/1000 + " {{wpe.units}}";
+      document.getElementById('wpe{{wpe.batch_id}}').innerHTML = Math.floor({{wpe.amount}}*num_units*1000)/1000 + " {{wpe.units}}";
     }
   }
 
   function confirmInventory(){
-    let r = window.confirm("I hope you really checked inventory!");
-    if( r == true ){
-      document.getElementById( 'confirm_inventory' ).setAttribute('disabled', "true");
-      document.getElementById( 'num_units' ).setAttribute( 'disabled', "true" );
-      document.getElementById( 'make_run' ).removeAttribute('disabled');
+    let num_units = document.getElementById('num_units').value;
+    //confirm values have been updated ...
+    let qty_req = document.getElementById(first_item).innerHTML;
+    updateQuantities();
+    let new_req = document.getElementById(first_item).innerHTML;
+    if( qty_req != new_req ){
+      window.alert( "Try that again real quick, and maybe don't use the browser back button.");
+    }else{
+      let r = window.confirm("I hope you really checked inventory!");
+      if( r == true ){
+        document.getElementById( 'confirm_inventory' ).setAttribute('disabled', "true");
+        document.getElementById( 'num_units' ).setAttribute( 'disabled', "true" );
+        document.getElementById( 'make_run' ).removeAttribute('disabled');
+      }
     }
   }
 
   function createRun(){
     let num_units = document.getElementById('num_units').value;
     //confirm values have been updated ...
-    let qty_req = document.getElementById({{ingredients[0].key}}).innerHTML;
+    let qty_req = document.getElementById(first_item).innerHTML;
     updateQuantities();
-    let new_req = document.getElementById({{ingredients[0].key}}).innerHTML;
+    let new_req = document.getElementById(first_item).innerHTML;
     if( qty_req != new_req ){
       window.alert( "Unfortunately you will have to resubmit this formulation request. Maybe my bad, but also, try not using the browser back button.");
     }else{
@@ -84,14 +98,18 @@
   <p>There is not enough {{limit.item.label}} to make any product matching this formulation. You can:</p>
   <form id='advance_inventory_form' action='/production/advance_lot' method='post'>
     {{#each request}}<input type='hidden' name='{{@key}}' value='{{this}}' />{{/each}}
+    {{#if limit.item.key}}
     <input type='hidden' name='limiting_key' value='{{limit.item.key}}' />
+    {{else}}
+    <input type='hidden' name='limiting_batch_id' value='{{limit.item.batch_id}}' />
+    {{/if}}
     <input type='hidden' name='limiting_lot' value='{{limit.item.lot_number}}' />
     <input type='hidden' name='limiting_type' value='{{limit.type}}' />
     <input type='button' value='Advance Inventory for {{limit.item.label}}' onclick='advanceInventory();'> or <input type='button' value='Make a Different Product' onclick='window.location="/production/"' />
   </form>
   {{else}}
   <p>There isn't any {{limit.item.label}} in inventory.</p>
-  <p><a href='/inventory/{{limit.item.key}}'>Add {{limit.item.label}} here</a>.</p>
+  <p><a href='/inventory/{{#if limit.item.key}}{{limit.item.key}}{{else}}wpe/{{limit.item.batch_id}}{{/if}}'>Add {{limit.item.label}} here</a>.</p>
   {{/if}}
 {{/if}}
 <table>
@@ -112,7 +130,7 @@
   <tr>
     <td {{#unless wpe.max_units}}class='outinv'{{/unless}}>{{wpe.label}}</td>
     <td {{#unless wpe.max_units}}class='outinv'{{/unless}}>{{wpe.lot_number}}</td>
-    <td {{#unless wpe.max_units}}class='outinv'{{/unless}} id='{{wpe.key}}'>{{wpe.amount}} {{wpe.units}}</td>
+    <td {{#unless wpe.max_units}}class='outinv'{{/unless}} id='wpe{{wpe.batch_id}}'>{{wpe.amount}} {{wpe.units}}</td>
     <td class='extradata {{#unless wpe.max_units}}outinv{{else}}{{#if wpe.warning_level}}lowinv{{/if}}{{/unless}}'>{{wpe.max_units}}</td>
   </tr>
 </table>
@@ -122,7 +140,7 @@
   <input type='hidden' name='{{@key}}' value='{{this}}' />
   {{/each}}
   <input type='hidden' id='qty_requested' name='units_requested' value='1' />
-  <input type='hidden' name='wpe_key' value='{{wpe.key}}' />
+  <input type='hidden' name='wpe_batch_id' value='{{wpe.batch_id}}' />
   {{#if limit.item.max_units}}
     {{#if limit.warning_level}}
       Please physically confirm inventory <span class='lowinv'>on red quantities above</span> then click <em>Inventory Confirmed</em>.

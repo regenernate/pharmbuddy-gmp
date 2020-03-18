@@ -25,7 +25,7 @@ module.exports.createFormula = async function( request, extract ){
   frm.ingredients.push( {key:eos, amount:mls_eo, units:'ml'} ); //add e.o. in mls
   total_mls += mls_eo;
   let cbd_per_unit = ( strength/cbd_extract_percent/MILS_PER_OZ );
-  frm.wpe = { key:extract.key, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add wpe in g
+  frm.wpe = { batch_id:extract.batch_id, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add wpe in g
   return frm;
 }
 
@@ -60,7 +60,7 @@ function validateStrength( strength, errors ){
 }
 
 function confirmExtract( extr, errors ){
-  if( !extr || !extr.hasOwnProperty( 'key' ) || !extr.hasOwnProperty( 'percent_cbd') ){
+  if( !extr || !extr.hasOwnProperty( 'batch_id' ) || !extr.hasOwnProperty( 'percent_cbd') ){
     errors.push( "The extraction sent was not valid // value sent was : ", extr );
   }
   return extr;

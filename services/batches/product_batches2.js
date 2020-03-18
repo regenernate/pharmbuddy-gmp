@@ -15,14 +15,42 @@ module.exports.getProductBatchId = function( product_type, batch_id, strength ){
   return tpbid;
 }
 
-function initialize(){
+module.exports.initialize = initialize;
+
+function initDb(){
   //use filesys_util to load the data
   let {loadData} = require( "../../tools/filesys/filesys_util");
 
   ( { product_batches } = loadData("./services/batches/data/product_batches.json") );
+
   loadData = null;
+  {
+    id: 100,
+    strength: 300,
+    product_type: 'sublingual',
+    product_name: '300mg Sublingual',
+    batch_id: '3',
+    current_count: 40
+  },
+
+  console.log(product_batches);
+/*  for( let i in product_batches ){
+    let r = pbatches.upsert( {key:product_batches[i].id}, product_batches[i] );
+  }
+  */
 }
 
-var product_batches;
+async function initialize(){
+  if( pbatches ) return;
+  pbatches = await ds.collection('product_batches');
+  initDb();
+}
+
+
+module.exports.saveProductBatch = function( batch ){
+
+}
+
+var pbatches;
 var next_pbid = 106;
-initialize();
+const ds = require("../../tools/data_persistence/mongostore");

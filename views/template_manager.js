@@ -18,6 +18,15 @@ function compileTemplates( templates, replace ){
 handlebars.registerPartial('head', handlebars.compile( fs.readFileSync( "./views/partials/head.handlebars", 'utf-8' )));
 handlebars.registerPartial('header', handlebars.compile( fs.readFileSync( "./views/partials/header.handlebars", 'utf-8' )));
 handlebars.registerPartial('footer', handlebars.compile( fs.readFileSync( "./views/partials/footer.handlebars", 'utf-8' )));
+handlebars.registerPartial('add_ingredient_lot', handlebars.compile( fs.readFileSync( "./views/forms/add_ingredient_lot.handlebars", 'utf-8' )));
+
+handlebars.registerHelper('asPercent', function( value ){
+  let iv = parseFloat( value );
+  if( !iv ) return value;
+  let precision = 100;
+  if( iv < 1 ) iv *= 100;
+  return Math.floor( iv * precision ) / precision;
+});
 
 //load and compile layout templates
 const default_layout = "logged_out";

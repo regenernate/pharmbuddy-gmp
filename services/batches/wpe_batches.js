@@ -5,72 +5,102 @@ PURPOSE: The purpose of this service is to keep track of extraction batches and 
 *****/
 
 /**** get current batch for product type sent  ********/
-module.exports.getBatchForProduct = function( use_type ){
+module.exports.getBatchForProduct = async function( use_type ){
   if( !use_type || typeof(use_type) !== "string" ) { console.log("batches.error in getBatchForUseType :: use_type was not a string"); return false; }
-  for( let i=0; i<batch_list.length; i++ ){
-    if( batch_list[i].use_for.indexOf( use_type ) >= 0 && !batch_list[i].retired_date ){
-      return getBatch( batch_list[i].key );
+  let f = await batches.find({use_for:use_type, retired_date:null}).sort({production_date:1});
+  if( await f.hasNext() ) return await f.next();
+  else return false;
+}
+
+module.exports.pullFromBatch = async function( batch_id, total_amount ){
+  let f = await batches.findOne({batch_id:batch_id});
+  if(!f) return false;
+  f.current_mass = f.current_mass - total_amount;
+  if( f.current_mass < 0 ) f.current_mass = 0;
+  let u = await batches.updateOne({batch_id:batch_id}, {$set:{current_mass:f.current_mass}});
+  return u.modifiedCount == 1;
+}
+
+async function addBatch( batch ){
+  let batch_id = await getNextBatchId();
+  batch.batch_id = batch_id;
+  if( !batch.lot_number ) batch.lot_number = batch.batch_id;
+  if( !batch.label ) batch.label = generateBatchName( batch );
+  //confirm this wpe batch doesn't already exist
+  let f = await batches.findOne({batch_id:batch.batch_id});
+  if( f ) throw new Error('wpe_batches.addBatch :: This batch already exists.');
+  //confirm correct fields and only correct fields being added
+  let plist = ['batch_id', 'lot_number', 'label', 'production_date', 'mechanism', 'location', 'percent_cbd', 'initial_mass', 'current_mass', 'use_for']
+  for( let i in batch ){
+    if( plist.indexOf( i ) < 0 ) throw new Error("Invalid property sent to wpe_batches.addBatch :: " + i);
+  }
+  for( let i in plist ){
+    if( !batch.hasOwnProperty( plist[i] ) ){
+      throw new Error("Missing property in wpe_batches.addBatch :: " + plist[i] );
     }
   }
+  //insert the batch
+  let iv = await batches.insertOne(batch);
+  if( iv.insertedCount ) return true;
   return false;
 }
 
-module.exports.pullFromBatch = function( batch_key, total_amount ){
-  for( let i=0; i<batch_list.length; i++ ){
-    if( batch_list[i].key == batch_key ){
-      let b = batch_list[i];
-      b.current_mass = b.current_mass - total_amount;
-      if( b.current_mass < 0 ) b.current_mass = 0;
-    }
-  }
-  return true;
+module.exports.addBatch = addBatch;
+
+module.exports.retireBatch = async function( batch_id ){
+  let u = await batches.updateOne({batch_id:parseInt(batch_id)}, {$set:{retired_date:moment().format('x')}});
+  return u.modifiedCount == 1;
 }
 
-module.exports.retireBatch = function( batch_key ){
-  for( let i=0; i<batch_list.length; i++ ){
-    if( batch_list[i].key == batch_key ){
-      let b = batch_list[i];
-      b.retired_date = moment().format('x');
-      return true;
-    }
-  }
-  return false;
+module.exports.unretireBatch = async function( batch_id ){
+  let u = await batches.updateOne({batch_id:parseInt(batch_id)}, {$unset:{retired_date:1}});
+  return u.modifiedCount == 1;
 }
 
-module.exports.getBatchList = function(){
-  return batch_list;
+module.exports.getBatchList = async function(){
+  let f = await batches.find().sort({batch_id:1});
+  return await f.toArray();
 }
 
-module.exports.getBatchLot = function( batch_key ){
-  return getBatch( batch_key );
+module.exports.getLotByBatchId = async function( batch_id ){
+  return await getBatch(batch_id);
 }
 
-module.exports.getBatchName = function( batch_key ){
-  return getBatch( batch_key ).label;
+module.exports.getBatchName = async function( batch_id ){
+  let item = await getBatch( batch_id );
+  return item.label;
 }
 
-module.exports.getAvailableMass = function( batch_key ){
-  for( let i=0; i<batch_list.length; i++ ){
-    if( batch_list[i].key == batch_key ){
-      let b = batch_list[i];
-      return { mass:b.current_mass, key:batch_key, warning_level:( b.current_mass / b.initial_mass <= WARNING_PERCENT ) };
-    }
-  }
+module.exports.updateAvailableMass = async function( batch_id, new_mass ){
+  let f = await getBatch( batch_id );
+  console.log(f);
+  let u = await batches.updateOne({_id:f._id}, {$set:{current_mass:new_mass}});
+  console.log("wpe_batches.updateAvailableMass :: ", batch_id, u.modifiedCount );
+  return u.modifiedCount == 1;
+}
+
+module.exports.getAvailableMass = async function( batch_id ){
+  let b = await getBatch(batch_id);
+  if( b ) return { mass:b.current_mass, batch_id:batch_id, warning_level:( b.current_mass / b.initial_mass <= WARNING_PERCENT ) };
   return false;
 }
 
 /***** base getters ********/
-function getBatch( batch_key ){
-  if( batches_key.hasOwnProperty( batch_key ) ){
-    return { key:batch_key, label:batches_key[ batch_key ].label, lot_number:batches_key[ batch_key ].lot_number, percent_cbd:batches_key[ batch_key ].percent_cbd };
-  }
+async function getBatch( batch_id ){
+  let f = await batches.findOne({batch_id:parseInt(batch_id)});
+  if( f ) return f;
   return false;
 }
 
 /******** initialization and data loading *********/
 
-function generateBatchKey( batch ){
-  return moment(batch.production_date, 'x').format('MMDDYYYY') + "_" + batch.mechanism.split(" ").join("_");
+async function getNextBatchId(){
+  let f = await batches.find().sort({ batch_id:-1 });
+  while( await f.hasNext() ){
+    let item = await f.next();
+    if( item != null ) return parseInt(item.batch_id) + 1;
+  }
+  return 2;
 }
 
 function generateBatchName( batch ){
@@ -78,24 +108,17 @@ function generateBatchName( batch ){
   return "WPE batch# " + batch.batch_id;
 }
 
-function initialize(){
-  //use filesys_util to load the data
-  let {loadData} = require( "../../tools/filesys/filesys_util");
-
-  ( { batch_list } = loadData("./services/batches/data/wpe_batches.json") );
-  loadData = null;
-  //create index by id for quick reference
-
-  for( let i in batch_list ){
-    batch_list[i].key = generateBatchKey( batch_list[i] );
-    batch_list[i].label = generateBatchName( batch_list[i] );
-    batches_key[ batch_list[i].key ] = batch_list[i];
-  }
+async function initialize(){
+  if( batches ) return true;
+  batches = await ds.collection('wpe');
+//  let f = await batches.find().toArray();
+//  console.log(f);
 }
+
+module.exports.initialize = initialize;
 
 const WARNING_PERCENT = .1;
 const moment = require('moment');
 const { precisify } = require('../../tools/unit_converter');
-var batch_list;
-var batches_key = {};
-initialize();
+var batches;
+var ds = require("../../tools/data_persistence/mongostore");

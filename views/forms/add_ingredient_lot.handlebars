@@ -1,0 +1,16 @@
+<p>Fill in the information below to add a lot of {{label}}</p>
+
+<form id='add_ingredient_form' method='post' action='/inventory/{{key}}'>
+  <input type='hidden' name='key' value='{{key}}' />
+  <input type='hidden' name='label' value='{{label}}' />
+  <fieldset>
+  <input id='lni' type='text' name='lot_number' /><label for='lni'>Lot Number</label>
+  <input id='ivi' type='text' name='initial_volume' /><label for='ivi'>Initial Volume</label>
+  <input id='edi' type='date' name='expiration_date' /><label for='edi'>Expires On</label>
+  </fieldset>
+  <fieldset>
+  <input id='pdi' type='date' name='purchase_date' /><label for='pdi'>Purchase Date</label>
+  <input id='pfi' type='text' name='purchased_from' /><label for='pfi'>Purchased From</label>
+  </fieldset>
+  <input type='submit' value='Add {{label}} Lot' onclick='submitIngredients();' />
+</form>

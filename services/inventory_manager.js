@@ -8,38 +8,65 @@ module.exports.getIngredientsFor = function( product_type ){
   }
 }
 
-module.exports.getIngredientLot = function( item_key ){
-  return inventory.getIngredientLot( item_key );
+module.exports.getIngredientLot = async function( item_key, product_type ){
+  let il = await ingredients.getCurrentLot( item_key, product_type );
+  if(!il) return false;
+  return il;
 }
 
-module.exports.getWPELot = function( batch_key ){
-  return wpe_batches.getBatchLot( batch_key );
+module.exports.addIngredientLot = async function( item_key, lot_details ){
+  return await ingredients.addLot(item_key, lot_details);
 }
 
-module.exports.calculateMaxUnitsByMass = function( item_key, lot_number, mass_per_unit ){
-  let ingredient = inventory.getAvailableMass( item_key, lot_number );
-  ingredient.max_units = Math.floor( ingredient.mass / mass_per_unit );
-  return ingredient;
+module.exports.getAllInventoryFor = async function( item_key ){
+  return await ingredients.getAllInventoryFor( item_key );
 }
 
-module.exports.calculateMaxUnitsByVolume = function( item_key, lot_number, volume_per_unit ){
-  let ingredient = inventory.getAvailableVolume( item_key, lot_number );
-  ingredient.max_units = Math.floor( ingredient.volume / volume_per_unit );
-  return ingredient;
+module.exports.getWPELot = async function( batch_id ){
+  if( batch_id ) return await wpe_batches.getLotByBatchId( batch_id );
+  else return false;
 }
 
-module.exports.calculateWPEMaxUnits = function( batch_key, mass_per_unit ){
-  let batch = wpe_batches.getAvailableMass( batch_key );
+module.exports.calculateMaxUnitsByMass = async function( item_key, lot_number, mass_per_unit ){
+  let r = { key:item_key, lot_number:lot_number }
+  let i = await ingredients.getItem( item_key, lot_number );
+  if(i){
+    let m = milsToGrams(i.current_volume, i.key);
+    r.max_units = Math.floor( m / mass_per_unit );
+    r.warning_level = ( i.current_volume / i.initial_volume ) < .1;
+  }else{
+    r.max_units = 0;
+    console.log("inventory_manager.calculateMaxUnitsByMass :: could not find item " + item_key + " : " + lot_number);
+  }
+  return r;
+}
+
+module.exports.calculateMaxUnitsByVolume = async function( item_key, lot_number, volume_per_unit ){
+  let r = {key:item_key, lot_number:lot_number};
+  let i = await ingredients.getItem( item_key, lot_number );
+  if(i){
+    let m = i.current_volume;
+    r.max_units = Math.floor( m / volume_per_unit );
+    r.warning_level = ( i.current_volume / i.initial_volume ) < .1;
+  }else{
+    r.max_units = 0;
+    console.log("inventory_manager.calculateMaxUnitsByVolume :: could not find item " + item_key + " : " + lot_number);
+  }
+  return r;
+}
+
+module.exports.calculateWPEMaxUnits = async function( batch_id, mass_per_unit ){
+  let batch = await wpe_batches.getAvailableMass( batch_id );
   batch.max_units = Math.floor( batch.mass / mass_per_unit );
   return batch;
 }
 
-module.exports.getIngredientLabel = function( item_key ){
-  return inventory.getIngredientName( item_key );
+module.exports.getIngredientLabel = async function( item_key ){
+  return await ingredients.getIngredientLabel( item_key );
 }
 
-module.exports.getWPELabel = function( batch_key ){
-  return wpe_batches.getBatchName( batch_key );
+module.exports.getWPELabel = async function( batch_id ){
+  return await wpe_batches.getBatchName( batch_id );
 }
 
 module.exports.getProductTypes = function(){
@@ -57,18 +84,31 @@ module.exports.getProduct = function( product_type ){
   return false;
 }
 
-module.exports.getBatchForProduct = function( product_type ){
-  return wpe_batches.getBatchForProduct( product_type );
+module.exports.getBatchForProduct = async function( product_type ){
+  return await wpe_batches.getBatchForProduct( product_type );
 }
 
 module.exports.getProductBatchId = function( product_type, wpe_lot, strength ){
   return products.getProductBatchId( product_type, wpe_lot, strength );
 }
 
-module.exports.advanceWPELot = function( wpe, product_type ){
-  if( wpe_batches.retireBatch( wpe.key ) ){
-    let l = wpe_batches.getBatchForProduct( product_type );
-    console.log( "inventory_manager.advanceWPELot :: need to dispatch event here" );
+module.exports.retireWPEBatch = async function( batch_id ){
+  return await wpe_batches.retireBatch( batch_id );
+}
+
+module.exports.unretireWPEBatch = async function( batch_id ){
+  return await wpe_batches.unretireBatch( batch_id );
+}
+
+module.exports.updateWPEMass = async function( batch_id, new_mass ){
+  if( !new_mass || isNaN(parseInt(new_mass)) ) return false;
+  if( new_mass < 0 ) new_mass = 0;
+  return await wpe_batches.updateAvailableMass( batch_id, new_mass );
+}
+
+module.exports.advanceWPELot = async function( wpe, product_type ){
+  if( await wpe_batches.retireBatch( wpe.batch_id ) ){
+    let l = await wpe_batches.getBatchForProduct( product_type );
     if( l ) return l;
     else return {lot_number:false, label:"Whole Plant Extract"};
   }else{
@@ -76,15 +116,10 @@ module.exports.advanceWPELot = function( wpe, product_type ){
   }
 }
 
-module.exports.advanceIngredientLot = function( ingredient ){
-  if( !ingredient.hasOwnProperty( 'key' ) ) throw new Error('illegal advanceIngredientLot call!');
-  if( !ingredient.hasOwnProperty( 'lot_number' ) || !ingredient.lot_number ) ingredient.lot_number = inventory.getIngredientLot( ingredient.key ).lot_number;
-//  if( !sessions.isValidResponsibleParty( ingredient.responsible_party ) ) throw new Error( 'illegal attempt to advanceIngredientLot without proper authorization' );
-  if( !ingredient.hasOwnProperty( 'responsible_party' ) || !ingredient.responsible_party ) throw new Error( 'advanceIngredientLot call ... no responsible party, no access!');
-  if( !ingredient.hasOwnProperty( 'registered_device' ) || !ingredient.registered_device ) throw new Error( 'advanceIngredientLot call ... no registered device, no access!');
-  if( inventory.retireIngredient( ingredient.key, ingredient.lot_number ) ){
+module.exports.advanceIngredientLot = async function( ingredient, product_type ){
+  if( await ingredients.retireIngredient( ingredient.key, ingredient.lot_number, product_type ) ){
     //log if the new lot is the last lot in inventory!
-    let l = inventory.getIngredientLot( ingredient.key )
+    let l = await ingredients.getCurrentLot( ingredient.key, product_type );
     //dispatch event with change
     console.log( "inventory_manager.advanceIngredientLot :: need to dispatch an event here for logging to catch and record advancement of inventory ");
     return l;
@@ -93,33 +128,65 @@ module.exports.advanceIngredientLot = function( ingredient ){
   }
 }
 
-module.exports.getIngredientList = function(){
-  return inventory.getIngredientList();
+module.exports.retireIngredient = async function( _id, product_type ){
+  let f = await ingredients.getKeyAndLotFromId( _id );
+  if( !f ) return false;
+  else{
+    let u = await ingredients.retireIngredient( f.key, f.lot_number, product_type );
+    return u;
+  }
 }
 
-module.exports.getBatchList = function(){
-  return wpe_batches.getBatchList();
+module.exports.unretireIngredient = async function( _id, product_type ){
+  let f = await ingredients.getKeyAndLotFromId( _id );
+  if( !f ) return false;
+  else{
+    let u = await ingredients.unretireIngredient( f.key, f.lot_number, product_type );
+    return u;
+  }
 }
 
-module.exports.pullIngredientsForRun = function( ingredients, wpe ){
+module.exports.getIngredientList = async function( active_only ){
+  if( !active_only ) active_only = false;
+  else active_only = true;
+  let il = await ingredients.getCurrentList( active_only );
+  return il;
+}
+
+module.exports.getBatchList = async function(){
+  return await wpe_batches.getBatchList();
+}
+
+module.exports.pullIngredientsForRun = async function( ing, wpe ){
   //ultimately need to implement rollback here if any pull fails
-  console.log("inventory_manager.pullIngredientsForRun - need to implement rollback if pull fails from any ingredient or the wpe");
-  wpe_batches.pullFromBatch( wpe.key, wpe.total_amount );
-  for( let i in ingredients ){
-    if( ingredients[i].units == GRAMS ){
-      inventory.pullMassFromLot( ingredients[i].key, ingredients[i].lot_number, ingredients[i].total_amount );
+  if(!await wpe_batches.pullFromBatch( wpe.batch_id, wpe.total_amount )) throw new Error("inventory_manager.pullIngredientsForRun :: couldn't pull wpe for run", wpe);
+  for( let i in ing ){
+    if( ing[i].units == GRAMS ){
+      await ingredients.pullMassFromLot( ing[i].key, ing[i].lot_number, ing[i].total_amount );
+    }else if( ing[i].units == MILS ){
+      await ingredients.pullVolumeFromLot( ing[i].key, ing[i].lot_number, ing[i].total_amount );
+    }else if( ing[i].units == OUNCES ){
+      await ingredients.pullVolumeFromLot( ing[i].key, ing[i].lot_number, ozToMils(ing[i].total_amount) );
     }else{
-      let ta = ingredients[i].total_amount;
-      if( ingredients[i].units == OUNCES ){
-        ta = ozToMils( ta );
-      }
-      inventory.pullVolumeFromLot( ingredients[i].key, ingredients[i].lot_number, ta );
+      console.log("pullIngredientsForRun unrecognized units :: " + ing[i].units );
     }
   }
   return true;
 }
 
-function initialize(){
+module.exports.updateVolumeById = async function( _id, new_volume ){
+  if( !new_volume || new_volume < 0 ) return false;
+  let f = await ingredients.getKeyAndLotFromId( _id );
+  if( !f ) return false;
+  else{
+    let u = await ingredients.updateVolume( f.key, f.lot_number, new_volume );
+    return u;
+  }
+}
+
+async function initialize(){
+  await ingredients.initialize();
+  await wpe_batches.initialize();
   ( { product_key } = loadData("./services/product_key.json") );
   loadData = null;
   //create index by id for quick reference
@@ -129,7 +196,8 @@ function initialize(){
       if(  Array.isArray(product_key[i][j]) ){
         for( let k in product_key[i][j] ){ //for each ingredient
           if( product_key[i][j][k].hasOwnProperty( 'key' )){
-            product_key[i][j][k].label = inventory.getIngredientName( product_key[i][j][k].key );
+            product_key[i][j][k].label = await ingredients.getIngredientLabel( product_key[i][j][k].key );
+//            console.log(product_key[i][j][k]);
           }
         }
       }
@@ -138,9 +206,10 @@ function initialize(){
 }
 
 let {loadData} = require( "../tools/filesys/filesys_util");
-const inventory = require('./ingredients/ingredients');
 const wpe_batches = require('./batches/wpe_batches');
 const products = require('./batches/product_batches');
-const {GRAMS, OUNCES, MILS, ozToMils} = require('../tools/unit_converter');
+const {GRAMS, OUNCES, MILS, ozToMils, milsToGrams } = require('../tools/unit_converter');
 var product_key;
+const moment = require('moment');
+const ingredients = require('../services/ingredients/ingredients');
 initialize();

@@ -1,0 +1,141 @@
+
+<script language='javascript'>
+
+var unretirefor = "urf";
+var unretire = "ur";
+var retire = "rt";
+var updateqty = "uqty";
+var newqty = "newqty";
+
+
+
+function updateQuantity( id ){
+  let new_qty = document.getElementById( newqty + "_" + id ).value;
+  let xhr = getXHRRequest( '/inventory/update' );
+  xhr.onload = function() {
+    console.log(xhr.responseText);
+      if (xhr.status === 200) {
+          let result = JSON.parse( xhr.responseText );
+          alert('Update ' + (( result.success ) ? 'succeeded' : 'failed') + '.');
+      }
+      else if (xhr.status !== 200) {
+          alert('Request failed.  Returned status of ' + xhr.status);
+      }
+  };
+  let str = "_id=" + id + "&new_volume=" + new_qty;
+  xhr.send(str);
+}
+
+function retireLot( id ){
+
+  let xhr = getXHRRequest( '/inventory/retire' );
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+        let result = JSON.parse( xhr.responseText );
+        if( result.success ){
+          location.reload();
+        }
+    }
+    else if (xhr.status !== 200) {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+  };
+  let str = "_id=" + id;
+  xhr.send(str);
+}
+
+function unretireLot( id ){
+  unretireLotFor( id, null );
+}
+
+function unretireLotFor( id, product_type ){
+  let xhr = getXHRRequest( '/inventory/unretire' );
+  xhr.onload = function() {
+    console.log(xhr.responseText);
+      if (xhr.status === 200) {
+          let result = JSON.parse( xhr.responseText );
+          if( result.success ){
+            location.reload();
+          }
+      }
+      else if (xhr.status !== 200) {
+          alert('Request failed.  Returned status of ' + xhr.status);
+      }
+  };
+  let str = "_id=" + id + (( product_type != null ) ? "&product_type=" + product_type : "");
+  xhr.send(str);
+}
+
+function getXHRRequest( url ){
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', url);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.setRequestHeader('Accept', 'application/json');
+  return xhr;
+}
+</script>
+<h1>Inventory for {{item.label}}</h1>
+
+<h2>Add more</h2>
+{{>add_ingredient_lot this.item}}
+
+<h2>Active Inventory</h2>
+{{#if active_lots}}
+<table>
+  <tr>
+    <th>Purchased From</th>
+    <th>Expires On</th>
+    <th>Lot #</th>
+    <th>Inventory (ml)</th>
+    <th>Update quantity</th>
+    <th>Retire lot</th>
+  </tr>
+{{#each active_lots}}
+<tr>
+  <td>{{purchased_from}}</td>
+  <td>{{expiration_date_vf}}</td>
+  <td>{{lot_number}}</td>
+  <td>{{current_volume}}</td>
+<!--  <td>
+  {{#if do_not_use_for}}
+  {{#each do_not_use_for}}<input type="button" id='urf_{{../_id}}{{this}}' onclick="unretireLotFor('{{../_id}}', '{{this}}')" value="Unretire for {{this}}" />{{/each}}
+  {{/if}}
+</td> -->
+  <td><input type='text' id="newqty_{{_id}}" value="{{current_volume}}"></input><label for="newqty_{{_id}}">ml</label><input type="button" id="uqty_{{_id}}" onclick="updateQuantity('{{_id}}');" value="Update Quantity" /></td>
+  <td><input type="button" id="rt_{{_id}}" onclick="retireLot('{{_id}}');" value="Retire this Lot" /></td>
+</tr>
+{{/each}}
+</table>
+{{else}}
+<p>It seems there is no active {{item.label}}. Add some above.</p>
+{{/if}}
+
+<h2>Retired Inventory</h2>
+{{#if retired_lots}}
+<table>
+  <tr>
+    <th>Purchased From</th>
+    <th>Retired On</th>
+    <th>Lot #</th>
+    <th>Unretire</th>
+  </tr>
+  {{#each retired_lots}}
+  <tr>
+    <td>{{purchased_from}}</td>
+    <td>
+      {{#if retired_date}}
+        {{retired_date_vf}}
+      {{else}}
+        {{#each do_not_use_for}}
+          {{this}}
+        {{/each}}
+      {{/if}}
+    </td>
+    <td>{{lot_number}}</td>
+    <td><input type="button" onclick="unretireLot('{{_id}}');" id="ur_{{_id}}" value="Un-retire this Lot" /></td>
+  </tr>
+  {{/each}}
+</table>
+{{else}}
+<p>You haven't use up any of this item yet. When you do, rest assured it will show up here!</p>
+{{/if}}

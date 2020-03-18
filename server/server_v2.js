@@ -123,7 +123,7 @@ function getQueryString( request, path ){
     if(qmi[0].substr(-1) == "/") qmi[0] = qmi[0].substring(0, qmi[0].length-1);
     request_path = qmi[0];
     request.url = request_path;
-    console.log("server_v2:queryobject => ", queryobject, request.url);
+//    console.log("server_v2:queryobject => ", queryobject, request.url);
   }else request.query = {};
 }
 
@@ -133,10 +133,10 @@ function getPostedData( request, response, headers ){
   }else{
     let content_type_in = headers['content-type'].toLowerCase();
     if( content_type_in.indexOf(FORM_URLENCODED) >= 0 ) {
-      console.log( "  PROCESSING AS :: " + FORM_URLENCODED );
+      //console.log( "  PROCESSING AS :: " + FORM_URLENCODED );
       collectRequestData( request, response, respondToRequest );
     }else if( request.headers['content-type'].indexOf(FORM_MULTIPART) >= 0 ){
-      console.log( "  PROCESSING AS :: " + FORM_MULTIPART );
+      //console.log( "  PROCESSING AS :: " + FORM_MULTIPART );
       throw new Error("Currently not accepting posted image data");
   //          image_service.processImageData( request, response, respondToRequest );
     }else{ //no special processing for other content types yet ...
@@ -229,7 +229,7 @@ async function collectRequestData(request, response, resume) {
         request.body[i] = formatDateForDB( request.body[i] );
       }
     }
-    console.log( request.body );
+    //console.log( request.body );
     //look for and reformat location objects - put this into the where service
     if( request.body.latitude && request.body.longitude ){
       request.geolocation = location(request.body.latitude, request.body.longitude, request.body.accuracy);

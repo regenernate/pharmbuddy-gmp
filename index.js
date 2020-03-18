@@ -10,12 +10,30 @@ if( !port || !ip ){
   process.exit();
 }
 
-//pull this out into /services/router_config.json
+//set up database connection(s)
+console.log("right before connect");
+const mongo_connect = require('./tools/data_persistence/mongostore');
+mongo_connect.connect( loadModels );
+console.log("right after connect");
+
+function loadModels(){
+  console.log("loadModels");
+  try{
+    loadRouters();
+    http_server.startServer(port, ip);
+  }catch(err){
+    console.log( "there was an error loading a configured router", err.stack );
+  }
+}
+
+//initialize services, injecting data as needed
+
+
+//load routers - could pull out into router config file
 var routers_to_load = [ {name:"registration_router", path:"../routers/" },
                         {name:"statics_router", path:"../routers/" },
                         {name:"production_router", path:"../routers/" },
-                        {name:"scrum_router", path:"../routers/"},
-                        {name:"lot_router", path:"../routers/"},
+                        {name:"production_runs_router", path:"../routers/"},
                         {name:"inventory_router", path:"../routers/"}
                       ];
 //
@@ -27,14 +45,6 @@ function loadRouters(){
   }
   http_server.setDefaultRouter( "static" );
 }
-
-try{
-  loadRouters();
-  http_server.startServer(port, ip);
-}catch(err){
-  console.log( "there was an error loading a configured router", err.stack );
-}
-
 
 /*mysql database
 var db = require('./database/mysql2_db.js');

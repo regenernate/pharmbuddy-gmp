@@ -1,8 +1,7 @@
 
 {
   "ingredient_list":[
-    { "item_id":"1",
-      "item_key":"olive_oil",
+    { "item_key":"olive_oil",
       "item_name":"Olive Oil",
       "lots":[
         {
@@ -16,7 +15,6 @@
       ]
     },
     {
-      "item_id":"2",
       "item_key":"hempseed_oil",
       "item_name":"Hempseed Oil",
             "lots":[
@@ -39,7 +37,6 @@
       ]
     },
     {
-      "item_id":"3",
       "item_key":"peppermint_flavoring",
       "item_name":"Peppermint Flavoring",
             "lots":[
@@ -54,7 +51,6 @@
       ]
     },
     {
-      "item_id":"4",
       "item_key":"licorice_flavoring",
       "item_name":"Licorice Flavoring",
       "lots":[
@@ -69,7 +65,6 @@
       ]
     },
     {
-      "item_id":"5",
       "item_key":"orange_cream_flavoring",
       "item_name":"Orange Cream Flavoring",
       "lots":[
@@ -84,7 +79,6 @@
       ]
     },
     {
-      "item_id":"6",
       "item_key":"sunflower_seed_oil",
       "item_name":"Sunflower Seed Oil",
       "lots":[
@@ -99,7 +93,6 @@
       ]
     },
     {
-      "item_id":"7",
       "item_key":"lemon_eo",
       "item_name":"Lemon Essential Oil",
       "lots":[
@@ -114,7 +107,6 @@
       ]
     },
     {
-      "item_id":"8",
       "item_key":"peppermint_eo",
       "item_name":"Peppermint Essential Oil",
       "lots":[
@@ -129,7 +121,6 @@
       ]
     },
     {
-      "item_id":"9",
       "item_key":"orange_eo",
       "item_name":"Orange Essential Oil",
       "lots":[
@@ -144,7 +135,6 @@
       ]
     },
     {
-      "item_id":"10",
       "item_key":"argan_oil",
       "item_name":"Argan Oil",
       "lots":[
@@ -159,7 +149,6 @@
       ]
     },
     {
-      "item_id":"11",
       "item_key":"beeswax",
       "item_name":"Beeswax",
       "lots":[

@@ -1,7 +1,6 @@
 
 <script language='javascript'>
 function printRunLabel() {
-    console.log("printRunLabel");
     var prtContent = document.getElementById('run_label');
     var WinPrint = window.open('', '', 'letf=0,top=0,width=800,height=600,toolbar=0,scrollbars=0,status=0');
     WinPrint.document.write("<html><head><style>@import url('/printcss_uglified.css');</style></head><body>" + prtContent.innerHTML + "</body></html>");
@@ -17,15 +16,14 @@ function printRunLabel() {
 
 <h1>This run has been created!</h1>
 
-<p>Run {{product.run_id}} of lot {{product.lot_id}} is ready to make.<br>The inventory lots and quantities to use are visible below.</p>
+<p>Run {{run_id}} is ready to make.<br>The inventory lots and quantities to use are visible below.</p>
 
-<input type="button" onclick="printRunLabel();" value="Print a Label for this Run" />, then visit <a href="/lots/run/{{product.run_id}}">the run view</a> to add notes or mark it complete.
+<input type="button" onclick="printRunLabel();" value="Print a Label for this Run" />, then visit <a href="/runs/{{run_id}}">the run view</a> to add notes or mark it complete.
 
 
 <section id="run_label">
-  <div class='important'>Lot <strong>{{product.lot_id}}</strong></div>
-  <div class='important'>Run <strong>{{product.run_id}}</strong></div>
-  <div class='important'>Batch <strong>{{product.batch_id}}</strong></div>
+  <div class='important'>Run <strong>{{run_id}}</strong></div>
+  <div class='important'>Batch <strong>{{batch_id}}</strong></div>
   <hr />
   <p>This run makes {{units_made}} {{strength}}mg strength {{product_type}}.</p>
   <table>
@@ -37,7 +35,7 @@ function printRunLabel() {
   </table>
   <hr />
   Handwrite notes below and enter them online by visiting:
-  https://cgmp.ravenridgefamilyfarm.com/lots/run/{{product.run_id}}
+  https://cgmp.ravenridgefamilyfarm.com/runs/{{run_id}}
   <hr />
 </section>
 
@@ -45,6 +43,6 @@ function printRunLabel() {
 <ol>
   <li>Print the label for this run ( see obvious button above ).</li>
   <li>Make the run using the lot numbers provided and amounts as indicated.</li>
-  <li>Notes any deviations from the SOP on the label and online by visiting <a href="/lots/run/{{product.run_id}}">this runs view</a>.</li>
-  <li>The <a href="/lots/run/{{product.run_id}}">run's view page</a> is also where you mark the run as complete<br>which puts the products into inventory.</li>
+  <li>Notes any deviations from the SOP on the label and online by visiting <a href="/runs/{{run_id}}">this runs view</a>.</li>
+  <li>The <a href="/runs/{{run_id}}">run's view page</a> is also where you mark the run as complete<br>which puts the products into inventory.</li>
 </ol>
