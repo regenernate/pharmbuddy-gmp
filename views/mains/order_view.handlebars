@@ -1,0 +1,47 @@
+<script language='javascript'>
+
+var customer = "&name=" + encodeURIComponent('{{order.customer_name}}') + "&email=" + encodeURIComponent('{{order.customer_email}}');
+
+function saveCorrelation( sku, position ){
+  let run_id = document.getElementById(sku + "_" + position).selectedOptions[0].value;
+  if( ( !run_id && confirm( "Do you mean to save this order item as uncorrelated?" ) ) || run_id ){
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/purchases/correlate/{{order.order_id}}');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+          let result = JSON.parse( xhr.responseText );
+          if( result.success ){
+            alert("It is recorded that {{order.customer_name}} has received product from run " + run_id + ".");
+          }
+      }
+      else if (xhr.status !== 200) {
+          alert('Request failed.  Returned status of ' + xhr.status);
+      }
+    };
+    let str = "run_id=" + run_id + "&product_sku=" + sku + "&position=" + position + customer;
+    xhr.send(str);
+  }
+}
+
+</script>
+
+
+<a href='/purchases/list'>Return to purchases list.</a>
+<h1>This is order #{{order.order_id}}.</h1>
+  <p>Order details are below.</p>
+  <a href='/purchases/customer/{{order.customer_id}}'>{{order.customer_name}}</a> - {{order.customer_email}}<br>
+  {{order.payment_status}} & {{order.fulfillment_status}} on {{order.order_date_vf}}.<br>
+  Items:<br>
+  <table><tr><th>Item</th><th>Options</th><th>Product Run Pulled</th></tr>
+  {{#each order.items}}
+  <tr>
+      <td>{{name}}</td>
+      <td>{{#each selected_options}}{{value}},{{/each}}</td>
+      <td>{{#for quantity}}<select id='{{../sku}}_{{this}}'><option value=''>Not yet correlated</option>{{{runOptions ../../runs ../run_ids this}}}</select>
+        <input type='button' value='Save' onclick="saveCorrelation('{{../sku}}', '{{this}}');" />{{/for}}
+      </td>
+    </tr>
+  {{/each}}
+  </table>

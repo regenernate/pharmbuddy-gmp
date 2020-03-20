@@ -34,6 +34,7 @@ var routers_to_load = [ {name:"registration_router", path:"../routers/" },
                         {name:"statics_router", path:"../routers/" },
                         {name:"production_router", path:"../routers/" },
                         {name:"production_runs_router", path:"../routers/"},
+                        {name:"purchases_router", path:"../routers/"},
                         {name:"inventory_router", path:"../routers/"}
                       ];
 //

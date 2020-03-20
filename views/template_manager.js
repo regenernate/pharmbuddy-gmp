@@ -20,6 +20,8 @@ handlebars.registerPartial('header', handlebars.compile( fs.readFileSync( "./vie
 handlebars.registerPartial('footer', handlebars.compile( fs.readFileSync( "./views/partials/footer.handlebars", 'utf-8' )));
 handlebars.registerPartial('add_ingredient_lot', handlebars.compile( fs.readFileSync( "./views/forms/add_ingredient_lot.handlebars", 'utf-8' )));
 
+//these helpers ultimately need to be pulled out of this file
+
 handlebars.registerHelper('asPercent', function( value ){
   let iv = parseFloat( value );
   if( !iv ) return value;
@@ -27,6 +29,26 @@ handlebars.registerHelper('asPercent', function( value ){
   if( iv < 1 ) iv *= 100;
   return Math.floor( iv * precision ) / precision;
 });
+
+handlebars.registerHelper('for', function(n, block) {
+    var accum = '';
+    for(var i = 0; i < n; ++i)
+        accum += block.fn(i);
+    return accum;
+});
+
+handlebars.registerHelper('runOptions', function( runs, used_ids, pos, block ){
+  if( !runs.length ) return "";
+  if(!used_ids) used_ids = [];
+  let uid = used_ids[pos];
+  let rtn = "";
+  for( let i=0; i<runs.length; i++ ){
+    rtn+="<option value='" + runs[i].run_id + "'";
+    if( uid != null && uid == runs[i].run_id ) rtn += " selected";
+    rtn += ">" + runs[i].run_id + " : " + runs[i].strength + "mg " + runs[i].product_type + " from " + runs[i].run_date_vf + "</option >";
+  }
+  return rtn;
+} );
 
 //load and compile layout templates
 const default_layout = "logged_out";
@@ -54,7 +76,6 @@ module.exports.executeTemplate = function( source, data, layout ){
   var template_value;
   try{
     cleanDatesForDisplay(data);
-//    console.log("executeTempate :: ", data.session );
     template_value = layouts[ layout ]( { body:source(data.main), meta:{title:data.title, description:data.description }, footer:data.session, header:data.session });
   }catch(err){
     console.log("template_manager.executeTemplate :: ", err.message);
