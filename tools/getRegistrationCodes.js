@@ -11,7 +11,8 @@ const valid_devices = [
   "your phone ( or tablet )",
   "Nate's iMac",
   "Nate's macbookPro",
-  "the iMac in Dad's office"
+  "the iMac in Dad's office",
+  "Any of Ben's computers"
 ];
 
 if( process.argv.length < 3 ){ console.log("You need to send a valid device number as the first parameter, or 'list' to see all device numbers."); process.exit(); }

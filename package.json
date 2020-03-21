@@ -25,6 +25,7 @@
     "moment": "^2.24.0",
     "mongodb": "^3.5.4",
     "query-string": "^6.10.1",
-    "uglifycss": "0.0.29"
+    "uglifycss": "0.0.29",
+    "xmlhttprequest": "^1.8.0"
   }
 }

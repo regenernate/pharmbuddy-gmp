@@ -10,7 +10,7 @@ const runs = require('./services/production_runs/runs.js');
 
 async function loadInjectors(){
   try{
-    /* insert ingredients
+    // insert ingredients
     console.log("INGREDIENTS");
     await clearOldData("ingredients");
     await ingredients.initialize();
@@ -20,7 +20,7 @@ async function loadInjectors(){
     console.log( await ingredients.getCurrentList() );
     /*  finished with ingredients */
 
-    /* insert wpe
+    // insert wpe
     console.log("WPE BATCHES");
     await clearOldData("wpe");
     await wpe.initialize();
@@ -30,7 +30,7 @@ async function loadInjectors(){
     console.log( await wpe.getBatchList() );
     /* finished with WPE */
 
-    /* insert runs
+    // insert runs
     console.log('PRODUCTION RUNS');
     await clearOldData('production_runs');
     await runs.initialize();
