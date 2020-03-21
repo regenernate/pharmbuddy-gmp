@@ -82,8 +82,10 @@ const valid_devices = [
   "your phone ( or tablet )",
   "Nate's iMac",
   "Nate's macbookPro",
-  "the iMac in Dad's office"
+  "the iMac in Dad's office",
+  "Any of Ben's computers"
 ];
+
 const default_device = valid_devices[1];
 
 /***** create a unique registration code  *****/

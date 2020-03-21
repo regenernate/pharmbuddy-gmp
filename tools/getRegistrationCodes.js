@@ -1,10 +1,12 @@
-
+require('dotenv').config({path:'../.env'});
 //make remote call posting required data ( device name ) to get back a registration code
 
 const prod_url = "cgmp.ravenridgefamilyfarm.com";
 const prod_port = 443;
-const dev_url = "localhost";
-const dev_port = 3200;
+const dev_url = process.env.BIND_IP;
+const dev_port = process.env.PORT;
+
+console.log(process.env);
 
 const valid_devices = [
   "the Basement 27\" iMac",

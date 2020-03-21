@@ -4,6 +4,8 @@ require('dotenv').config();
 const mongo_connect = require('./tools/data_persistence/mongostore');
 mongo_connect.connect( loadInjectors );
 
+console.log(process.env);
+
 const ingredients = require('./services/ingredients/ingredients.js');
 const wpe = require('./services/batches/wpe_batches.js');
 const runs = require('./services/production_runs/runs.js');
