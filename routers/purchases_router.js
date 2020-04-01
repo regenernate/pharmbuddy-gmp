@@ -11,7 +11,7 @@ module.exports.router = async function( req, res, path ) {
     //this if/then situation may not last if this router requires more routes
     if( !path || !path.length || path[0] == "" || path[0] == "list" ){
       let shipped_orders = await getOrders();
-      return bro.get( true, renderTemplate( req, pages.order_list, { orders:{shipped:shipped_orders}} ) );
+      return bro.get( true, renderTemplate( req, pages.order_list, { orders:shipped_orders } ) );
     }else if( path[0] == "customer" ){
       return bro.get( true, renderError(req, 'Viewing all orders by customer has not been implement yet.'));
     }else if( path[0] == "correlate" ){
@@ -114,12 +114,15 @@ async function getOrders(){
 //            console.log("getOrders :: readyStateChange to " + xhr.status);
             if (xhr.readyState == 4 && xhr.status == 200) {
               let orders = JSON.parse(xhr.responseText);
-              let data = {};
+              let data = [];
               for( let i in orders.items ){
                 let o = orders.items[i];
-                if( !data.hasOwnProperty( o.customerId ) ) data[ o.customerId ] = [];
-                data[ o.customerId ].push( cleanOrderObject( o ) );
+                data.push( cleanOrderObject( o ) );
               }
+              data.sort(function(a,b){
+                if( a.order_id < b.order_id ) return 1;
+                else return -1;
+              });
 //              console.log("getOrders :: orders loaded");
               resolve(data);
             }

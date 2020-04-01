@@ -1,24 +1,13 @@
-<h1>Oh we be sellin'!</h1>
-<p>Current and past orders show up below. Product run correlations can be set here, or in an order's detail view reached by clicking on a specific order below.</p>
-<h2>Pending orders</h2>
-{{#if orders.pending}}
-{{#each orders.pending}}
-{{/each}}
-{{else}}
-<p>There are no pending orders at this time. Now get out there and sell, sell, sell!</p>
-{{/if}}
-<h2>Shipped orders</h2>
-{{#if orders.shipped}}
+<h1>Sales, most recent order first.</h1>
+<p>Current and past orders show up below. Product run correlations can be set in an order's detail view reached by clicking on a specific order below.</p>
+{{#if orders}}
 <table><tr><th>Customer</th><th>Email</th><th>Order ID</th><th>Order Date</th><th>Items Purchased</th></tr>
-{{#each orders.shipped}}
-<tr><td colspan='5'><a href='/purchases/customer/{{this.[0].customer_id}}'>{{this.[0].customer_name}}</a> - <em>{{this.[0].customer_email}}</em></td></tr>
-{{#each this}}
-<tr><td colspan='2'></td><td><a href='/purchases/{{order_id}}'>Order #{{order_id}}</a></td><td>{{order_date_vf}}</td><td>
+{{#each orders}}
+  <tr><td>{{customer_name}}</td><td>{{customer_email}}</td><td><a href='/purchases/{{order_id}}'>Order #{{order_id}}</a></td><td>{{order_date_vf}}</td><td>
   {{#each items}}
   <p><strong>{{quantity}} @ </strong> {{name}}{{#each selected_options}}, {{value}}{{/each}}</p>
   {{/each}}
 </td></tr>
-{{/each}}
 {{/each}}
 </table>
 {{else}}
