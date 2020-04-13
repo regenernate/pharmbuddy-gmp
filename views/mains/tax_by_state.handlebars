@@ -1,0 +1,3 @@
+<h1>This report shows taxes for {{last_month}}</h1>
+
+{{#each taxes_by_state}}<p>{{@key}} :: {{num_orders}} orders collected ${{tax}}</p>{{/each}}

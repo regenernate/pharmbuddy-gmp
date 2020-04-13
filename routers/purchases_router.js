@@ -28,6 +28,9 @@ module.exports.router = async function( req, res, path ) {
         }
         return bro.get( true, renderData({success:true }) );
       }
+    }else if( path[0] == "taxes" ){
+      let d = await getLastMonthsTaxes();
+      return bro.get( true, renderTemplate(req, pages.tax_by_state, {last_month:moment().month(moment().month()-1).format('MMMM'), taxes_by_state:d}) );
     }else{
       let order_id = path[0];
       if( isNaN(order_id) ) return bro.get( true, renderError( req, "You didn't include an order id in this request...try finding one <a href='/purchases/list'>in this list</a>."));
@@ -65,7 +68,7 @@ const { getWPELabel, getIngredientLabel, getProductBatchId } = require("../servi
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");
-  pages = compileTemplates( fsu.generatePaths( { order_list:1, order_view:1 }, "./views/mains/", ".handlebars", true ), true );
+  pages = compileTemplates( fsu.generatePaths( { order_list:1, order_view:1, tax_by_state:1 }, "./views/mains/", ".handlebars", true ), true );
   fsu = null;
 }
 
@@ -101,6 +104,49 @@ async function getOrder( order_id ){
     };
     xhr.send();
 
+  });
+}
+
+async function getLastMonthsTaxes(){
+  return new Promise(function(resolve, reject) {
+    let method = "GET";
+    let last_month = moment().date(0).hour(0).minute(0).second(0);
+    let last_month_end = last_month.format('X');
+    last_month.month( last_month.month() - 1 );
+    let last_month_start = last_month.format('X');
+    let url = 'https://app.ecwid.com/api/v3/'+ecwid_store_id+'/orders?createdFrom=' + last_month_start + '&createdTo=' + last_month_end + '&paymentStatus=PAID&shippingStatus=SHIPPED&token='+ecwid_private_token;
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.onreadystatechange = function() {
+//            console.log("getLastMonthsTaxes :: readyStateChange to " + xhr.status);
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        let orders = JSON.parse(xhr.responseText);
+        let data = [];
+        let tbs = {};
+        let total_tax = 0;
+        for( let i in orders.items ){
+          let o = cleanOrderObject(orders.items[i]);
+          if( !tbs.hasOwnProperty( o.shipping_state )) tbs[ o.shipping_state ] = { num_orders:0, tax:0 };
+          tbs[ o.shipping_state ].num_orders++;
+          tbs[ o.shipping_state ].tax += o.tax;
+          data.push( o );
+        }
+
+        data.sort(function(a,b){
+          if( a.order_id < b.order_id ) return 1;
+          else return -1;
+        });
+//              console.log("getOrders :: orders loaded");
+        resolve(tbs);
+      }
+    };
+    xhr.onerror = function () {
+        reject({
+            status: this.status,
+            statusText: xhr.statusText
+        });
+    };
+    xhr.send();
   });
 }
 
@@ -143,6 +189,9 @@ function cleanOrderObject( o ){
   no.fulfillment_status = o.fulfillmentStatus;
   no.customer_name = o.shippingPerson.name;
   no.customer_email = o.email;
+  no.tax = o.tax;
+  no.shipping_state = o.shippingPerson.stateOrProvinceCode.toUpperCase();
+  no.city = o.shippingPerson.city;
   no.order_date = moment(o.createDate.split(" +")[0]).format('x');
   no.items = [];
   for( let j=0; j<o.items.length; j++ ){
