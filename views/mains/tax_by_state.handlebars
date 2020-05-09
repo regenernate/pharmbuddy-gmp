@@ -3,6 +3,9 @@
 <ul><li><a href='/purchases'>Recent Purchases</a></li></ul>
 {{#each taxes_by_state}}<p>{{@key}} :: {{num_orders}} orders collected ${{tax}}</p>
 {{#if counties}}
-{{#each counties}}<p>{{@key}} :: {{num_orders}} orders collected ${{tax}}</p>{{/each}}
+<table>
+  <tr><th>County</th><th>Order count</th><th>County Tax</th><th>State Tax</th></tr>
+{{#each counties}}<tr><td>{{@key}}</td><td>{{num_orders}}</td><td>${{county_tax}}</td><td>${{state_tax}}</td></tr>{{/each}}
+</table>
 {{/if}}
 {{/each}}

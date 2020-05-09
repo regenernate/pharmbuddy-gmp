@@ -109,6 +109,8 @@ async function getOrder( order_id ){
   });
 }
 
+const state_tax_rate = .0525;
+
 async function getLastMonthsTaxes(){
   return new Promise(function(resolve, reject) {
     let method = "GET";
@@ -128,15 +130,18 @@ async function getLastMonthsTaxes(){
         let total_tax = 0;
         for( let i in orders.items ){
           let o = cleanOrderObject(orders.items[i]);
+          if( !o.total ) continue;
           if( o.shipping_state == "NC" ) o.county = counties.getCountyByCity( o.city );
-          if( !tbs.hasOwnProperty( o.shipping_state )) tbs[ o.shipping_state ] = { num_orders:0, tax:0, counties:{} };
+          if( !tbs.hasOwnProperty( o.shipping_state )) tbs[ o.shipping_state ] = { num_orders:0, tax:0, counties:((o.shipping_state=="NC")?{}:null) };
           tbs[ o.shipping_state ].num_orders++;
           tbs[ o.shipping_state ].tax += o.tax;
           //if NC, also break down by county
           if( o.shipping_state == "NC" ){
+            let state_tax = (o.total) ? o.subtotal * state_tax_rate : 0;
             if( !tbs.NC.counties.hasOwnProperty( o.county ) ) tbs.NC.counties[ o.county ] = {num_orders:0, tax:0};
             tbs.NC.counties[ o.county ].num_orders++;
-            tbs.NC.counties[ o.county ].tax += o.tax;
+            tbs.NC.counties[ o.county ].county_tax = Math.round( (o.tax-state_tax)*100)/100;
+            tbs.NC.counties[ o.county ].state_tax = state_tax;
           }
           data.push( o );
         }
@@ -198,6 +203,8 @@ function cleanOrderObject( o ){
   no.fulfillment_status = o.fulfillmentStatus;
   no.customer_name = o.shippingPerson.name;
   no.customer_email = o.email;
+  no.subtotal = o.subtotal;
+  no.total = o.total;
   no.tax = o.tax;
   no.shipping_state = o.shippingPerson.stateOrProvinceCode.toUpperCase();
   no.city = o.shippingPerson.city;
