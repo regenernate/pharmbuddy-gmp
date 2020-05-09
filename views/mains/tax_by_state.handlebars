@@ -1,4 +1,8 @@
 <h1>This report shows taxes for {{last_month}}</h1>
 
 <ul><li><a href='/purchases'>Recent Purchases</a></li></ul>
-{{#each taxes_by_state}}<p>{{@key}} :: {{num_orders}} orders collected ${{tax}}</p>{{/each}}
+{{#each taxes_by_state}}<p>{{@key}} :: {{num_orders}} orders collected ${{tax}}</p>
+{{#if counties}}
+{{#each counties}}<p>{{@key}} :: {{num_orders}} orders collected ${{tax}}</p>{{/each}}
+{{/if}}
+{{/each}}

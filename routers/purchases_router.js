@@ -65,11 +65,13 @@ const { renderData, renderError, renderTemplate } = require("../tools/rendering/
 const { compileTemplates } = require('../views/template_manager');
 const { getRun, getAllRuns, saveCorrelation, getCorrelation } = require('../services/production_runs/runs');
 const { getWPELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
+const counties = require("../tools/county_lookup/county_lookup.js");
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");
   pages = compileTemplates( fsu.generatePaths( { order_list:1, order_view:1, tax_by_state:1 }, "./views/mains/", ".handlebars", true ), true );
   fsu = null;
+
 }
 
 var pages;
@@ -126,9 +128,16 @@ async function getLastMonthsTaxes(){
         let total_tax = 0;
         for( let i in orders.items ){
           let o = cleanOrderObject(orders.items[i]);
-          if( !tbs.hasOwnProperty( o.shipping_state )) tbs[ o.shipping_state ] = { num_orders:0, tax:0 };
+          if( o.shipping_state == "NC" ) o.county = counties.getCountyByCity( o.city );
+          if( !tbs.hasOwnProperty( o.shipping_state )) tbs[ o.shipping_state ] = { num_orders:0, tax:0, counties:{} };
           tbs[ o.shipping_state ].num_orders++;
           tbs[ o.shipping_state ].tax += o.tax;
+          //if NC, also break down by county
+          if( o.shipping_state == "NC" ){
+            if( !tbs.NC.counties.hasOwnProperty( o.county ) ) tbs.NC.counties[ o.county ] = {num_orders:0, tax:0};
+            tbs.NC.counties[ o.county ].num_orders++;
+            tbs.NC.counties[ o.county ].tax += o.tax;
+          }
           data.push( o );
         }
 
