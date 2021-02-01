@@ -33,7 +33,7 @@ function initDb(){
     current_count: 40
   },
 
-  console.log(product_batches);
+  console.log("pd2...", product_batches);
 /*  for( let i in product_batches ){
     let r = pbatches.upsert( {key:product_batches[i].id}, product_batches[i] );
   }

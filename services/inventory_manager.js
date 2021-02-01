@@ -22,8 +22,8 @@ module.exports.getAllInventoryFor = async function( item_key ){
   return await ingredients.getAllInventoryFor( item_key );
 }
 
-module.exports.getWPELot = async function( batch_id ){
-  if( batch_id ) return await wpe_batches.getLotByBatchId( batch_id );
+module.exports.getFSELot = async function( batch_id ){
+  if( batch_id ) return await fse_batches.getLotByBatchId( batch_id );
   else return false;
 }
 
@@ -55,8 +55,8 @@ module.exports.calculateMaxUnitsByVolume = async function( item_key, lot_number,
   return r;
 }
 
-module.exports.calculateWPEMaxUnits = async function( batch_id, mass_per_unit ){
-  let batch = await wpe_batches.getAvailableMass( batch_id );
+module.exports.calculateFSEMaxUnits = async function( batch_id, mass_per_unit ){
+  let batch = await fse_batches.getAvailableMass( batch_id );
   batch.max_units = Math.floor( batch.mass / mass_per_unit );
   return batch;
 }
@@ -65,8 +65,8 @@ module.exports.getIngredientLabel = async function( item_key ){
   return await ingredients.getIngredientLabel( item_key );
 }
 
-module.exports.getWPELabel = async function( batch_id ){
-  return await wpe_batches.getBatchName( batch_id );
+module.exports.getFSELabel = async function( batch_id ){
+  return await fse_batches.getBatchName( batch_id );
 }
 
 module.exports.getProductTypes = function(){
@@ -85,32 +85,32 @@ module.exports.getProduct = function( product_type ){
 }
 
 module.exports.getBatchForProduct = async function( product_type ){
-  return await wpe_batches.getBatchForProduct( product_type );
+  return await fse_batches.getBatchForProduct( product_type );
 }
 
-module.exports.getProductBatchId = function( product_type, wpe_lot, strength ){
-  return products.getProductBatchId( product_type, wpe_lot, strength );
+module.exports.getProductBatchId = function( product_type, fse_lot, strength ){
+  return products.getProductBatchId( product_type, fse_lot, strength );
 }
 
-module.exports.retireWPEBatch = async function( batch_id ){
-  return await wpe_batches.retireBatch( batch_id );
+module.exports.retireFSEBatch = async function( batch_id ){
+  return await fse_batches.retireBatch( batch_id );
 }
 
-module.exports.unretireWPEBatch = async function( batch_id ){
-  return await wpe_batches.unretireBatch( batch_id );
+module.exports.unretireFSEBatch = async function( batch_id ){
+  return await fse_batches.unretireBatch( batch_id );
 }
 
-module.exports.updateWPEMass = async function( batch_id, new_mass ){
+module.exports.updateFSEMass = async function( batch_id, new_mass ){
   if( !new_mass || isNaN(parseInt(new_mass)) ) return false;
   if( new_mass < 0 ) new_mass = 0;
-  return await wpe_batches.updateAvailableMass( batch_id, new_mass );
+  return await fse_batches.updateAvailableMass( batch_id, new_mass );
 }
 
-module.exports.advanceWPELot = async function( wpe, product_type ){
-  if( await wpe_batches.retireBatch( wpe.batch_id ) ){
-    let l = await wpe_batches.getBatchForProduct( product_type );
+module.exports.advanceFSELot = async function( fse, product_type ){
+  if( await fse_batches.retireBatch( fse.batch_id ) ){
+    let l = await fse_batches.getBatchForProduct( product_type );
     if( l ) return l;
-    else return {lot_number:false, label:"Whole Plant Extract"};
+    else return {lot_number:false, label:"Full Spectrum Extract"};
   }else{
     return false;
   }
@@ -154,12 +154,12 @@ module.exports.getIngredientList = async function( active_only ){
 }
 
 module.exports.getBatchList = async function(){
-  return await wpe_batches.getBatchList();
+  return await fse_batches.getBatchList();
 }
 
-module.exports.pullIngredientsForRun = async function( ing, wpe ){
+module.exports.pullIngredientsForRun = async function( ing, fse ){
   //ultimately need to implement rollback here if any pull fails
-  if(!await wpe_batches.pullFromBatch( wpe.batch_id, wpe.total_amount )) throw new Error("inventory_manager.pullIngredientsForRun :: couldn't pull wpe for run", wpe);
+  if(!await fse_batches.pullFromBatch( fse.batch_id, fse.total_amount )) throw new Error("inventory_manager.pullIngredientsForRun :: couldn't pull fse for run", fse);
   for( let i in ing ){
     if( ing[i].units == GRAMS ){
       await ingredients.pullMassFromLot( ing[i].key, ing[i].lot_number, ing[i].total_amount );
@@ -186,7 +186,7 @@ module.exports.updateVolumeById = async function( _id, new_volume ){
 
 async function initialize(){
   await ingredients.initialize();
-  await wpe_batches.initialize();
+  await fse_batches.initialize();
   ( { product_key } = loadData("./services/product_key.json") );
   loadData = null;
   //create index by id for quick reference
@@ -206,7 +206,7 @@ async function initialize(){
 }
 
 let {loadData} = require( "../tools/filesys/filesys_util");
-const wpe_batches = require('./batches/wpe_batches');
+const fse_batches = require('./batches/fse_batches');
 const products = require('./batches/product_batches');
 const {GRAMS, OUNCES, MILS, ozToMils, milsToGrams } = require('../tools/unit_converter');
 var product_key;

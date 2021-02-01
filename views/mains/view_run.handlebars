@@ -2,6 +2,7 @@
 
 Run {{run_id}} made {{units_made}} units of {{product_type}} at {{strength}}mg strength on {{run_date_vf}}.
 <hr />
+<div class='lot_number'>Lot ID: <em>{{product_type}}_{{strength}}_{{batch_id}}</em></div>
 <div class='important'>Run <strong>{{run_id}}</strong></div>
 <div class='important'>Batch <strong>{{batch_id}}</strong></div>
 <hr />
@@ -11,7 +12,23 @@ Run {{run_id}} made {{units_made}} units of {{product_type}} at {{strength}}mg s
   {{#each ingredients}}
   <tr><td>{{label}}</td><td>{{lot_number}}</td><td>{{total_amount}} {{units}}</td></tr>
   {{/each}}
-  <tr><td>{{wpe.label}}</td><td>{{wpe.lot_number}}</td><td>{{wpe.total_amount}} {{wpe.units}}</td></tr>
+  <tr><td>{{fse.label}}</td><td>{{fse.lot_number}}</td><td>{{fse.total_amount}} {{fse.units}}</td></tr>
 </table>
 
-<p>Here we need to manage workflow including add notes and mark as completed.</p>
+<section>
+  <h2>Pull Dates</h2>
+  <form id='fdp' action='/runs/pull_dates' method='post'>
+    <label for='first_pull_date'>Date of First Pull</label>
+    <input type='date' name='first_pull_date' id='first_pull_date' {{#if first_pull_date}}value='{{first_pull_date_dpf}}'{{/if}}/>
+    <input type='hidden' name='run_id' value='{{run_id}}' />
+    <input type='hidden' name='pull_prop' value='first_pull_date' />
+    <input type='submit' value='Save Date' />
+  </form>
+  <form id='ldp' action='/runs/pull_dates' method='post'>
+    <label for='last_pull_date'>Date of Last Pull</label>
+    <input type='date' name='last_pull_date' id='last_pull_date' {{#if last_pull_date}}value='{{last_pull_date_dpf}}'{{/if}} />
+    <input type='hidden' name='run_id' value='{{run_id}}' />
+    <input type='hidden' name='pull_prop' value='last_pull_date' />
+    <input type='submit' value='Save Date' />
+  </form>
+</section>

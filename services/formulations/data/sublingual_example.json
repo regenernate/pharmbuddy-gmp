@@ -4,5 +4,5 @@
     { "key": "hempseed_oil", "amount": 25.486658817373105 },
     { "key": "peppermint_flavoring", "amount": 0.895 }
   ],
-  "wpe": { "key": "11282019_rosin_press", "amount": 0.47095761381475665 }
+  "fse": { "key": "11282019_rosin_press", "amount": 0.47095761381475665 }
 }

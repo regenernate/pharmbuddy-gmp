@@ -7,7 +7,7 @@ mongo_connect.connect( loadInjectors );
 console.log(process.env);
 
 const ingredients = require('./services/ingredients/ingredients.js');
-const wpe = require('./services/batches/wpe_batches.js');
+const fse = require('./services/batches/fse_batches.js');
 const runs = require('./services/production_runs/runs.js');
 
 async function loadInjectors(){
@@ -22,15 +22,15 @@ async function loadInjectors(){
     console.log( await ingredients.getCurrentList() );
     /*  finished with ingredients */
 
-    // insert wpe
-    console.log("WPE BATCHES");
-    await clearOldData("wpe");
-    await wpe.initialize();
+    // insert fse
+    console.log("FSE BATCHES");
+    await clearOldData("fse");
+    await fse.initialize();
     for( let i=0; i<extracts.length; i++ ){
-      console.log( await wpe.addBatch(extracts[i]) );
+      console.log( await fse.addBatch(extracts[i]) );
     }
-    console.log( await wpe.getBatchList() );
-    /* finished with WPE */
+    console.log( await fse.getBatchList() );
+    /* finished with FSE */
 
     // insert runs
     console.log('PRODUCTION RUNS');
@@ -253,13 +253,13 @@ const production_runs = [
       label: 'Peppermint Essential Oil'
     }
   ],
-  wpe: {
+  fse: {
     batch_id: 2,
     amount: 13.099,
     units: 'g',
     total_amount: 26.198,
     lot_number: 2,
-    label: 'WPE batch# 2'
+    label: 'FSE batch# 2'
   },
   units_made: '2',
   strength: '300',
@@ -309,13 +309,13 @@ const production_runs = [
       label: 'Peppermint Essential Oil'
     }
   ],
-  wpe: {
+  fse: {
     batch_id: 2,
     amount: 6.549,
     units: 'g',
     total_amount: 13.098,
     lot_number: 2,
-    label: 'WPE batch# 2'
+    label: 'FSE batch# 2'
   },
   units_made: '2',
   strength: '150',

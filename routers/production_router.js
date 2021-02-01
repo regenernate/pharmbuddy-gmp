@@ -30,8 +30,8 @@ module.exports.router = async function( req, res, path ) {
       if( path[0] == 'advance_lot' ){
         if( !req.body.limiting_type ) throw new Error( "You can't recalculate unless you advance")
         let advanced_lot;
-        if( req.body.limiting_type == WPE ){
-          advanced_lot = await inventory.advanceWPELot( {batch_id:req.body.limiting_batch_id, responsible_party:sessions.getResponsibleParty(req), registered_device:sessions.getRegisteredDevice(req) }, req.body.product_type );
+        if( req.body.limiting_type == FSE ){
+          advanced_lot = await inventory.advanceFSELot( {batch_id:req.body.limiting_batch_id, responsible_party:sessions.getResponsibleParty(req), registered_device:sessions.getRegisteredDevice(req) }, req.body.product_type );
         }else{
           advanced_lot = await inventory.advanceIngredientLot( {key:req.body.limiting_key, lot_number:req.body.limiting_lot, responsible_party:sessions.getResponsibleParty(req), registered_device:sessions.getRegisteredDevice(req) }, req.body.product_type );
         }
@@ -39,24 +39,24 @@ module.exports.router = async function( req, res, path ) {
 //        if( !advanced_lot.lot_number ) throw new Error("Unfortunately there are no more lots of " + advanced_lot.label + "." );
       }
 
-      //get which whole plant extract batch to use
-      let wpe_batch;
-      if( req.body.wpe_batch_id ) wpe_batch = await inventory.getWPELot( req.body.wpe_batch_id );
-      else wpe_batch = await inventory.getBatchForProduct( req.body.product_type ); //get correct wpe batch object { key: , label: , percent_cbd: }
+      //get which full spectrum extract batch to use
+      let fse_batch;
+      if( req.body.fse_batch_id ) fse_batch = await inventory.getFSELot( req.body.fse_batch_id );
+      else fse_batch = await inventory.getBatchForProduct( req.body.product_type ); //get correct fse batch object { key: , label: , percent_cbd: }
       //get formulator to use based on product type being made
       let formulator = formulators[ req.body.product_type ];
       if(!formulator) throw new Error( "No formulator exists for " + req.body.product_type );
-      formula = await formulator.createFormula( req.body, wpe_batch );
+      formula = await formulator.createFormula( req.body, fse_batch );
 
       let ingredient_lot, max_units, amount_needed;
-      max_units = await inventory.calculateWPEMaxUnits( formula.wpe.batch_id, formula.wpe.amount );
-      formula.wpe.lot_number = wpe_batch.lot_number;
-      formula.wpe.max_units = max_units.max_units;
-      formula.wpe.warning_level = max_units.warning_level;
-      formula.wpe.label = wpe_batch.label;
-      let limiting_ingredient = formula.wpe;
-      let limiting_type = "wpe";
-      let warning_level = formula.wpe.warning_level;
+      max_units = await inventory.calculateFSEMaxUnits( formula.fse.batch_id, formula.fse.amount );
+      formula.fse.lot_number = fse_batch.lot_number;
+      formula.fse.max_units = max_units.max_units;
+      formula.fse.warning_level = max_units.warning_level;
+      formula.fse.label = fse_batch.label;
+      let limiting_ingredient = formula.fse;
+      let limiting_type = "fse";
+      let warning_level = formula.fse.warning_level;
       for( let i in formula.ingredients ){
         let iln = await inventory.getIngredientLot( formula.ingredients[i].key, req.body.product_type );
         if(!iln){
@@ -101,18 +101,18 @@ module.exports.router = async function( req, res, path ) {
 //    console.log("******* END FORMULA REQUESTED ********")
     return bro.get( true, renderTemplate( req, pages.calculate_ingredients, formula ) );
   }else if( path[0] == "create_run" ){
-    let wpe_batch;
+    let fse_batch;
     try{
-      if( req.body.wpe_key ) wpe_batch = await inventory.getWPELot( req.body.wpe_batch_id );
-      else wpe_batch = await inventory.getBatchForProduct( req.body.product_type ); //get correct wpe batch object { key: , label: , percent_cbd: }
+      if( req.body.fse_key ) fse_batch = await inventory.getFSELot( req.body.fse_batch_id );
+      else fse_batch = await inventory.getBatchForProduct( req.body.product_type ); //get correct fse batch object { key: , label: , percent_cbd: }
       //get formulator to use based on product type being made
       let formulator = formulators[ req.body.product_type ];
       if(!formulator) throw new Error( "No formulator exists for " + req.body.product_type );
-      formula = await formulator.createFormula( req.body, wpe_batch );
+      formula = await formulator.createFormula( req.body, fse_batch );
       let units_to_make = req.body.units_requested;
-      formula.wpe.total_amount = precisify(units_to_make * formula.wpe.amount);
-      formula.wpe.lot_number = wpe_batch.lot_number;
-      formula.wpe.label = wpe_batch.label;
+      formula.fse.total_amount = precisify(units_to_make * formula.fse.amount);
+      formula.fse.lot_number = fse_batch.lot_number;
+      formula.fse.label = fse_batch.label;
       let limiting_ingredient = false;
       for( let i in formula.ingredients ){
         let iln = await inventory.getIngredientLot( formula.ingredients[i].key );
@@ -125,19 +125,19 @@ module.exports.router = async function( req, res, path ) {
         formula.ingredients[i].total_amount = precisify( units_to_make * formula.ingredients[i].amount );
         formula.ingredients[i].label = iln.label;
       }
-      if( limiting_ingredient ) return bro.get( true, renderError( req, "<p>It turns out the " + limiting_ingredient.label + " used in this formulation is no longer available. You'll have to <a href='/production'>create a new run</a>.</p><p>Or you can <a href='/inventory/" + ((limiting_type == 'wpe') ? "wpe/" + limiting_ingredient.batch_id : limiting_ingredient.key ) + "'>update inventory here</a>.</p><p>And maybe don't use the browser back button so much :).</p>"));
+      if( limiting_ingredient ) return bro.get( true, renderError( req, "<p>It turns out the " + limiting_ingredient.label + " used in this formulation is no longer available. You'll have to <a href='/production'>create a new run</a>.</p><p>Or you can <a href='/inventory/" + ((limiting_type == 'fse') ? "fse/" + limiting_ingredient.batch_id : limiting_ingredient.key ) + "'>update inventory here</a>.</p><p>And maybe don't use the browser back button so much :).</p>"));
       formula.units_made = units_to_make;
       formula.strength = req.body.strength;
       formula.product_type = req.body.product_type;
       //get product batch id here ...
-      formula.batch_id = inventory.getProductBatchId( req.body.product_type, formula[ WPE ].lot_number, req.body.strength );
+      formula.batch_id = inventory.getProductBatchId( req.body.product_type, formula[ FSE ].lot_number, req.body.strength );
 
       let run_id = await runs.createRun( formula );
       if( !run_id ) return bro.get( true, renderError( req, "The run you requested could not be created." ) );
 
       //formula.run_id = run_id; - because we send the formula object, createRun has already added the run_id
       //pullInventory for this run
-      if( !await inventory.pullIngredientsForRun( formula.ingredients, formula.wpe ) ){
+      if( !await inventory.pullIngredientsForRun( formula.ingredients, formula.fse ) ){
         //maybe delete run??
         return bro.get( true, renderError( req, "The inventory could not be pulled based on the formulation requested.") );
       }
@@ -153,8 +153,8 @@ module.exports.router = async function( req, res, path ) {
   }
 }
 
-const WPE = "wpe";
-const WPE_TYPE = "whole plant extract";
+const FSE = "fse";
+const FSE_TYPE = "full spectrum extract";
 const SUBLINGUAL = "sublingual";
 const SALVE = "salve";
 
@@ -163,7 +163,7 @@ const bro = require('../server/bro');
 const sessions = require('../tools/sessions/session_util');
 const { compileTemplates } = require('../views/template_manager');
 const {renderError, renderTemplate} = require('../tools/rendering/render_util');
-//const wpe_batches = require('../services/batches/batches');
+//const fse_batches = require('../services/batches/batches');
 const inventory = require('../services/inventory_manager');
 const runs = require('../services/production_runs/runs');
 runs.initialize();

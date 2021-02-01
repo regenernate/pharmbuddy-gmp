@@ -10,7 +10,7 @@ const volume_per_item = 30; //ml
 
 //this is an index of specific gravities for the carrier oils
 const valid_carriers = {"olive_oil":.915, "hempseed_oil":.895};
-const valid_strengths = { 300:1, 600:1, 900:1 };
+const valid_strengths = { 300:1, 600:1, 900:1, 1200:1 };
 //this is an index of the specific gravities of these flavorings
 const valid_flavorings = {"orange_cream_flavoring":.89, "licorice_flavoring":.94, "peppermint_flavoring":.895, "natural":0 }
 const flavoring_amount = 1; // in ml
@@ -18,11 +18,11 @@ const flavoring_amount = 1; // in ml
 const extract_specific_gravity = .9;
 
 const default_carrier = "olive_oil";
-const default_strength = 600;
+const default_strength = 900;
 const default_flavoring = "natural";
 
 const carrier_error = "Carrier must be one of the following: olive, hempseed.";
-const strength_error = "Strength must be one of the following: 300, 600, 900.";
+const strength_error = "Strength must be one of the following: 300, 600, 900, 1200.";
 const flavoring_error = "Flavoring must be one of the following: orange_cream, licorice, peppermint, natural.";
 const extract_error = "Extract must have batch_id.";
 
@@ -56,7 +56,7 @@ module.exports.createFormula = async function( request, extract ){
   let frm = {};
   frm.ingredients = [{ key:carrier, amount:(carr_per_unit * valid_carriers[ carrier ]), units:'g' }];
   if( flav_per_unit > 0 ) frm.ingredients.push({ key:flavoring, amount:(flav_per_unit * valid_flavorings[ flavoring ]), units:'g' });
-  frm.wpe = { batch_id:extract.batch_id, amount:(cbd_per_unit * extract_specific_gravity), units:'g'};
+  frm.fse = { batch_id:extract.batch_id, amount:(cbd_per_unit * extract_specific_gravity), units:'g'};
   return frm;
 }
 

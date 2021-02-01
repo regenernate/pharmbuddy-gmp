@@ -25,7 +25,7 @@ module.exports.createFormula = async function( request, extract ){
   frm.ingredients.push( {key:eos, amount:mls_eo, units:'ml'} ); //add e.o. in mls
   total_mls += mls_eo;
   let cbd_per_unit = ( strength/cbd_extract_percent/MILS_PER_OZ );
-  frm.wpe = { batch_id:extract.batch_id, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add wpe in g
+  frm.fse = { batch_id:extract.batch_id, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add fse in g
   return frm;
 }
 
@@ -54,7 +54,7 @@ function validateEssentialOils( eos, errors ){
 }
 
 function validateStrength( strength, errors ){
-  if( strength == 300 || strength == 150 ) return strength;
+  if( strength == 300 || strength == 600 ) return strength;
   errors.push( "Strength " + strength + " is not valid." );
   return false;
 }

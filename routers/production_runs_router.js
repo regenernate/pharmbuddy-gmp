@@ -16,8 +16,12 @@ module.exports.router = async function( req, res, path ) {
         if( !rtn.hasOwnProperty( runs[l].product_type ) ) rtn[ runs[l].product_type ] = [];
         rtn[ runs[l].product_type ].push( runs[l] );
       }
-      console.log(rtn);
       return bro.get( true, renderTemplate( req, pages.run_list, {run_count:runs.length, runs:rtn} ) );
+    }else if( path == "pull_dates" ){
+      if(!req.body ) throw new Error('There was no date sent for this pull date record.');
+      let pds = await savePullDate( req.body.run_id, req.body.pull_prop, req.body[req.body.pull_prop] );
+      if(!pds) throw new Error('Could not save pull date.');
+      return bro.redirect("/runs/" + req.body.run_id );
     }else{
       let run_id = path[0];
       if(!run_id || run_id.length <= 0) return bro.get( true, renderError( req, "You didn't include a run id in this request...try finding one <a href='/runs/list'>in this list</a>."));
@@ -35,8 +39,8 @@ const bro = require("../server/bro");
 const sessions = require("../tools/sessions/session_util");
 const { renderError, renderTemplate } = require("../tools/rendering/render_util");
 const { compileTemplates } = require('../views/template_manager');
-const { getRun, getAllRuns } = require('../services/production_runs/runs');
-const { getWPELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
+const { getRun, getAllRuns, savePullDate } = require('../services/production_runs/runs');
+const { getFSELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");

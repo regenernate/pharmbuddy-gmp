@@ -39,7 +39,7 @@ function saveCorrelation( sku, position ){
   <tr>
       <td>{{name}}</td>
       <td>{{#each selected_options}}{{value}},{{/each}}</td>
-      <td>{{#for quantity}}<select id='{{../sku}}_{{this}}'><option value=''>Not yet correlated</option>{{{runOptions ../../runs ../run_ids this}}}</select>
+      <td>{{#for quantity}}<select id='{{../sku}}_{{this}}'><option value=''>Not yet correlated</option>{{{runOptions ../runs ../run_ids this}}}</select>
         <input type='button' value='Save' onclick="saveCorrelation('{{../sku}}', '{{this}}');" />{{/for}}
       </td>
     </tr>

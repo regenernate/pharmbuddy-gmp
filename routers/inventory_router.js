@@ -25,9 +25,9 @@ module.exports.router = async function( req, res, path ) {
   }else if( path[0] == "update" ){
     if( req.body ){
       let r;
-      if( req.body.type == 'wpe' ){
+      if( req.body.type == 'fse' ){
         console.log("inventory_router.update :: ", req.body);
-        r = await inventory.updateWPEMass( req.body.batch_id, req.body.new_mass );
+        r = await inventory.updateFSEMass( req.body.batch_id, req.body.new_mass );
         r = { success:r, new_mass:req.body.new_mass };
       }else if( req.body._id ){
         r = await inventory.updateVolumeById( req.body._id, req.body.new_volume );
@@ -40,8 +40,8 @@ module.exports.router = async function( req, res, path ) {
   }else if( path[0] == "retire" ){
     let s = false;
     if( req.body ){
-      if( req.body.type == 'wpe' ){
-        s = await inventory.retireWPEBatch( req.body.batch_id );
+      if( req.body.type == 'fse' ){
+        s = await inventory.retireFSEBatch( req.body.batch_id );
       }else{
         s = await inventory.retireIngredient( req.body._id, (req.body.product_type) ? req.body.product_type : null );
       }
@@ -50,21 +50,21 @@ module.exports.router = async function( req, res, path ) {
   }else if( path[0] == "unretire" ){
     let s = false;
     if( req.body ){
-      if( req.body.type == 'wpe' ){
-        s = await inventory.unretireWPEBatch( req.body.batch_id );
+      if( req.body.type == 'fse' ){
+        s = await inventory.unretireFSEBatch( req.body.batch_id );
       }else{
         s = await inventory.unretireIngredient( req.body._id, (req.body.product_type) ? req.body.product_type : null )
       }
     }
     return bro.get( true, renderData( {success:s} ) );
-  }else if( path[0] == "wpe" ){
+  }else if( path[0] == "fse" ){
     if( req.body ){
-      //add wpe lot here
+      //add fse lot here
     }
     let batch_id = path[1]; //get batch_id which should be after second /
-    let fnd = await inventory.getWPELot(batch_id);
-    if( fnd ) return bro.get( true, renderTemplate( req, pages.wpe_item, {item:fnd}));
-    else return bro.get( true, renderError(req, 'Unrecognized Whole Plant Extract id. Try selecting a batch from the <a href="/inventory">inventory list</a>.'));
+    let fnd = await inventory.getFSELot(batch_id);
+    if( fnd ) return bro.get( true, renderTemplate( req, pages.fse_item, {item:fnd}));
+    else return bro.get( true, renderError(req, 'Unrecognized Full Spectrum Extract id. Try selecting a batch from the <a href="/inventory">inventory list</a>.'));
   }else{  //assume this is an attempt to see a specific inventory item by key
     if( req.body ){
       let ai = await inventory.addIngredientLot( req.body.key, req.body );
@@ -93,7 +93,7 @@ const inventory = require('../services/inventory_manager');
 
 function initialize(){
   let fsu = require( "../tools/filesys/filesys_util");
-  pages = compileTemplates( fsu.generatePaths( { inventory_list:1, inventory_item:1, wpe_item:1 }, "./views/mains/", ".handlebars", true ), true );
+  pages = compileTemplates( fsu.generatePaths( { inventory_list:1, inventory_item:1, fse_item:1 }, "./views/mains/", ".handlebars", true ), true );
   fsu = null;
 }
 

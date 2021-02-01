@@ -35,15 +35,18 @@ module.exports.router = async function( req, res, path ) {
       let order_id = path[0];
       if( isNaN(order_id) ) return bro.get( true, renderError( req, "You didn't include an order id in this request...try finding one <a href='/purchases/list'>in this list</a>."));
       else{
-        let runs = await getAllRuns();
         let order = await getOrder( order_id );
+        let runs = await getAllRuns();
         for( let i in order.items ){
+
+          order.items[i].runs = getRunsOfProduct( order.items[i], runs );
+
+          //now look for existing correlations on these purchases
           for( let j=0; j<order.items[i].quantity; j++ ){
 //            console.log("order.items[i] ", order.items[i]);
             let fnd = await getCorrelation( order.order_id, order.items[i].sku, j );
 
 //how can I store the saved run_id for each item in an accessible way for the view??? What information needs to show?
-
             if( fnd ){
               if( !order.items[i].run_ids ) order.items[i].run_ids = [];
               order.items[i].run_ids[j] = fnd.run_id;
@@ -59,12 +62,54 @@ module.exports.router = async function( req, res, path ) {
   }
 }
 
+function getRunsOfProduct( item, all_runs ){
+  let p_name = item.name.toLowerCase();
+
+  /*
+
+    Using the name of the product as stored in Ecwid to pull out the product type and p_strength
+    in order to reduce the number of runs to be selected from when correlating products with purchases.
+
+    I know this is brittle, but its the easiest solution for now.
+
+    In the future we can create a simple lookup of sku's with type and strength ... thats probably a better option!
+
+  */
+
+  let p_type = ( p_name.indexOf( 'salve' ) >= 0 ) ? "salve" : "sublingual";
+  let p_strength;
+  if( p_type == "salve" ){
+    let tps = parseInt(p_name.substring(0, p_name.indexOf('%') ));
+    switch(tps){
+      case .5:
+        p_strength = 150;
+        break;
+      case 1:
+        p_strength = 300;
+        break;
+      case 2:
+        p_strenth = 600;
+        break;
+    }
+  }else{
+    p_strength = parseInt(p_name.substring(0, p_name.indexOf(' ')));
+  }
+
+  let rtn = [];
+  for( let i in all_runs ){
+    if( all_runs[i].product_type == p_type && all_runs[i].strength == p_strength ){
+      rtn.push( all_runs[i] );
+    }
+  }
+  return rtn;
+}
+
 const bro = require("../server/bro");
 const sessions = require("../tools/sessions/session_util");
 const { renderData, renderError, renderTemplate } = require("../tools/rendering/render_util");
 const { compileTemplates } = require('../views/template_manager');
 const { getRun, getAllRuns, saveCorrelation, getCorrelation } = require('../services/production_runs/runs');
-const { getWPELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
+const { getFSELabel, getIngredientLabel, getProductBatchId } = require("../services/inventory_manager");
 const counties = require("../tools/county_lookup/county_lookup.js");
 
 function initialize(){

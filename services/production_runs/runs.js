@@ -19,6 +19,22 @@ module.exports.getAllRuns = async function( run ){
   return await f.toArray();
 }
 
+module.exports.savePullDate = async function( run_id, prop, date ){
+  let f = await runs.findOne({run_id:parseInt(run_id)});
+  if( prop != "first_pull_date" && prop != "last_pull_date" ){
+    console.log("runs.js you can't save a pull date with property name :: ", prop);
+    return false;
+  }
+  let rtn;
+  if( f ){
+    let set_prop = {};
+    set_prop[prop] = date;
+    rtn = await runs.updateOne({run_id:parseInt(run_id)}, {$set:set_prop});
+    if( rtn.matchedCount == 1 ) return true;
+  }
+  return false;
+}
+
 module.exports.saveCorrelation = async function( purchased_item ){
   for( let i in purchased_item ){
     if( correlation_fields.indexOf( i ) < 0 ) throw new Error("runs.saveCorrelation found invalid field propery ( " + i + " ).");

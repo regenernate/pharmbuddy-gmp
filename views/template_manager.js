@@ -98,15 +98,17 @@ function cleanDatesForDisplay( d ){
     }else{
       if( i.indexOf('date') > -1 ){
         d[i + "_vf"] = formatDateForDisplay( i, d[i] );
+        d[i + "_dpf"] = formatDateForDisplay( i, d[i], 'YYYY-MM-DD');
       }
     }
   }
 //  return source( data );
 }
 
-function formatDateForDisplay( date_name, ms ){
+function formatDateForDisplay( date_name, ms, format ){
+  if( !format ) format='MM-DD-YYYY';
   //let r_date = moment( ms, 'x' ).format('MM-DD-YYYY [at] HH:MM');
   //console.log("formatDatesForDisplay converted " + date_name + " from " + ms + " to " + r_date);
   //return r_date;
-  return moment( ms, 'x' ).format('MM-DD-YYYY');
+  return moment( ms, 'x' ).format(format);
 }

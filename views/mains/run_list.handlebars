@@ -4,9 +4,9 @@
 
 {{#each runs}}
   <h2>Production {{@key}} runs:</h2>
-  <table><tr><th>Run Id</th><th>Run Date</th><th>Units Made</th><th>Strength</th><th>WPE Batch</th></tr>
+  <table><tr><th>Run Id</th><th>Run Date</th><th>Units Made</th><th>Strength</th><th>FSE Batch</th></tr>
   {{#each this}}
-  <tr><td><a href='/runs/{{run_id}}'>{{run_id}}</a></td><td>{{run_date_vf}}</td><td>{{units_made}}</td><td>{{strength}}mg</td><td>{{wpe.label}}</td></tr>
+  <tr><td><a href='/runs/{{run_id}}'>{{run_id}}</a></td><td>{{run_date_vf}}</td><td>{{units_made}}</td><td>{{strength}}mg</td><td>{{fse.label}}</td></tr>
   {{/each}}
   </table>
 {{/each}}

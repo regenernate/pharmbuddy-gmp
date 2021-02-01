@@ -6,8 +6,6 @@
  then run node index.js and visit url from previous step output - select correct device name and voila!
 
  //load data into mongo, from / folder:
- node injector.js - should insert starting inventory, wpe ( whole plant cbd extract ), and a couple production runs
+ node injector.js - should insert starting inventory, fse ( full plant cbd extract ), and a couple production runs
 
  then node index.js and poke around. running injector.js again will clear all data and reinstall
-
- 

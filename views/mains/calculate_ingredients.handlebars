@@ -27,7 +27,7 @@
       {{#each ingredients}}
       document.getElementById('{{key}}').innerHTML = Math.floor({{amount}}*num_units*1000)/1000 + " {{units}}";
       {{/each}}
-      document.getElementById('wpe{{wpe.batch_id}}').innerHTML = Math.floor({{wpe.amount}}*num_units*1000)/1000 + " {{wpe.units}}";
+      document.getElementById('fse{{fse.batch_id}}').innerHTML = Math.floor({{fse.amount}}*num_units*1000)/1000 + " {{fse.units}}";
     }
   }
 
@@ -109,7 +109,7 @@
   </form>
   {{else}}
   <p>There isn't any {{limit.item.label}} in inventory.</p>
-  <p><a href='/inventory/{{#if limit.item.key}}{{limit.item.key}}{{else}}wpe/{{limit.item.batch_id}}{{/if}}'>Add {{limit.item.label}} here</a>.</p>
+  <p><a href='/inventory/{{#if limit.item.key}}{{limit.item.key}}{{else}}fse/{{limit.item.batch_id}}{{/if}}'>Add {{limit.item.label}} here</a>.</p>
   {{/if}}
 {{/if}}
 <table>
@@ -128,10 +128,10 @@
   </tr>
   {{/each}}
   <tr>
-    <td {{#unless wpe.max_units}}class='outinv'{{/unless}}>{{wpe.label}}</td>
-    <td {{#unless wpe.max_units}}class='outinv'{{/unless}}>{{wpe.lot_number}}</td>
-    <td {{#unless wpe.max_units}}class='outinv'{{/unless}} id='wpe{{wpe.batch_id}}'>{{wpe.amount}} {{wpe.units}}</td>
-    <td class='extradata {{#unless wpe.max_units}}outinv{{else}}{{#if wpe.warning_level}}lowinv{{/if}}{{/unless}}'>{{wpe.max_units}}</td>
+    <td {{#unless fse.max_units}}class='outinv'{{/unless}}>{{fse.label}}</td>
+    <td {{#unless fse.max_units}}class='outinv'{{/unless}}>{{fse.lot_number}}</td>
+    <td {{#unless fse.max_units}}class='outinv'{{/unless}} id='fse{{fse.batch_id}}'>{{fse.amount}} {{fse.units}}</td>
+    <td class='extradata {{#unless fse.max_units}}outinv{{else}}{{#if fse.warning_level}}lowinv{{/if}}{{/unless}}'>{{fse.max_units}}</td>
   </tr>
 </table>
 {{#if limit.item.max_units }}
@@ -140,7 +140,7 @@
   <input type='hidden' name='{{@key}}' value='{{this}}' />
   {{/each}}
   <input type='hidden' id='qty_requested' name='units_requested' value='1' />
-  <input type='hidden' name='wpe_batch_id' value='{{wpe.batch_id}}' />
+  <input type='hidden' name='fse_batch_id' value='{{fse.batch_id}}' />
   {{#if limit.item.max_units}}
     {{#if limit.warning_level}}
       Please physically confirm inventory <span class='lowinv'>on red quantities above</span> then click <em>Inventory Confirmed</em>.

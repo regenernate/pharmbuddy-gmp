@@ -26,17 +26,17 @@ async function addBatch( batch ){
   batch.batch_id = batch_id;
   if( !batch.lot_number ) batch.lot_number = batch.batch_id;
   if( !batch.label ) batch.label = generateBatchName( batch );
-  //confirm this wpe batch doesn't already exist
+  //confirm this fse batch doesn't already exist
   let f = await batches.findOne({batch_id:batch.batch_id});
-  if( f ) throw new Error('wpe_batches.addBatch :: This batch already exists.');
+  if( f ) throw new Error('fse_batches.addBatch :: This batch already exists.');
   //confirm correct fields and only correct fields being added
   let plist = ['batch_id', 'lot_number', 'label', 'production_date', 'mechanism', 'location', 'percent_cbd', 'initial_mass', 'current_mass', 'use_for']
   for( let i in batch ){
-    if( plist.indexOf( i ) < 0 ) throw new Error("Invalid property sent to wpe_batches.addBatch :: " + i);
+    if( plist.indexOf( i ) < 0 ) throw new Error("Invalid property sent to fse_batches.addBatch :: " + i);
   }
   for( let i in plist ){
     if( !batch.hasOwnProperty( plist[i] ) ){
-      throw new Error("Missing property in wpe_batches.addBatch :: " + plist[i] );
+      throw new Error("Missing property in fse_batches.addBatch :: " + plist[i] );
     }
   }
   //insert the batch
@@ -75,7 +75,7 @@ module.exports.updateAvailableMass = async function( batch_id, new_mass ){
   let f = await getBatch( batch_id );
   console.log(f);
   let u = await batches.updateOne({_id:f._id}, {$set:{current_mass:new_mass}});
-  console.log("wpe_batches.updateAvailableMass :: ", batch_id, u.modifiedCount );
+  console.log("fse_batches.updateAvailableMass :: ", batch_id, u.modifiedCount );
   return u.modifiedCount == 1;
 }
 
@@ -105,14 +105,13 @@ async function getNextBatchId(){
 
 function generateBatchName( batch ){
   //let d = moment(batch.production_date, 'x').format('MM-DD-YYYY');
-  return "WPE batch# " + batch.batch_id;
+  return "FSE batch# " + batch.batch_id;
 }
 
 async function initialize(){
   if( batches ) return true;
-  batches = await ds.collection('wpe');
-//  let f = await batches.find().toArray();
-//  console.log(f);
+  batches = await ds.collection('fse');
+  let f = await batches.find().toArray();
 }
 
 module.exports.initialize = initialize;

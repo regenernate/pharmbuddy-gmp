@@ -32,7 +32,7 @@ module.exports.mlsToOz = function( mls ){
 
 const specific_gravities = { sunflower_seed_oil:.925, olive_oil:.915, hempseed_oil:.895,
   orange_cream_flavoring:.89, licorice_flavoring:.94, peppermint_flavoring:.895,
-  wpe:.9, lemon_eo:.85, orange_eo:.85, peppermint_eo:.898, argan_oil:.912, beeswax:.968 };
+  fse:.9, lemon_eo:.85, orange_eo:.85, peppermint_eo:.898, argan_oil:.912, beeswax:.968 };
 
 const MILS_PER_OZ = 29.5635;
 
