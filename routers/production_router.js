@@ -129,8 +129,8 @@ module.exports.router = async function( req, res, path ) {
       formula.units_made = units_to_make;
       formula.strength = req.body.strength;
       formula.product_type = req.body.product_type;
-      //get product batch id here ...
-      formula.batch_id = inventory.getProductBatchId( req.body.product_type, formula[ FSE ].lot_number, req.body.strength );
+      //get lot # here
+      formula.lot_id = inventory.getProductLotNumber( req.body.product_type, formula[ FSE ].lot_number, req.body.strength );
 
       let run_id = await runs.createRun( formula );
       if( !run_id ) return bro.get( true, renderError( req, "The run you requested could not be created." ) );
@@ -142,7 +142,7 @@ module.exports.router = async function( req, res, path ) {
         return bro.get( true, renderError( req, "The inventory could not be pulled based on the formulation requested.") );
       }
 
-      console.log(formula);
+//      console.log(formula);
 
       return bro.get( true, renderTemplate( req, pages.confirm_run, formula ) );
     }catch(e){
@@ -163,7 +163,7 @@ const bro = require('../server/bro');
 const sessions = require('../tools/sessions/session_util');
 const { compileTemplates } = require('../views/template_manager');
 const {renderError, renderTemplate} = require('../tools/rendering/render_util');
-//const fse_batches = require('../services/batches/batches');
+
 const inventory = require('../services/inventory_manager');
 const runs = require('../services/production_runs/runs');
 runs.initialize();

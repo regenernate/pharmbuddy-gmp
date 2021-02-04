@@ -4,14 +4,14 @@ PURPOSE: The purpose of this service is to keep track of product batches
 
 *****/
 
-module.exports.getProductBatchId = function( product_type, batch_id, strength ){
-//  console.log("product_batches.getProductBatchId", product_type, batch_id, strength );
-  for( let i in product_batches ){
-    let tpb = product_batches[i];
+module.exports.getProductLotNumber = function( product_type, batch_id, strength ){
+//  console.log("product_lots.getProductBatchId", product_type, batch_id, strength );
+  for( let i in product_lots ){
+    let tpb = product_lots[i];
     if( tpb.batch_id == batch_id && tpb.product_type == product_type && tpb.strength == strength ) return tpb.id;
   }
   let tpbid = next_pbid++;
-  product_batches.push( { id:tpbid, batch_id:batch_id, product_type:product_type, strength:strength } );
+  product_lots.push( { id:tpbid, batch_id:batch_id, product_type:product_type, strength:strength } );
   return tpbid;
 }
 
@@ -21,7 +21,7 @@ function initDb(){
   //use filesys_util to load the data
   let {loadData} = require( "../../tools/filesys/filesys_util");
 
-  ( { product_batches } = loadData("./services/batches/data/product_batches.json") );
+  ( { product_lots } = loadData("./services/lots/data/product_lots.json") );
 
   loadData = null;
   {
@@ -33,16 +33,16 @@ function initDb(){
     current_count: 40
   },
 
-  console.log("pd2...", product_batches);
-/*  for( let i in product_batches ){
-    let r = pbatches.upsert( {key:product_batches[i].id}, product_batches[i] );
+  console.log("pd2...", product_lots);
+/*  for( let i in product_lots ){
+    let r = p_lots.upsert( {key:product_lots[i].id}, product_lots[i] );
   }
   */
 }
 
 async function initialize(){
-  if( pbatches ) return;
-  pbatches = await ds.collection('product_batches');
+  if( p_lots ) return;
+  p_lots = await ds.collection('product_lots');
   initDb();
 }
 
@@ -51,6 +51,6 @@ module.exports.saveProductBatch = function( batch ){
 
 }
 
-var pbatches;
+var p_lots;
 var next_pbid = 106;
 const ds = require("../../tools/data_persistence/mongostore");

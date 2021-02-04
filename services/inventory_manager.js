@@ -88,8 +88,8 @@ module.exports.getBatchForProduct = async function( product_type ){
   return await fse_batches.getBatchForProduct( product_type );
 }
 
-module.exports.getProductBatchId = function( product_type, fse_lot, strength ){
-  return products.getProductBatchId( product_type, fse_lot, strength );
+module.exports.getProductLotNumber = function( product_type, fse_lot, strength ){
+  return products.getProductLotNumber( product_type, fse_lot, strength );
 }
 
 module.exports.retireFSEBatch = async function( batch_id ){
@@ -206,8 +206,8 @@ async function initialize(){
 }
 
 let {loadData} = require( "../tools/filesys/filesys_util");
-const fse_batches = require('./batches/fse_batches');
-const products = require('./batches/product_batches');
+const fse_batches = require('./lots/fse_batches');
+const products = require('./lots/product_lots');
 const {GRAMS, OUNCES, MILS, ozToMils, milsToGrams } = require('../tools/unit_converter');
 var product_key;
 const moment = require('moment');

@@ -8,7 +8,7 @@ var pbatches;
 
 async function loadTests(){
   try{
-    pbatches = await require('./services/batches/product_batches.js');
+    pbatches = await require('./services/lots/product_lots.js');
     await pbatches.initialize();
 
   }catch(err){

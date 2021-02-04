@@ -11,13 +11,10 @@ if( !port || !ip ){
 }
 
 //set up database connection(s)
-console.log("right before connect");
 const mongo_connect = require('./tools/data_persistence/mongostore');
 mongo_connect.connect( loadModels );
-console.log("right after connect");
 
 function loadModels(){
-  console.log("loadModels");
   try{
     loadRouters();
     http_server.startServer(port, ip);

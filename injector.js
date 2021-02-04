@@ -4,10 +4,8 @@ require('dotenv').config();
 const mongo_connect = require('./tools/data_persistence/mongostore');
 mongo_connect.connect( loadInjectors );
 
-console.log(process.env);
-
 const ingredients = require('./services/ingredients/ingredients.js');
-const fse = require('./services/batches/fse_batches.js');
+const fse = require('./services/lots/fse_batches.js');
 const runs = require('./services/production_runs/runs.js');
 
 async function loadInjectors(){
@@ -15,6 +13,7 @@ async function loadInjectors(){
     // insert ingredients
     console.log("INGREDIENTS");
     await clearOldData("ingredients");
+
     await ingredients.initialize();
     for( let i in inventory ){
       console.log( await ingredients.addLot(inventory[i].key, inventory[i]));
@@ -264,7 +263,7 @@ const production_runs = [
   units_made: '2',
   strength: '300',
   product_type: 'salve',
-  batch_id: 104,
+  lot_id: 104,
 },
 {
   ingredients: [
@@ -320,6 +319,62 @@ const production_runs = [
   units_made: '2',
   strength: '150',
   product_type: 'salve',
-  batch_id: 105,
+  lot_id: 105,
+},
+{
+  ingredients: [
+  {
+    key: 'hempseed_oil',
+    amount: 8,
+    units: 'oz',
+    lot_number: '140519012',
+    total_amount: 8,
+    label: 'Hempseed Oil'
+  },
+  {
+    key: 'argan_oil',
+    amount: 8,
+    units: 'oz',
+    lot_number: 'arganlotnum',
+    total_amount: 8,
+    label: 'Argan Oil'
+  },
+  {
+    key: 'sunflower_seed_oil',
+    amount: 8,
+    units: 'oz',
+    lot_number: 'A77829073119',
+    total_amount: 8,
+    label: 'Sunflower Seed Oil'
+  },
+  {
+    key: 'beeswax',
+    amount: 3,
+    units: 'oz',
+    lot_number: 'beeswaxnumber',
+    total_amount: 3,
+    label: 'Beeswax'
+  },
+  {
+    key: 'peppermint_eo',
+    amount: 0.84375,
+    units: 'ml',
+    lot_number: 'firstpmlot',
+    total_amount: 0.84375,
+    label: 'Peppermint Essential Oil'
+  }
+],
+fse: {
+  batch_id: 2,
+  amount: 13.099,
+  units: 'g',
+  total_amount: 13.099,
+  lot_number: 2,
+  label: 'FSE batch# 2'
+},
+units_made: '1',
+strength: '300',
+product_type: 'salve',
+lot_id: 105,
 }
 ];
