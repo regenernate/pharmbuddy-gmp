@@ -15,7 +15,9 @@ if( process.argv.length > 3 ){
   to = process.argv[4];
 }else if( process.argv.length < 3 ){
   //output valid formats
-  console.log( "YYYY-MM-DD hh:mm:ss\nx" );
+  console.log( "To convert times, use time.js {value_to_convert} {from_format} {to_format}");
+  console.log( "{from_format} and {to_format} are optional and default to YYYY-MM-DD and x");
+//  console.log( "YYYY-MM-DD hh:mm:ss\nx" );
   return;
 }
 

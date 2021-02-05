@@ -21,7 +21,7 @@
   <fieldset>
     <legend>Essential Oils</legend>
     {{#each options.scent}}
-    <input type='radio' id="f{{@index}}" name='scent' value='{{key}}'{{#unless @index}}checked{{/unless}} />
+    <input type='checkbox' id="f{{@index}}" name='scent' value='{{key}}' checked />
     <label for="f{{@index}}">{{label}}</label>
     {{/each}}
   </fieldset>

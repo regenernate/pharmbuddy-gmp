@@ -11,6 +11,7 @@ module.exports.router = async function( req, res, path ) {
     //this if/then situation may not last if this router requires more routes
     if( !path || !path.length || path[0] == "" || path[0] == "list" ){
       let runs = await getAllRuns();
+      console.log(runs[0]);
       let rtn = {};
       for( let l=0; l<runs.length; l++){
         if( !rtn.hasOwnProperty( runs[l].product_type ) ) rtn[ runs[l].product_type ] = [];

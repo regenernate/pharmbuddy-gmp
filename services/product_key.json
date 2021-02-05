@@ -10,7 +10,7 @@
         "product_type":{ "key":"salve", "label":"Topical Salve"},
         "strength":[ {"key":300, "label":"1% or 10mg / ml"}, {"key":600, "label":"2% or 20mg / ml"}],
         "base":[{"key":"hempseed_oil"},{"key":"sunflower_seed_oil"},{"key":"argan_oil"}, {"key":"beeswax"}],
-        "scent":[{"key":"peppermint_eo"}, {"key":"orange_eo"}]
+        "scent":[{"key":"peppermint_eo"}, {"key":"lemon_eo"}]
       }
     ]
 }

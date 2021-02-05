@@ -1,44 +1,112 @@
 {
   "product_lots":[
     {
-      "id":100,
+      "id":106,
       "strength":300,
       "product_type":"sublingual",
-      "product_name":"300mg Sublingual",
-      "batch_id":"3",
-      "current_count":40
+      "extract_id":"3"
     },
     {
-      "id":102,
+      "id":107,
       "strength":600,
       "product_type":"sublingual",
-      "product_name":"600mg Sublingual",
-      "batch_id":"3",
-      "current_count":40
+      "extract_id":"3"
     },
     {
-      "id":103,
+      "id":108,
       "strength":900,
       "product_type":"sublingual",
-      "product_name":"900mg Sublingual",
-      "batch_id":"3",
-      "current_count":40
+      "extract_id":"3"
     },
     {
-      "id":104,
+      "id":109,
+      "strength":1200,
+      "product_type":"sublingual",
+      "extract_id":"3"
+    },
+    {
+      "id":110,
       "strength":300,
       "product_type":"salve",
-      "product_name":"1% Salve",
-      "batch_id":"2",
-      "current_count":40
+      "extract_id":"3"
     },
     {
-      "id":105,
-      "strength":150,
+      "id":111,
+      "strength":600,
       "product_type":"salve",
-      "product_name":".5% Salve",
-      "batch_id":"2",
-      "current_count":40
+      "extract_id":"3"
+    },
+    {
+      "id":112,
+      "strength":300,
+      "product_type":"sublingual",
+      "extract_id":"4"
+    },
+    {
+      "id":113,
+      "strength":600,
+      "product_type":"sublingual",
+      "extract_id":"4"
+    },
+    {
+      "id":114,
+      "strength":900,
+      "product_type":"sublingual",
+      "extract_id":"4"
+    },
+    {
+      "id":115,
+      "strength":1200,
+      "product_type":"sublingual",
+      "extract_id":"4"
+    },
+    {
+      "id":116,
+      "strength":300,
+      "product_type":"salve",
+      "extract_id":"5"
+    },
+    {
+      "id":117,
+      "strength":600,
+      "product_type":"salve",
+      "extract_id":"5"
+    },
+    {
+      "id":118,
+      "strength":300,
+      "product_type":"sublingual",
+      "extract_id":"6"
+    },
+    {
+      "id":119,
+      "strength":600,
+      "product_type":"sublingual",
+      "extract_id":"6"
+    },
+    {
+      "id":120,
+      "strength":900,
+      "product_type":"sublingual",
+      "extract_id":"6"
+    },
+    {
+      "id":121,
+      "strength":1200,
+      "product_type":"sublingual",
+      "extract_id":"6"
+    },
+    {
+      "id":122,
+      "strength":300,
+      "product_type":"salve",
+      "extract_id":"6"
+    },
+    {
+      "id":123,
+      "strength":600,
+      "product_type":"salve",
+      "extract_id":"6"
     }
   ]
 }

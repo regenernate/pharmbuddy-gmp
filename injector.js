@@ -1,48 +1,79 @@
 require('dotenv').config();
 
+var do_in=false, do_ex=false, do_pr=false;
+
+if( process.argv.length <= 2 ){
+  console.log( "Ooops - you forgot to tell me what we are injectoring...");
+  console.log( "Options are 'ingredients', 'extracts' or 'products'");
+  process.exit();
+}else{
+  for( let i=2; i<process.argv.length; i++ ){
+    switch( process.argv[i] ){
+      case "ingredients":
+        do_in = true;
+      break;
+      case "extracts":
+        do_ex = true;
+      break;
+      case "products":
+        do_pr = true;
+      break;
+      default:
+        console.log( "Sorry, I'm not sure what " + process.argv[i] + " is, exactly." );
+        process.exit();
+      break;
+    }
+  }
+}
+
 //set up database connection(s)
 const mongo_connect = require('./tools/data_persistence/mongostore');
-mongo_connect.connect( loadInjectors );
+mongo_connect.connect( () =>{ loadInjectors( do_in, do_ex, do_pr ) });
 
 const ingredients = require('./services/ingredients/ingredients.js');
 const fse = require('./services/lots/fse_batches.js');
 const runs = require('./services/production_runs/runs.js');
 
-async function loadInjectors(){
+async function loadInjectors(do_ingredients=false, do_fse=false, do_products=false){
   try{
     // insert ingredients
-    console.log("INGREDIENTS");
-    await clearOldData("ingredients");
+    if( do_ingredients ){
+      console.log("INGREDIENTS");
+      await clearOldData("ingredients");
 
-    await ingredients.initialize();
-    for( let i in inventory ){
-      console.log( await ingredients.addLot(inventory[i].key, inventory[i]));
+      await ingredients.initialize();
+      for( let i in inventory ){
+        console.log( await ingredients.addLot(inventory[i].key, inventory[i]));
+      }
+      console.log( await ingredients.getCurrentList() );
+      /*  finished with ingredients */
     }
-    console.log( await ingredients.getCurrentList() );
-    /*  finished with ingredients */
-
-    // insert fse
-    console.log("FSE BATCHES");
-    await clearOldData("fse");
-    await fse.initialize();
-    for( let i=0; i<extracts.length; i++ ){
-      console.log( await fse.addBatch(extracts[i]) );
+    if( do_fse ){
+      // insert fse
+      console.log("FSE BATCHES");
+      await clearOldData("fse");
+      await fse.initialize();
+      for( let i=0; i<extracts.length; i++ ){
+        console.log( await fse.addBatch(extracts[i]) );
+      }
+      console.log( await fse.getBatchList() );
+      /* finished with FSE */
     }
-    console.log( await fse.getBatchList() );
-    /* finished with FSE */
-
-    // insert runs
-    console.log('PRODUCTION RUNS');
-    await clearOldData('production_runs');
-    await runs.initialize();
-    for( let i=0; i<production_runs.length; i++ ){
-      console.log( await runs.createRun(production_runs[i]) );
+    if( do_products ){
+      // insert runs
+      console.log('PRODUCTION RUNS');
+      await clearOldData('production_runs');
+      await runs.initialize();
+      for( let i=0; i<production_runs.length; i++ ){
+        console.log( await runs.createRun(production_runs[i]) );
+      }
+      console.log( await runs.getAllRuns() );
+      /* finished with production runs */
     }
-    console.log( await runs.getAllRuns() );
-    /* finished with production runs */
-    process.exit();
   }catch(err){
     console.log( "there was an error loading a configured router", err.stack );
+  }finally{
+    process.exit();
   }
 }
 
@@ -53,30 +84,39 @@ async function clearOldData(collection){
 
 let extracts = [
   {
-    production_date: '1573448400000',
+    production_date: '1546318800000',
     mechanism: 'rosin press',
-    location: 'On Site',
-    percent_cbd: '.619',
-    initial_mass: 120,
-    current_mass: 95,
-    use_for: [ 'salve' ],
+    location: "On Site",
+    percent_cbd: '.620',
+    initial_mass: 10,
+    current_mass: 10,
+    use_for: [ 'sublingual', 'salve' ],
   },
   {
-    production_date: '1574917200000',
-    mechanism: 'rosin press',
-    location: 'On Site',
-    percent_cbd: '.637',
-    initial_mass: 400,
-    current_mass: 250,
+    production_date: '1583038800000',
+    mechanism: 'subcritical',
+    location: "Grower's Hemp",
+    percent_cbd: '.539',
+    initial_mass: 500,
+    current_mass: 450,
     use_for: [ 'sublingual' ],
   },
   {
-    production_date: '1578114000000',
+    production_date: '1575176400000',
+    mechanism: 'rosin press',
+    location: 'On Site',
+    percent_cbd: '.5187',
+    initial_mass: 725,
+    current_mass: 650,
+    use_for: [ 'salve' ],
+  },
+  {
+    production_date: '1609477200000',
     mechanism: 'subcritical',
     location: "Grower's Hemp",
     percent_cbd: '.527',
-    initial_mass: 600,
-    current_mass: 600,
+    initial_mass: 2500,
+    current_mass: 2500,
     use_for: [ 'sublingual', 'salve' ],
   }
 ];
@@ -164,6 +204,16 @@ let inventory = [
   label: 'Orange Cream Flavoring',
   purchase_date: '157515640000',
   purchased_from: 'Apex Flavorings'
+},
+{
+  key: 'lemon_eo',
+  lot_number: 'firstlemonlot',
+  current_volume: '30',
+  expiration_date: '1658376000000',
+  initial_volume: '30',
+  label: 'Lemon Essential Oil',
+  purchase_date: '157515640000',
+  purchased_from: 'DoTerra'
 },
 {
   key: 'orange_eo',
@@ -263,7 +313,7 @@ const production_runs = [
   units_made: '2',
   strength: '300',
   product_type: 'salve',
-  lot_id: 104,
+  lot_id: 102,
 },
 {
   ingredients: [
@@ -319,7 +369,7 @@ const production_runs = [
   units_made: '2',
   strength: '150',
   product_type: 'salve',
-  lot_id: 105,
+  lot_id: 101,
 },
 {
   ingredients: [
@@ -375,6 +425,6 @@ fse: {
 units_made: '1',
 strength: '300',
 product_type: 'salve',
-lot_id: 105,
+lot_id: 102,
 }
 ];

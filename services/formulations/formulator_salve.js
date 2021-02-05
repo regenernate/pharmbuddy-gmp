@@ -1,8 +1,10 @@
 
 module.exports.createFormula = async function( request, extract ){
   let errors = [];
+  //ensure array format whether one or more scents is being sunflower_seed_oil
+  let scent = ( typeof( request.scent ) == "string" ) ? request.scent.split(',') : request.scent;
   //validate quantity, expect error pushed onto stack plus replacement of quantity with default value, or return = quantity sent ( i.e. valid )
-  let eos = validateEssentialOils( request.scent, errors );
+  let eos = validateEssentialOils( scent, errors );
   let strength = validateStrength( request.strength, errors );
 
   confirmExtract( extract, errors );
@@ -22,8 +24,10 @@ module.exports.createFormula = async function( request, extract ){
     total_mls += frm.ingredients[i].amount*MILS_PER_OZ;
   }
   let mls_eo = EO_MILS_TO_USE_PER_OZ*(total_mls/MILS_PER_OZ);
-  frm.ingredients.push( {key:eos, amount:mls_eo, units:'ml'} ); //add e.o. in mls
-  total_mls += mls_eo;
+  for( let i in eos ){
+    frm.ingredients.push( {key:eos[i], amount:mls_eo, units:'ml'} ); //add e.o. in mls
+  }
+  total_mls += mls_eo * eos.length; //add the total mls of EO used based on how many scents are in this formulation
   let cbd_per_unit = ( strength/cbd_extract_percent/MILS_PER_OZ );
   frm.fse = { batch_id:extract.batch_id, amount:precisify(cbd_per_unit * total_mls /1000), units:'g' }; //add fse in g
   return frm;
@@ -42,15 +46,23 @@ const BASE_OILS = ["hempseed_oil","argan_oil","sunflower_seed_oil"];
 const BEESWAX = "beeswax";
 
 const EO_MILS_TO_USE_PER_OZ = .25/8;
+
 const ORANGE = "orange_eo";
 const PEPPERMINT = "peppermint_eo";
+const LEMON = "lemon_eo";
 
 const {precisify, MILS_PER_OZ} = require('../../tools/unit_converter');
 
 function validateEssentialOils( eos, errors ){
-  if( eos == ORANGE || eos == PEPPERMINT ) return eos;
-  errors.push( "Essential Oil " + eos + " isn't valid." );
-  return false;
+  let err = false;
+  for( let i in eos ){
+    if( eos[i] != ORANGE && eos[i] != PEPPERMINT && eos[i] != LEMON ){
+      errors.push( "Essential Oil " + eos + " isn't valid." );
+      err = true;
+    }
+  }
+  if( err ) return false;
+  else return eos;
 }
 
 function validateStrength( strength, errors ){

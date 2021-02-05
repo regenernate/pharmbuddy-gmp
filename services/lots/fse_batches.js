@@ -100,7 +100,7 @@ async function getNextBatchId(){
     let item = await f.next();
     if( item != null ) return parseInt(item.batch_id) + 1;
   }
-  return 2;
+  return 3;
 }
 
 function generateBatchName( batch ){

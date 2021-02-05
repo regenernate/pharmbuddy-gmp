@@ -72,7 +72,7 @@ module.exports.router = async function( req, res, path ) {
           if( formula.ingredients[i].units == 'oz' ) amount_needed *= MILS_PER_OZ;
           max_units = await inventory.calculateMaxUnitsByVolume( formula.ingredients[i].key, formula.ingredients[i].lot_number, amount_needed );
         }
-        console.log( "production_router :: ", max_units );
+//        console.log( "production_router :: ", max_units );
         formula.ingredients[i].max_units = max_units.max_units;
         formula.ingredients[i].warning_level = max_units.warning_level;
         formula.ingredients[i].label = iln.label;
