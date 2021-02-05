@@ -1,3 +1,4 @@
 .env
 .gitignore
-/tools/getRegistrationCodes.js
+tools/getRegistrationCodes.js
+dist
