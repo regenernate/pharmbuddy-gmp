@@ -4,7 +4,7 @@ var do_in=false, do_ex=false, do_pr=false;
 
 if( process.argv.length <= 2 ){
   console.log( "Ooops - you forgot to tell me what we are injectoring...");
-  console.log( "Options are 'ingredients', 'extracts' or 'products'");
+  console.log( "Options are any combination of 'ingredients', 'extracts' and/or 'products'");
   process.exit();
 }else{
   for( let i=2; i<process.argv.length; i++ ){
@@ -125,7 +125,7 @@ let inventory = [
   {
   key: 'argan_oil',
   lot_number: 'arganlotnum',
-  current_volume: '500',
+  current_volume: '250',
   expiration_date: '1658376000000',
   initial_volume: '946',
   label: 'Argan Oil',
@@ -166,7 +166,7 @@ let inventory = [
   do_not_use_for: [],
 },
 {
-  key: 'lemon_eo',
+  key: 'lemon_essential_oil',
   lot_number: 'lemoneolotnumber',
   current_volume: '30',
   expiration_date: '1658376000000',
@@ -206,7 +206,7 @@ let inventory = [
   purchased_from: 'Apex Flavorings'
 },
 {
-  key: 'lemon_eo',
+  key: 'lemon_essential_oil',
   lot_number: 'firstlemonlot',
   current_volume: '30',
   expiration_date: '1658376000000',
@@ -216,7 +216,7 @@ let inventory = [
   purchased_from: 'DoTerra'
 },
 {
-  key: 'orange_eo',
+  key: 'orange_essential_oil',
   lot_number: 'firstorangeeolot',
   current_volume: '30',
   expiration_date: '1658376000000',
@@ -226,7 +226,7 @@ let inventory = [
   purchased_from: 'DoTerra'
 },
 {
-  key: 'peppermint_eo',
+  key: 'peppermint_essential_oil',
   lot_number: 'firstpmlot',
   current_volume: 24.096,
   expiration_date: '1658376000000',
@@ -294,7 +294,7 @@ const production_runs = [
       label: 'Beeswax'
     },
     {
-      key: 'peppermint_eo',
+      key: 'peppermint_essential_oil',
       amount: 0.84375,
       units: 'ml',
       lot_number: 'firstpmlot',
@@ -303,7 +303,7 @@ const production_runs = [
     }
   ],
   fse: {
-    batch_id: 2,
+    batch_id: 3,
     amount: 13.099,
     units: 'g',
     total_amount: 26.198,
@@ -350,7 +350,7 @@ const production_runs = [
       label: 'Beeswax'
     },
     {
-      key: 'peppermint_eo',
+      key: 'peppermint_essential_oil',
       amount: 0.84375,
       units: 'ml',
       lot_number: 'firstpmlot',
@@ -359,7 +359,7 @@ const production_runs = [
     }
   ],
   fse: {
-    batch_id: 2,
+    batch_id: 3,
     amount: 6.549,
     units: 'g',
     total_amount: 13.098,
@@ -406,7 +406,7 @@ const production_runs = [
     label: 'Beeswax'
   },
   {
-    key: 'peppermint_eo',
+    key: 'peppermint_essential_oil',
     amount: 0.84375,
     units: 'ml',
     lot_number: 'firstpmlot',
@@ -415,7 +415,7 @@ const production_runs = [
   }
 ],
 fse: {
-  batch_id: 2,
+  batch_id: 3,
   amount: 13.099,
   units: 'g',
   total_amount: 13.099,

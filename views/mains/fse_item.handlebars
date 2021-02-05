@@ -66,6 +66,7 @@ function getXHRRequest( url ){
 </script>
 
 <h1>Details for {{item.label}}</h1>
+<a href='/inventory/list'>Return to Inventory</a>
 <p>Batch {{item.batch_id}} was produced using {{item.mechanism}} at {{item.location}}.</p>
 <p>It was made on {{item.production_date_vf}} and is {{asPercent item.percent_cbd}}% CBD.</p>
 <p>It can be used for {{#each item.use_for}}{{#if @index}}, and {{/if}}{{this}}{{/each}}.</p>

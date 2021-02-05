@@ -4,21 +4,36 @@ const ingredients_collection = "ingredients";
 const {milsToGrams, gramsToMils, precisify } = require( "../../tools/unit_converter");
 const moment = require('moment');
 var lots;
+var key_of_keys;
 var label_key = {};
 
 async function initialize(){
+  //already initialized?
   if(lots) return true;
+  key_of_keys = [];
+  //load the key of valid ingredients to be managed by this instance of ingredients.js
+  let {loadData} = require( "../../tools/filesys/filesys_util");
+  ( { ingredients } = loadData( "./services/ingredients/data/ingredients.json") );
+  for( let i in ingredients ){
+    //generate product key from name
+    let tmp_key = ingredients[i].toLowerCase().split(" ").join("_");
+    if( label_key.hasOwnProperty( tmp_key ) ) throw new Error( "Your ingredient data is corrupt. " + ingredients[i] + " is defined twice in the ingredients.json file." );
+    label_key[ tmp_key ] = ingredients[i];
+    key_of_keys.push(tmp_key);
+  }
+//  console.log(label_key);
+//  console.log(key_of_keys);
+  loadData = null;
   lots = await ds.collection(ingredients_collection);
-  await buildLabelKey();
+  await cleanIngredientVolumes();
   return true;
 }
 
-async function buildLabelKey(){
+async function cleanIngredientVolumes(){
   let lc = await lots.find({});
   while(await lc.hasNext()){
     let item = await lc.next();
     if( item != null ){
-      label_key[item.key] = item.label;
       if( item.current_volume < 0 ){ console.log('ingredients.initialize, updating negative volume'); lots.updateOne({_id:item._id}, {$set:{current_volume:0}}) };
     }
   };
@@ -155,14 +170,28 @@ module.exports.getCurrentLot = async function( key, product_type ){
   }
 }
 
+//only returns the current active item for each ingredient key
 module.exports.getCurrentList = async function( active_only ){
   let fnd = active_only ? {retired_date : { $exists:false }} : {};
   let f = await lots.find(fnd).sort({key:1, expiration_date:1});
   let rtn = [];
   let itm;
+  let my_key = {};
+  for( let k in label_key ){
+    my_key[ k ] = false;
+  }
   while(await f.hasNext()){
     itm = await f.next();
-    if( itm ) rtn.push( itm );
+    if( itm && !my_key[itm.key] ){
+      my_key[ itm.key ] = true;
+      rtn[ key_of_keys.indexOf(itm.key) ] =  itm;
+    }
+  }
+  for( let k in my_key ){
+    if( !my_key[k] ){ //there aren't any items of this ingredient currently
+//      console.log("there wasn't any: " + label_key[k], "which should show up at position: " + key_of_keys.indexOf(k));
+      rtn[ key_of_keys.indexOf(k) ] = { key:k, label:label_key[k], empty:true };
+    }
   }
   return rtn;
 }

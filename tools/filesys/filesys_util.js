@@ -51,6 +51,11 @@ module.exports.generatePaths = function( pages, dir, ext, replace ){
   return rtn;
 }
 
+/*** helper to load data from the filesystem *
+
+@pages : string path to load OR object with keyed paths
+@replace : boolean, poorly implemented so doesn't work. effectively always true
+***/
 module.exports.loadData = function( pages, replace ){
   if( !pages ){ console.log("filesys_util.error in loadData() :: path was not a string"); return false; }
   if( typeof(pages) == "string" ){

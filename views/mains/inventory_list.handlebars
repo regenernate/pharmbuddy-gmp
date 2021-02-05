@@ -32,11 +32,17 @@
 {{#each ingredients}}
   <tr>
       <td><a href='/inventory/{{key}}'>{{label}}</a></td>
+    {{#if empty}}
+      <td colspan='5'>
+        <a href='/inventory/{{key}}'>Inventory is Empty ... Click to add</a>
+      </td>
+    {{else}}
       <td>{{expiration_date_vf}}</td>
       <td>{{purchased_from}}</td>
       <td>{{lot_number}}</td>
       <td>{{current_volume}}</td>
       <td>{{current_mass}}</td>
+    {{/if}}
   </tr>
 {{/each}}
 </table>
