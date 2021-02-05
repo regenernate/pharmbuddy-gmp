@@ -43,7 +43,7 @@ async function loadInjectors(do_ingredients=false, do_fse=false, do_products=fal
 
       await ingredients.initialize();
       for( let i in inventory ){
-        console.log( await ingredients.addLot(inventory[i].key, inventory[i]));
+        await ingredients.addLot(inventory[i].key, inventory[i]);
       }
       console.log( await ingredients.getCurrentList() );
       /*  finished with ingredients */
@@ -54,7 +54,7 @@ async function loadInjectors(do_ingredients=false, do_fse=false, do_products=fal
       await clearOldData("fse");
       await fse.initialize();
       for( let i=0; i<extracts.length; i++ ){
-        console.log( await fse.addBatch(extracts[i]) );
+        await fse.addBatch(extracts[i]);
       }
       console.log( await fse.getBatchList() );
       /* finished with FSE */
@@ -65,7 +65,7 @@ async function loadInjectors(do_ingredients=false, do_fse=false, do_products=fal
       await clearOldData('production_runs');
       await runs.initialize();
       for( let i=0; i<production_runs.length; i++ ){
-        console.log( await runs.createRun(production_runs[i]) );
+        await runs.createRun(production_runs[i]);
       }
       console.log( await runs.getAllRuns() );
       /* finished with production runs */
@@ -88,8 +88,8 @@ let extracts = [
     mechanism: 'rosin press',
     location: "On Site",
     percent_cbd: '.620',
-    initial_mass: 10,
-    current_mass: 10,
+    initial_mass: 20,
+    current_mass: 18,
     use_for: [ 'sublingual', 'salve' ],
   },
   {

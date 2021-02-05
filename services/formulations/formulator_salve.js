@@ -47,9 +47,9 @@ const BEESWAX = "beeswax";
 
 const EO_MILS_TO_USE_PER_OZ = .25/8;
 
-const ORANGE = "orange_eo";
-const PEPPERMINT = "peppermint_eo";
-const LEMON = "lemon_eo";
+const ORANGE = "orange_essential_oil";
+const PEPPERMINT = "peppermint_essential_oil";
+const LEMON = "lemon_essential_oil";
 
 const {precisify, MILS_PER_OZ} = require('../../tools/unit_converter');
 

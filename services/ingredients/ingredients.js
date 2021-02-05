@@ -78,13 +78,13 @@ module.exports.addLot = async function( key, lot ){
     }
   }
   let i = await lots.insertOne(lot);
-  console.log("ingredients.addLot :: added " + i.insertedCount);
+//  console.log("ingredients.addLot :: added " + i.insertedCount);
   return i.insertedCount;
 }
 
 module.exports.deleteLot = async function( key, lot_number ){
   let d = await lots.delete( {key:key, lot_number:lot_number} );
-  console.log("ingredients.deleteLot :: removed " + d.deletedCount);
+//  console.log("ingredients.deleteLot :: removed " + d.deletedCount);
   return ( d.deletedCount > 0 );
 }
 

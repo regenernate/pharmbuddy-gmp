@@ -26,7 +26,7 @@ module.exports.router = async function( req, res, path ) {
     let advanced_lot, formula;
     try{
       if( !req.body ) throw new Error("You must send appropriate data to the formulator! Post body was undefined.");
-
+      console.log(req.body);
       if( path[0] == 'advance_lot' ){
         if( !req.body.limiting_type ) throw new Error( "You can't recalculate unless you advance")
         let advanced_lot;
@@ -47,7 +47,6 @@ module.exports.router = async function( req, res, path ) {
       let formulator = formulators[ req.body.product_type ];
       if(!formulator) throw new Error( "No formulator exists for " + req.body.product_type );
       formula = await formulator.createFormula( req.body, fse_batch );
-
       let ingredient_lot, max_units, amount_needed;
       max_units = await inventory.calculateFSEMaxUnits( formula.fse.batch_id, formula.fse.amount );
       formula.fse.lot_number = fse_batch.lot_number;
