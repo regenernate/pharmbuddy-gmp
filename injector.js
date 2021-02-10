@@ -89,8 +89,9 @@ let extracts = [
     location: "On Site",
     percent_cbd: '.620',
     initial_mass: 20,
-    current_mass: 18,
+    current_mass: 0,
     use_for: [ 'sublingual', 'salve' ],
+    retired_date: 1583038800000
   },
   {
     production_date: '1583038800000',
@@ -114,7 +115,7 @@ let extracts = [
     production_date: '1609477200000',
     mechanism: 'subcritical',
     location: "Grower's Hemp",
-    percent_cbd: '.527',
+    percent_cbd: '.5283',
     initial_mass: 2500,
     current_mass: 2500,
     use_for: [ 'sublingual', 'salve' ],

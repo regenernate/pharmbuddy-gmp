@@ -30,9 +30,10 @@ async function addBatch( batch ){
   let f = await batches.findOne({batch_id:batch.batch_id});
   if( f ) throw new Error('fse_batches.addBatch :: This batch already exists.');
   //confirm correct fields and only correct fields being added
-  let plist = ['batch_id', 'lot_number', 'label', 'production_date', 'mechanism', 'location', 'percent_cbd', 'initial_mass', 'current_mass', 'use_for']
+  let plist = ['batch_id', 'lot_number', 'label', 'production_date', 'mechanism', 'location', 'percent_cbd', 'initial_mass', 'current_mass', 'use_for'];
+  let olist = ['retired_date'];
   for( let i in batch ){
-    if( plist.indexOf( i ) < 0 ) throw new Error("Invalid property sent to fse_batches.addBatch :: " + i);
+    if( plist.indexOf( i ) < 0 && olist.indexOf( i ) < 0 ) throw new Error("Invalid property sent to fse_batches.addBatch :: " + i);
   }
   for( let i in plist ){
     if( !batch.hasOwnProperty( plist[i] ) ){

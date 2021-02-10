@@ -9,7 +9,7 @@ var key = "11112019_rosin_press";
 
 async function loadTests(){
   try{
-    fse = await require('./services/batches/fse_batches');
+    fse = await require('./services/lots/fse_batches');
     await fse.initialize();
 //    let a = await fse.getBatchForProduct( "sublingual" );
 //    console.log(a);
