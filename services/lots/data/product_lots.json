@@ -1,109 +1,109 @@
 {
   "product_lots":[
     {
-      "id":106,
+      "id":2021106,
       "strength":300,
       "product_type":"sublingual",
       "extract_id":"3"
     },
     {
-      "id":107,
+      "id":2021107,
       "strength":600,
       "product_type":"sublingual",
       "extract_id":"3"
     },
     {
-      "id":108,
+      "id":2021108,
       "strength":900,
       "product_type":"sublingual",
       "extract_id":"3"
     },
     {
-      "id":109,
+      "id":2021109,
       "strength":1200,
       "product_type":"sublingual",
       "extract_id":"3"
     },
     {
-      "id":110,
+      "id":2021110,
       "strength":300,
       "product_type":"salve",
       "extract_id":"3"
     },
     {
-      "id":111,
+      "id":2021111,
       "strength":600,
       "product_type":"salve",
       "extract_id":"3"
     },
     {
-      "id":112,
+      "id":2021112,
       "strength":300,
       "product_type":"sublingual",
       "extract_id":"4"
     },
     {
-      "id":113,
+      "id":2021113,
       "strength":600,
       "product_type":"sublingual",
       "extract_id":"4"
     },
     {
-      "id":114,
+      "id":2021114,
       "strength":900,
       "product_type":"sublingual",
       "extract_id":"4"
     },
     {
-      "id":115,
+      "id":2021115,
       "strength":1200,
       "product_type":"sublingual",
       "extract_id":"4"
     },
     {
-      "id":116,
+      "id":2021116,
       "strength":300,
       "product_type":"salve",
       "extract_id":"5"
     },
     {
-      "id":117,
+      "id":2021117,
       "strength":600,
       "product_type":"salve",
       "extract_id":"5"
     },
     {
-      "id":118,
+      "id":2021118,
       "strength":300,
       "product_type":"sublingual",
       "extract_id":"6"
     },
     {
-      "id":119,
+      "id":2021119,
       "strength":600,
       "product_type":"sublingual",
       "extract_id":"6"
     },
     {
-      "id":120,
+      "id":2021120,
       "strength":900,
       "product_type":"sublingual",
       "extract_id":"6"
     },
     {
-      "id":121,
+      "id":2021121,
       "strength":1200,
       "product_type":"sublingual",
       "extract_id":"6"
     },
     {
-      "id":122,
+      "id":2021122,
       "strength":300,
       "product_type":"salve",
       "extract_id":"6"
     },
     {
-      "id":123,
+      "id":2021123,
       "strength":600,
       "product_type":"salve",
       "extract_id":"6"
