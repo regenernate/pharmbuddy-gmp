@@ -26,7 +26,9 @@ handlebars.registerHelper('asPercent', function( value ){
   let iv = parseFloat( value );
   if( !iv ) return value;
   let precision = 100;
-  if( iv < 1 ) iv *= 100;
+  if( iv < 1 ){
+    iv = Math.round(iv*100); // to deal with floating point display we have to round
+  }
   return Math.floor( iv * precision ) / precision;
 });
 
