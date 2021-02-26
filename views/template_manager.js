@@ -39,14 +39,13 @@ handlebars.registerHelper('for', function(n, block) {
     return accum;
 });
 
-handlebars.registerHelper('runOptions', function( runs, used_ids, pos, block ){
+handlebars.registerHelper('runOptions', function( runs, run_id, block ){
+//  console.log("templateManager.runOptions helper ::", runs);
   if( !runs.length ) return "";
-  if(!used_ids) used_ids = [];
-  let uid = used_ids[pos];
   let rtn = "";
   for( let i=0; i<runs.length; i++ ){
     rtn+="<option value='" + runs[i].run_id + "'";
-    if( uid != null && uid == runs[i].run_id ) rtn += " selected";
+    if( run_id != null && run_id == runs[i].run_id ) rtn += " selected";
     rtn += ">" + runs[i].run_id + " : " + runs[i].strength + "mg " + runs[i].product_type + " from " + runs[i].run_date_vf + "</option >";
   }
   return rtn;
@@ -98,7 +97,7 @@ function cleanDatesForDisplay( d ){
         }
       }
     }else{
-      if( i.indexOf('date') > -1 ){
+      if( i.indexOf('date') > -1 && i.indexOf('_vf') < 0 && i.indexOf("_dpf") < 0 ){
         d[i + "_vf"] = formatDateForDisplay( i, d[i] );
         d[i + "_dpf"] = formatDateForDisplay( i, d[i], 'YYYY-MM-DD');
       }

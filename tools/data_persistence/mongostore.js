@@ -1,4 +1,11 @@
 
+/*** example usage **
+
+const mongo_connect = require('./tools/data_persistence/mongostore');
+mongo_connect.connect( () =>{ callback_function( params ) }); //will connect to mongo and then call method requested
+
+****/
+
 const { MongoClient, ObjectId } = require('mongodb');
 // Connection URL
 //mongodb://farmbuddy-5528:LdFf4XiaXVKj3NTqBgt997yW0PKB7x@db-farmbuddy-5528.nodechef.com:5398/farmbuddy

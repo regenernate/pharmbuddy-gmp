@@ -3,13 +3,11 @@
 {{#if orders}}
 <table><tr><th>Customer</th><th>Email</th><th>Order ID</th><th>Order Date</th><th>Items Purchased</th></tr>
 {{#each orders}}
-  <tr><td>{{customer_name}}</td><td>{{customer_email}}</td><td><a href='/purchases/{{order_id}}'>Order #{{order_id}}</a></td><td>{{order_date_vf}}</td><td>
-  {{#each items}}
-  <p><strong>{{quantity}} @ </strong> {{name}}{{#each selected_options}}, {{value}}{{/each}}</p>
-  {{/each}}
+  <tr><td>{{customer_name}}</td><td>{{email}}</td><td><a href='/purchases/{{order_id}}'>Order #{{order_id}}</a></td><td>{{order_date_vf}}</td><td>
+  <p><strong>{{position}} @ </strong> {{product_name}}{{#each selected_options}}, {{value}}{{/each}}</p>
 </td></tr>
 {{/each}}
 </table>
 {{else}}
-<p>There are no shipped orders. Something's wrong!</p>
+<p>There are no uncorrelated orders. Try <a href='/purchases/update'>pulling orders from Shopify.</a></p>
 {{/if}}

@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-var do_in=false, do_ex=false, do_pr=false;
+var do_in=false, do_ex=false, do_pr=false, do_cor=false;
 
 if( process.argv.length <= 2 ){
   console.log( "Ooops - you forgot to tell me what we are injectoring...");
@@ -18,6 +18,9 @@ if( process.argv.length <= 2 ){
       case "products":
         do_pr = true;
       break;
+      case "correlations":
+        do_cor = true;
+      break;
       default:
         console.log( "Sorry, I'm not sure what " + process.argv[i] + " is, exactly." );
         process.exit();
@@ -28,13 +31,14 @@ if( process.argv.length <= 2 ){
 
 //set up database connection(s)
 const mongo_connect = require('./tools/data_persistence/mongostore');
-mongo_connect.connect( () =>{ loadInjectors( do_in, do_ex, do_pr ) });
+mongo_connect.connect( () =>{ loadInjectors( do_in, do_ex, do_pr, do_cor ) });
 
 const ingredients = require('./services/ingredients/ingredients.js');
 const fse = require('./services/lots/fse_batches.js');
 const runs = require('./services/production_runs/runs.js');
+const correlations = require("./services/purchases/correlations.js");
 
-async function loadInjectors(do_ingredients=false, do_fse=false, do_products=false){
+async function loadInjectors(do_ingredients=false, do_fse=false, do_products=false, do_correlations=false){
   try{
     // insert ingredients
     if( do_ingredients ){
@@ -70,6 +74,15 @@ async function loadInjectors(do_ingredients=false, do_fse=false, do_products=fal
       console.log( await runs.getAllRuns() );
       /* finished with production runs */
     }
+    if( do_correlations ){
+      console.log("CORRELATIONS");
+      await clearOldData('purchased_items');
+      await correlations.initialize();
+      for( let i=0; i<sample_line_items.length; i++ ){
+        await correlations.saveCorrelation(sample_line_items[i]);
+      }
+      console.log( await correlations.getUncorrelatedOrders() );
+    }
   }catch(err){
     console.log( "there was an error loading a configured router", err.stack );
   }finally{
@@ -81,6 +94,20 @@ async function loadInjectors(do_ingredients=false, do_fse=false, do_products=fal
 async function clearOldData(collection){
   let d1 = await mongo_connect.dropCollection( collection );
 }
+
+let sample_line_items = [
+  {
+    origin: 'shopify',
+    order_id: 1001,
+    order_date: '1614017908000',
+    product_name: '900mg Regenerative CBD Sublingual Oil',
+    customer_name:'Nathan Wheeler',
+    email: 'nathan.greenling@gmail.com',
+    product_sku: '20',
+    position: 0,
+    selected_options: 'Completely Fake Order'
+  }
+];
 
 let extracts = [
   {
