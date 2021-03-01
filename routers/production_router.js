@@ -26,7 +26,6 @@ module.exports.router = async function( req, res, path ) {
     let advanced_lot, formula;
     try{
       if( !req.body ) throw new Error("You must send appropriate data to the formulator! Post body was undefined.");
-      console.log(req.body);
       if( path[0] == 'advance_lot' ){
         if( !req.body.limiting_type ) throw new Error( "You can't recalculate unless you advance")
         let advanced_lot;
