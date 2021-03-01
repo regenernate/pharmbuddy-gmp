@@ -59,6 +59,7 @@ module.exports.getIngredientLabel = async function( key ){
 
 module.exports.addLot = async function( key, lot ){
   lot.key = key;
+  if( !lot.lot_number ) throw new Error("Ingredient Lots must have a unique lot_number.")
   if( label_key.hasOwnProperty( key ) ) lot.label = label_key[ key ];
   else if( lot.hasOwnProperty( "label" ) ) label_key[ key ] = lot.label;
   else throw new Error( 'Ingredients.addLot :: Can not add lot without label.' );
