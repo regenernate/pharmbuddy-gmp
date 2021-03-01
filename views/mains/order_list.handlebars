@@ -1,10 +1,10 @@
 <h1>Sales, most recent order first.</h1>
-<p>Current and past orders show up below. Product run correlations can be set in an order's detail view reached by clicking on a specific order below.</p>
+<p>Current and past orders with uncorrelated products show up below.</p><p><strong>Click on a specific order below to correlate the products in it.</strong></p>
 {{#if orders}}
 <table><tr><th>Customer</th><th>Email</th><th>Order ID</th><th>Order Date</th><th>Items Purchased</th></tr>
 {{#each orders}}
-  <tr><td>{{customer_name}}</td><td>{{email}}</td><td><a href='/purchases/{{order_id}}'>Order #{{order_id}}</a></td><td>{{order_date_vf}}</td><td>
-  <p><strong>{{position}} @ </strong> {{product_name}}{{#each selected_options}}, {{value}}{{/each}}</p>
+  <tr><td>{{customer_name}}</td><td>{{email}}</td><td><a href='/purchases/{{order_id}}'>{{order_id}}</a></td><td>{{order_date_vf}}</td><td>
+  {{#each items}}<p><strong>{{quantity}} @ </strong> {{product_name}} - {{selected_options}}</p>{{/each}}
 </td></tr>
 {{/each}}
 </table>

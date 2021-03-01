@@ -1,5 +1,5 @@
 module.exports.saveCorrelation = async function( purchased_item ){
-  if( !purchased_item.hasOwnProperty( 'run_id' ) ){
+  if( !purchased_item.hasOwnProperty( 'run_id' ) || purchased_item.run_id == '' ){
     purchased_item.run_id = null;
   }
   if( !purchased_item.hasOwnProperty( 'origin' ) ){
@@ -23,7 +23,6 @@ module.exports.saveCorrelation = async function( purchased_item ){
 }
 
 module.exports.saveLineItem = async function( purchased_item ){
-  console.log("saveLineItem :: ", purchased_item );
   if( !purchased_item.hasOwnProperty( "run_id" ) ) purchased_item.run_id = null;
   return await module.exports.saveCorrelation( purchased_item );
 }
@@ -56,7 +55,31 @@ module.exports.getUncorrelatedOrders = async function( origin ){
   let pts = ( origin ) ? { origin:origin } : {};
   pts.run_id = null; //uncorrelated line items only, please
   let uco = await purchased_items.find(pts).sort({order_id:1, _id:1});
-  return uco.toArray();
+  //let uco = await purchased_items.aggregate([{ "$group": {"_id": "$order_id", items:{ $push: "$$ROOT" } } } ]);
+  let ucoa = await uco.toArray();
+  let rtn = [];
+  let order_id = null;
+  let co;
+  //combine all items for same order
+  console.log(ucoa);
+  for( let i=0; i<ucoa.length; i++ ){
+    if( ucoa[i].order_id != order_id ){
+      rtn.push({order_id:ucoa[i].order_id, email:ucoa[i].email, customer_name:ucoa[i].customer_name, order_date:ucoa[i].order_date});
+      co = rtn[rtn.length-1];
+      co.items = [ ucoa[i] ];
+      co.items[0].quantity = 1;
+      order_id = ucoa[i].order_id;
+      continue;
+    }
+    if( ucoa[i].product_sku == co.items[co.items.length-1].product_sku ){
+      co.items[co.items.length-1].quantity++;
+    }else{
+      co.items.push(ucoa[i]);
+      ucoa[i].quantity = 1;
+    }
+  }
+  console.log(rtn);
+  return rtn;
 }
 
 module.exports.initialize = async function(){
