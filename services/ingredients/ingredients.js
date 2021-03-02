@@ -43,13 +43,11 @@ async function cleanIngredientVolumes(){
 module.exports.initialize = initialize;
 
 module.exports.getAllInventoryFor = async function( key ){
-  let f = await lots.find({key:key}).sort({retired_date:1, expiration_date:1});
-  let r = [];
-  while( await f.hasNext() ){
-    let i = await f.next();
-    if( i ) r.push(i);
+  if( !label_key.hasOwnProperty(key) ){ //this is an unmanaged item being looked for ...
+    return false;
   }
-  return r;
+  let f = await lots.find({key:key}).sort({retired_date:1, expiration_date:1});
+  return await f.toArray();
 }
 
 module.exports.getIngredientLabel = async function( key ){
@@ -61,8 +59,7 @@ module.exports.addLot = async function( key, lot ){
   lot.key = key;
   if( !lot.lot_number ) throw new Error("Ingredient Lots must have a unique lot_number.")
   if( label_key.hasOwnProperty( key ) ) lot.label = label_key[ key ];
-  else if( lot.hasOwnProperty( "label" ) ) label_key[ key ] = lot.label;
-  else throw new Error( 'Ingredients.addLot :: Can not add lot without label.' );
+  else throw new Error( 'Ingredients.addLot :: Unrecognized ingredient type :: ', key );
   let f = await lots.find({key:key, lot_number:lot.lot_number});
   let fc = await f.count();
   if( fc > 0 ) throw new Error( 'Ingredients.addLot :: There is already a ' + key + ' with lot number ' + lot.lot_number );
@@ -84,8 +81,14 @@ module.exports.addLot = async function( key, lot ){
 }
 
 module.exports.deleteLot = async function( key, lot_number ){
-  let d = await lots.delete( {key:key, lot_number:lot_number} );
+  let d = await lots.deleteOne( {key:key, lot_number:lot_number} );
 //  console.log("ingredients.deleteLot :: removed " + d.deletedCount);
+  return ( d.deletedCount > 0 );
+}
+
+module.exports.deleteById = async function( _id ){
+  let uid = ds.getObjectId( _id );
+  let d = await lots.deleteOne( {_id:uid} );
   return ( d.deletedCount > 0 );
 }
 
@@ -208,7 +211,7 @@ module.exports.getKeyAndLotFromId = getKeyAndLotFromId;
 
 function cleanQuantities( item ){
   if( item.initial_volume <= 0 || isNaN( item.initial_volume ) ){
-    console.log( "Ingredient.js :: initial_volume was not a positive number :: ", item );
+//    console.log( "Ingredient.js :: initial_volume was not a positive number :: ", item );
     item.initial_volume = 0;
   }
   if( item.current_volume <= 0 || isNaN( item.current_volume ) ) item.current_volume = item.initial_volume;

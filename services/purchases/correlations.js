@@ -43,9 +43,10 @@ module.exports.getLastOrderDate = async function(origin){
   let rtn;
   if( await loid.hasNext() ){
     rtn = await loid.next();
-    console.log("correlations.js - getLastOrderDate :: ", rtn);
+//    console.log("correlations.js - getLastOrderDate :: ", rtn);
   }else{
-    console.log("correlations.js :: getLastOrderDate - no dated orders found");
+//   console.log("correlations.js :: getLastOrderDate - no dated orders found");
+    rtn = {order_date:0};
   }
 
   return rtn.order_date;
@@ -61,7 +62,7 @@ module.exports.getUncorrelatedOrders = async function( origin ){
   let order_id = null;
   let co;
   //combine all items for same order
-  console.log(ucoa);
+//  console.log(ucoa);
   for( let i=0; i<ucoa.length; i++ ){
     if( ucoa[i].order_id != order_id ){
       rtn.push({order_id:ucoa[i].order_id, email:ucoa[i].email, customer_name:ucoa[i].customer_name, order_date:ucoa[i].order_date});
@@ -78,7 +79,7 @@ module.exports.getUncorrelatedOrders = async function( origin ){
       ucoa[i].quantity = 1;
     }
   }
-  console.log(rtn);
+//  console.log(rtn);
   return rtn;
 }
 

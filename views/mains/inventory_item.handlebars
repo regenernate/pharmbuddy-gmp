@@ -33,7 +33,7 @@ function retireLot( id ){
     if (xhr.status === 200) {
         let result = JSON.parse( xhr.responseText );
         if( result.success ){
-          location.reload();
+          window.location.href=window.location.href;
         }
     }
     else if (xhr.status !== 200) {
@@ -83,18 +83,18 @@ function getXHRRequest( url ){
 {{#if active_lots}}
 <table>
   <tr>
-    <th>Purchased From</th>
-    <th>Expires On</th>
     <th>Lot #</th>
+    <th>Expires On</th>
+    <th>Purchased From</th>
     <th>Inventory (ml)</th>
     <th>Update quantity</th>
     <th>Retire lot</th>
   </tr>
 {{#each active_lots}}
 <tr>
-  <td>{{purchased_from}}</td>
-  <td>{{expiration_date_vf}}</td>
   <td>{{lot_number}}</td>
+  <td>{{expiration_date_vf}}</td>
+  <td>{{purchased_from}}</td>
   <td>{{current_volume}}</td>
 <!--  <td>
   {{#if do_not_use_for}}
@@ -118,6 +118,7 @@ function getXHRRequest( url ){
     <th>Retired On</th>
     <th>Lot #</th>
     <th>Unretire</th>
+    <th>Delete from Inventory</th>
   </tr>
   {{#each retired_lots}}
   <tr>
@@ -133,6 +134,7 @@ function getXHRRequest( url ){
     </td>
     <td>{{lot_number}}</td>
     <td><input type="button" onclick="unretireLot('{{_id}}');" id="ur_{{_id}}" value="Un-retire this Lot" /></td>
+    <td><form action='/inventory/delete' method='POST'><input type='hidden' name='_id' value='{{_id}}' /><input type='hidden' name='key' value='{{../item.key}}' /><input type='submit' value='Delete Permanently' /></form></td>
   </tr>
   {{/each}}
 </table>

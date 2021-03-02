@@ -43,3 +43,9 @@ input[type='button']{
 input[type='button']:disabled{
   background-color: #999999;
 }
+
+.warning_text{
+  font-size:1.2rem;
+  color:#CC0000;
+  font-weight: bold;
+}

@@ -96,18 +96,21 @@ async function clearOldData(collection){
 }
 
 let sample_line_items = [
-  {
-    origin: 'shopify',
-    order_id: 1001,
-    order_date: '1614017908000',
-    product_name: '900mg Regenerative CBD Sublingual Oil',
-    customer_name:'Nathan Wheeler',
-    email: 'nathan.greenling@gmail.com',
-    product_sku: '20',
-    position: 0,
-    selected_options: 'Completely Fake Order'
-  }
 ];
+
+/*
+{
+  origin: 'shopify',
+  order_id: 1001,
+  order_date: '1614017908000',
+  product_name: '900mg Regenerative CBD Sublingual Oil',
+  customer_name:'Nathan Wheeler',
+  email: 'nathan.greenling@gmail.com',
+  product_sku: '20',
+  position: 0,
+  selected_options: 'Completely Fake Order'
+}
+*/
 
 let extracts = [
   {

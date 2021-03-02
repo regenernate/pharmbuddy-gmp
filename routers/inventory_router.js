@@ -26,7 +26,6 @@ module.exports.router = async function( req, res, path ) {
     if( req.body ){
       let r;
       if( req.body.type == 'fse' ){
-        console.log("inventory_router.update :: ", req.body);
         r = await inventory.updateFSEMass( req.body.batch_id, req.body.new_mass );
         r = { success:r, new_mass:req.body.new_mass };
       }else if( req.body._id ){
@@ -65,23 +64,35 @@ module.exports.router = async function( req, res, path ) {
     let fnd = await inventory.getFSELot(batch_id);
     if( fnd ) return bro.get( true, renderTemplate( req, pages.fse_item, {item:fnd}));
     else return bro.get( true, renderError(req, 'Unrecognized Full Spectrum Extract id. Try selecting a batch from the <a href="/inventory">inventory list</a>.'));
-  }else{  //assume this is an attempt to see a specific inventory item by key
+  }else if( path[0] == "delete" ){
     if( req.body ){
+      let rmd = await inventory.deleteInventoryItem( req.body._id );
+      if( rmd === true ) return bro.redirect( '/inventory/' + req.body.key );
+      else return bro.get( true, renderError(req, rmd) );
+    }else return bro.get( true, renderError(req, "You can't delete an item without sending an _id. Visit a specific inventory item page to find the delete buttons."));
+  }else{  //assume this is an attempt to see a specific inventory item by key
+    if( req.body ){ //if posted values, assume adding lot
       let ai = await inventory.addIngredientLot( req.body.key, req.body );
+      if( ai ) return bro.redirect('/inventory/' + req.body.key); //redirect here to avoid reposting
+      else return bro.get( true, renderError(req, "This item wasn't added to inventory!"));
     }
     let key = path[0].toLowerCase();
     let fnd = await inventory.getAllInventoryFor( key );
     if( fnd ){
-      let ai=[], ri=[];
-      for( let i=0; i<fnd.length; i++ ){
-        if( fnd[i] && fnd[i].retired_date ) ri.push( fnd[i] );
-        else ai.push( fnd[i] );
+      let ai=[], ri=[], rtn={};
+      if( fnd.length ){
+        for( let i=0; i<fnd.length; i++ ){
+          if( fnd[i] && fnd[i].retired_date ) ri.push( fnd[i] );
+          else ai.push( fnd[i] );
+        }
+        rtn.item = {key:key, label:fnd[0].label};
+      }else{ //tracked inventory item but not items currently in inventory
+        rtn.item = {key:key, label:await inventory.getIngredientLabel( key )};
       }
-      let rtn = { item:{key:key, label:fnd[0].label} };
       if( ai.length ) rtn.active_lots = ai;
       if( ri.length ) rtn.retired_lots = ri;
       return bro.get( true, renderTemplate( req, pages.inventory_item, rtn) );
-    }else return bro.get( true, renderError( req, "Unrecognized route! Try <a href='/list'>the inventory list</a>." ) );
+    }else return bro.get( true, renderError( req, "You are looking for an ingredient we don't currently use :: " + key + ". Try starting from <a href='/inventory/list'>the inventory list</a>." ) );
   }
 }
 

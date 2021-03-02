@@ -1,6 +1,7 @@
 <h1>Sales, most recent order first.</h1>
-<p>Current and past orders with uncorrelated products show up below.</p><p><strong>Click on a specific order below to correlate the products in it.</strong></p>
+<p>Orders with uncorrelated products show up below.</p><p><strong>Click on a specific order below to correlate the products in it.</strong></p>
 {{#if orders}}
+<p>If you don't see the most recent orders, try <a href='/purchases/update'>pulling new orders from Shopify.</a></p>
 <table><tr><th>Customer</th><th>Email</th><th>Order ID</th><th>Order Date</th><th>Items Purchased</th></tr>
 {{#each orders}}
   <tr><td>{{customer_name}}</td><td>{{email}}</td><td><a href='/purchases/{{order_id}}'>{{order_id}}</a></td><td>{{order_date_vf}}</td><td>

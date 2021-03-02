@@ -35,6 +35,10 @@ module.exports.savePullDate = async function( run_id, prop, date ){
   return false;
 }
 
+module.exports.deleteRun = async function( run_id ){
+  let r = await runs.deleteOne({run_id:parseInt(run_id)});
+  return r.deletedCount > 0;
+}
 
 function getRunId(){
   let rtn = next_id;

@@ -174,6 +174,12 @@ module.exports.pullIngredientsForRun = async function( ing, fse ){
   return true;
 }
 
+module.exports.deleteInventoryItem = async function( _id ){
+  let d = await ingredients.deleteById(_id);
+  if( !d ) return "The ingredient with _id ( " + _id + " ) could not be deleted.";
+  else return true;
+}
+
 module.exports.updateVolumeById = async function( _id, new_volume ){
   if( !new_volume || new_volume < 0 ) return false;
   let f = await ingredients.getKeyAndLotFromId( _id );

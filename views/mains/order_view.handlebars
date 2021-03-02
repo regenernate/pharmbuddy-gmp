@@ -31,11 +31,11 @@ function saveCorrelation( sku, position ){
 
 
 <a href='/purchases/list'>Return to purchases list.</a>
-<h1>This is order #{{line_items.[0].order_id}}.</h1>
+<h1>This is {{line_items.[0].origin}} order #{{line_items.[0].order_id}}.</h1>
   <p>Order details are below.</p>
-  <a href='/purchases/customer?email={{line_items.[0].email}}'>{{line_items.[0].customer_name}}</a> - {{line_items.[0].email}}<br>
-  Ordered on {{line_items.[0].order_date_vf}}.<br>
-  Items:<br>
+  {{line_items.[0].customer_name}}</a> - {{line_items.[0].email}}<br />
+  Ordered on {{line_items.[0].order_date_vf}}.<br />
+  Items:<br />
   <table><tr><th>Item</th><th>Options</th><th>Product Run Pulled</th></tr>
   {{#each line_items}}
   <tr>

@@ -95,7 +95,7 @@
 
 {{else}}
   {{#if limit.item.lot_number}}
-  <p>There is not enough {{limit.item.label}} to make any product matching this formulation. You can:</p>
+  <p class='warning_text'>There is not enough {{limit.item.label}} in the current lot to make the amount of product in this formulation.</p><p>You can <a href='/inventory/{{limit.item.key}}'>edit the amount available here</a>, or:</p>
   <form id='advance_inventory_form' action='/production/advance_lot' method='post'>
     {{#each request}}<input type='hidden' name='{{@key}}' value='{{this}}' />{{/each}}
     {{#if limit.item.key}}

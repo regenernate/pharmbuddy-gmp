@@ -25,6 +25,19 @@ async function getOrder( order_id ){
   */
 }
 
+async function doIt(orders){
+  for( let i in orders.orders ){
+    orders.orders[i] = cleanOrderObject( orders.orders[i] );
+    for( let k in orders.orders[i].items ){
+      console.log("k :: ", k);
+      let success = await savePurchaseLineItem( orders.orders[i].items[k] );
+      //if any fail to save, we need to abort
+      if( !success ) throw new Error("Shopify-cgmp :: Couldn't save order item :: ", orders.orders[i].items[k]);
+    }
+  }
+  return true;
+}
+
 async function getOrders( last_order_date ){
   let lod;
   if( last_order_date ){
@@ -32,34 +45,30 @@ async function getOrders( last_order_date ){
   }
   let url = base_api_url + "orders.json";
   url += "?fields=id,created_at,email,line_items,shipping_address" + ( ( lod ) ? "&created_at_min=" + lod : "" );
-  console.log(url);
-  let http = new XMLHttpRequest();
-  http.open('GET', url );
-  http.setRequestHeader('X-Shopify-Access-Token', SHOPIFY_API_PASS);
-  http.setRequestHeader('Content-type', 'application/json');
-  http.onreadystatechange = async function(){
-    if( http.readyState == 4 ){
-      if( http.status == 200 ){
-        //console.log("yes!!!");
-        let orders = JSON.parse(http.responseText);
-        //console.log(orders);
-        //persist the line items via the savePurchaseLineItem method as provided by calling component
-        for( let i in orders.orders ){
-          orders.orders[i] = cleanOrderObject( orders.orders[i] );
-          for( let k in orders.orders[i].items ){
-            let success = await savePurchaseLineItem( orders.orders[i].items[k] );
-            //if any fail to save, we need to abort
-            if( !success ) throw new Error("Shopify-cgmp :: Couldn't save order item :: ", orders.orders[i].items[k]);
-          }
+//  console.log(url);
+  return new Promise(function (resolve, reject) {
+    let http = new XMLHttpRequest();
+    http.open('GET', url, false );
+    http.setRequestHeader('X-Shopify-Access-Token', SHOPIFY_API_PASS);
+    http.setRequestHeader('Content-type', 'application/json');
+    http.onreadystatechange = async function(){
+      if( http.readyState == 4 ){
+        if( http.status == 200 ){
+          //console.log("yes!!!");
+          let orders = JSON.parse(http.responseText);
+          //persist the line items via the savePurchaseLineItem method as provided by calling component
+          await doIt( orders );
+          resolve(true);
+        }else{
+          resolve(false);
         }
-      }else{
-        console.log("no!!!", http.status );
-        console.log(http);
       }
     }
-  }
-
-  http.send();
+    http.onerror = function(){
+      reject(false);
+    }
+    http.send();
+  });
 
 /*  return new Promise(function (resolve, reject) {
           let method = "GET";
