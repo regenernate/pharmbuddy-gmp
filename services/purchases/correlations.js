@@ -23,7 +23,6 @@ module.exports.saveCorrelation = async function( purchased_item ){
 }
 
 module.exports.saveLineItem = async function( purchased_item ){
-  if( !purchased_item.hasOwnProperty( "run_id" ) ) purchased_item.run_id = null;
   return await module.exports.saveCorrelation( purchased_item );
 }
 
@@ -55,7 +54,7 @@ module.exports.getLastOrderDate = async function(origin){
 module.exports.getUncorrelatedOrders = async function( origin ){
   let pts = ( origin ) ? { origin:origin } : {};
   pts.run_id = null; //uncorrelated line items only, please
-  let uco = await purchased_items.find(pts).sort({order_id:1, _id:1});
+  let uco = await purchased_items.find(pts).sort({order_id:-1});
   //let uco = await purchased_items.aggregate([{ "$group": {"_id": "$order_id", items:{ $push: "$$ROOT" } } } ]);
   let ucoa = await uco.toArray();
   let rtn = [];

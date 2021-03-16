@@ -29,7 +29,6 @@ async function doIt(orders){
   for( let i in orders.orders ){
     orders.orders[i] = cleanOrderObject( orders.orders[i] );
     for( let k in orders.orders[i].items ){
-      console.log("k :: ", k);
       let success = await savePurchaseLineItem( orders.orders[i].items[k] );
       //if any fail to save, we need to abort
       if( !success ) throw new Error("Shopify-cgmp :: Couldn't save order item :: ", orders.orders[i].items[k]);
@@ -44,7 +43,7 @@ async function getOrders( last_order_date ){
     lod = moment(parseInt(last_order_date)+1000, 'x').format();
   }
   let url = base_api_url + "orders.json";
-  url += "?fields=id,created_at,email,line_items,shipping_address" + ( ( lod ) ? "&created_at_min=" + lod : "" );
+  url += "?status=any&fields=id,created_at,email,line_items,shipping_address" + ( ( lod ) ? "&created_at_min=" + lod : "" );
 //  console.log(url);
   return new Promise(function (resolve, reject) {
     let http = new XMLHttpRequest();
@@ -130,7 +129,7 @@ async function getProduct(item){
         p_strength = 300;
         break;
       case 2:
-        p_strenth = 600;
+        p_strength = 600;
         break;
     }
   }else{
@@ -151,6 +150,7 @@ function cleanOrderObject( o ){
   rtn.customer_email = o.email;
   rtn.order_date = moment(o.created_at).format('x');
   rtn.items = [];
+  explodeBundles( o.line_items );
   for( let j in o.line_items ){
     for( let k=0; k<o.line_items[j].quantity; k++ ){
       rtn.items.push({ origin:"shopify", order_date:rtn.order_date, customer_name:o.shipping_address.name, email:o.email, order_id:o.id, product_sku:o.line_items[j].sku, position:k, product_name:o.line_items[j].title, selected_options:o.line_items[j].variant_title.split(" / ").join(",") });
@@ -160,6 +160,24 @@ function cleanOrderObject( o ){
   return rtn;
 }
 
+/*
+This method turns purchased bundles into the individual line items in that bundle so each individual product can be correlated to a lot id
+
+It is brittle because it relies on the product names and it does not look up the correct individual item sku for each item
+*/
+function explodeBundles( items ){
+  for( let i=0; i<items.length; i++ ){
+    if( items[i].title.indexOf("Low Dosage") >= 0 ){
+      items[i].title = "600mg Regenerative CBD Sublingual Oil ( 20 mg/ml ) - bundle"; //rename this item as the sublingual oil
+      items.splice(i, 0, { sku:items[i].sku + "-salve", quantity:items[i].quantity, title:"1% Regenerative CBD Salve - bundle", variant_title:"1 oz"}); //add a new item as the salve
+      i++;
+    }else if( items[i].title.indexOf("High Dosage") >= 0 ){
+      items[i].title = "1200mg Regenerative CBD Sublingual Oil ( 40 mg/ml ) - bundle"; //rename this as the sublingual oil
+      items.splice(i, 0, { sku:items[i].skun+ "-salve", quantity:items[i].quantity, title:"2% Regenerative CBD Salve - bundle", variant_title:"1 oz"}); //add a new item as the salve
+      i++;
+    }
+  }
+}
 
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY;
