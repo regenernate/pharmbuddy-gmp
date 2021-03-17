@@ -172,7 +172,7 @@ function explodeBundles( items ){
       items.splice(i, 0, { sku:items[i].sku + "-salve", quantity:items[i].quantity, title:"1% Regenerative CBD Salve - bundle", variant_title:"1 oz"}); //add a new item as the salve
       i++;
     }else if( items[i].title.indexOf("High Dosage") >= 0 ){
-      items[i].title = "1200mg Regenerative CBD Sublingual Oil ( 40 mg/ml ) - bundle"; //rename this as the sublingual oil
+      items[i].title = "900mg Regenerative CBD Sublingual Oil ( 30 mg/ml ) - bundle"; //rename this as the sublingual oil
       items.splice(i, 0, { sku:items[i].skun+ "-salve", quantity:items[i].quantity, title:"2% Regenerative CBD Salve - bundle", variant_title:"1 oz"}); //add a new item as the salve
       i++;
     }
