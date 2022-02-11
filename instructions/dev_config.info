@@ -1,11 +1,27 @@
 //Configure local .env file from copy of .env.default
 
-//run from /tools folder:
+/* to get css working */
+//create the dist folder inside the main working directory ( if  you don't already have one )
+//then from /tools folder run:
+node uglify.js
+//exit process or leave open to automatically reuglify whenever you change .css files
+
+/* header image */
+//if you want a header image, put a file in dist called "the_zebra_head.jpg"
+
+/* to get data for testing */
+ //load data into mongo, from / folder:
+ node injector.js - gives you options of what to inject, do them in any order, they wipe out old data entirely
+
+//start local server, or point .env to active installation
+node index.js
+
+/* to register your computer to be allowed to use this app instance */
+//from /tools folder run:
  node getRegistrationCode.js list,
  then node getRegistrationCode.js {number of the device name you want to register under from previous step output}
  then run node index.js and visit url from previous step output - select correct device name and voila!
+//if it doesn't work - make sure your index.js file is running ( see previous section above )
 
- //load data into mongo, from / folder:
- node injector.js - should insert starting inventory, fse ( full plant cbd extract ), and a couple production runs
-
- then node index.js and poke around. running injector.js again will clear all data and reinstall
+/* play around */
+ //then node index.js and poke around. running injector.js again will clear all data and reinstall
